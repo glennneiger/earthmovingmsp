@@ -10,6 +10,8 @@ import StockActions from "./StockActions";
 
 import Spinner from "../common/Spinner";
 
+import "./css/dashboard.css";
+
 class Dashboard extends Component {
   constructor() {
     super();
@@ -54,6 +56,32 @@ class Dashboard extends Component {
                   <p>Now You Can Easily Manage Your Brand With Vawalk</p>
                 </div>
               </Modal>
+              <div className="col-md-12" style={{ padding: 20 }}>
+                <div
+                  className="row"
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <div class="h-100">
+                    <div class="d-flex justify-content-center h-100">
+                      <div class="searchbar">
+                        <input
+                          class="search_input"
+                          type="text"
+                          name=""
+                          placeholder="Search by item code, item name and machine part..."
+                        />
+                        <a href="#" class="search_icon">
+                          <i class="fa fa-search" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="col-md-12">
                 <div
                   className="row"
