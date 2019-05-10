@@ -53,7 +53,10 @@ class Dashboard extends Component {
               <Modal open={open} onClose={this.onCloseModal} center>
                 <div style={{ padding: 15 }}>
                   <h2>This Feature Is Coming Soon !!</h2>
-                  <p>Now You Can Easily Manage Your Brand With Vawalk</p>
+                  <p>
+                    Now You Can Easily Manage Your Brand With Earthmovingmsp
+                    software
+                  </p>
                 </div>
               </Modal>
               <div className="col-md-12" style={{ padding: 20 }}>
