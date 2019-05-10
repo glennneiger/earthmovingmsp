@@ -11,6 +11,7 @@ const expressValidator = require("express-validator");
 const path = require("path");
 
 const users = require("./routes/api/users");
+const warehouse = require("./routes/api/warehouse");
 
 const app = express();
 
@@ -123,6 +124,7 @@ app.locals.errors = null;
 
 // Use Routes
 app.use("/api/users", users);
+app.use("/api/warehouse", warehouse);
 
 const port = process.env.PORT || 5000;
 
