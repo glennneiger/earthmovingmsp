@@ -207,12 +207,9 @@ class StockActions extends Component {
                       </a>
                       <ul className="submenu">
                         <li>
-                          <a
-                            href="javascript:void(0)"
-                            onClick={this.onOpenModal}
-                          >
+                          <Link to="/warehouse-setting" className="nav-link">
                             <span>Warehouse Setting</span>
-                          </a>
+                          </Link>
                         </li>
 
                         <li>

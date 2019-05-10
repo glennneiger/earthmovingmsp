@@ -256,7 +256,7 @@
 }
 
 .mainheader-area {
-  background: #0085c3;
+  background-image: linear-gradient(to top, #48c6ef 0%, #6f86d6 100%);
   border-bottom: 1px solid #f3f8fb;
   padding-left: 15px;
   position: relative;

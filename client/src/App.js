@@ -22,6 +22,10 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/dashboard/Dashboard";
 
+import WarehouseSetting from "./components/WarehouseSetting/WarehouseSetting";
+import AddWarehouse from "./components/add-warehouse/AddWarehouse";
+import EditWarehouse from "./components/edit-warehouse/EditWarehouse";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -80,6 +84,28 @@ class App extends Component {
               <Route exact path="/login" component={Login} />
               <Switch>
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/warehouse-setting"
+                  component={WarehouseSetting}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/add-warehouse"
+                  component={AddWarehouse}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/edit-warehouse/:id"
+                  component={EditWarehouse}
+                />
               </Switch>
             </div>
             <Footer />
