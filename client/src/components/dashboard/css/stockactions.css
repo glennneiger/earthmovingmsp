@@ -1,0 +1,18 @@
+@media only screen and (max-width: 900px) {
+  .mobile_menu {
+    display: block;
+  }
+}
+
+@media only screen and (min-width: 1000px) {
+  .mobile_menu {
+    display: none;
+  }
+}
+
+#nav_menu {
+  text-align: left;
+}
+#nav_menu li {
+  padding-right: 30px;
+}
