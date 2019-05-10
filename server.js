@@ -10,6 +10,8 @@ const expressValidator = require("express-validator");
 
 const path = require("path");
 
+const users = require("./routes/api/users");
+
 const app = express();
 
 // DB Config
@@ -118,6 +120,9 @@ app.use(function(req, res, next) {
 
 //Set Global errors variables
 app.locals.errors = null;
+
+// Use Routes
+app.use("/api/users", users);
 
 const port = process.env.PORT || 5000;
 
