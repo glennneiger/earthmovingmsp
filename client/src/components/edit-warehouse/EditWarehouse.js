@@ -215,7 +215,7 @@ class EditWarehouse extends Component {
                                     }
                                     onChange={this.onChange}
                                     error={errors.warehousecapacity}
-                                    info="Put the Warehouse Capacity Ctn"
+                                    info="Put the Warehouse Capacity"
                                   />
                                 </div>
                                 <div class="form-group col-md-4">
