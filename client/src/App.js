@@ -26,6 +26,8 @@ import WarehouseSetting from "./components/WarehouseSetting/WarehouseSetting";
 import AddWarehouse from "./components/add-warehouse/AddWarehouse";
 import EditWarehouse from "./components/edit-warehouse/EditWarehouse";
 
+import CreateStock from "./components/create-stock/CreateStock";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -105,6 +107,13 @@ class App extends Component {
                   exact
                   path="/edit-warehouse/:id"
                   component={EditWarehouse}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/create-stock"
+                  component={CreateStock}
                 />
               </Switch>
             </div>
