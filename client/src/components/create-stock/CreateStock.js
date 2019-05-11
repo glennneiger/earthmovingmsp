@@ -135,7 +135,6 @@ class CreateStock extends Component {
       minrate,
       rate,
       maxrate,
-      productImage,
       acceptedFiles
     } = this.state;
 
@@ -143,14 +142,37 @@ class CreateStock extends Component {
     console.log("acceptedFiles is : " + acceptedFiles);
     //}
 
-    const stockData = {
+    let stockData = new FormData();
+    stockData.append("itemname", itemname);
+    stockData.append("itemcode", itemcode);
+    stockData.append("machinepart", JSON.stringify(machinepart));
+
+    stockData.append("itemlength", itemlength);
+    stockData.append("itemwidth", itemwidth);
+    stockData.append("itemheight", itemheight);
+    stockData.append("forcompany", JSON.stringify(forcompany));
+    stockData.append("hsncode", hsncode);
+    stockData.append("itemwarehouse", itemwarehouse);
+    stockData.append("rack", rack);
+    stockData.append("quantity", quantity);
+    stockData.append("minrate", minrate);
+    stockData.append("rate", rate);
+    stockData.append("maxrate", maxrate);
+
+    for (let i = 0; i < acceptedFiles.length; i += 1) {
+      stockData.append("file", acceptedFiles[i]);
+      console.log("acceptedFiles where i =" + i + " " + acceptedFiles[i]);
+    }
+
+    stockData.append("acceptedFiles", acceptedFiles);
+    /*const stockData = {
       itemname: itemname,
       itemcode: itemcode,
-      machinepart: machinepart,
+      machinepart: JSON.stringify(machinepart),
       itemlength: itemlength,
       itemwidth: itemwidth,
       itemheight: itemheight,
-      forcompany: forcompany,
+      forcompany: JSON.stringify(forcompany),
       hsncode: hsncode,
       itemwarehouse: itemwarehouse,
       rack: rack,
@@ -159,9 +181,9 @@ class CreateStock extends Component {
       rate: rate,
       maxrate: maxrate,
       acceptedFiles: acceptedFiles
-    };
-    console.log("stockData Data is : " + stockData);
-    console.table(stockData);
+    };*/
+    // console.log("stockData Data is : " + stockData);
+    //console.table(stockData);
 
     this.props.createStock(stockData, this.props.history);
 
@@ -242,8 +264,8 @@ class CreateStock extends Component {
 
   handleOnDrop = (files, rejectedFiles) => {
     if (files.length <= 4) {
-      console.log("accepted files are : " + files);
-      console.log("accepted file length is : " + files.length);
+      //  console.log("accepted files are : " + files);
+      // console.log("accepted file length is : " + files.length);
       this.setState({ acceptedFiles: files });
     } else {
       alert("You Cannot upload more then 4 images");
@@ -275,7 +297,7 @@ class CreateStock extends Component {
     let itemfiles;
     if (acceptedFiles) {
       itemfiles = acceptedFiles.map(file => (
-        <li key={file.path}>
+        <li className="list-group-item list-group-item-success" key={file.path}>
           {console.log(file)}
           {file.path} - {file.size} bytes
         </li>
@@ -631,7 +653,12 @@ class CreateStock extends Component {
                                 accept={acceptedFileTypes}
                                 maxSize={itemImageMaxSize}
                               >
-                                {({ getRootProps, getInputProps }) => (
+                                {({
+                                  getRootProps,
+                                  getInputProps,
+                                  isDragActive,
+                                  isDragReject
+                                }) => (
                                   <div className="container">
                                     <div
                                       {...getRootProps({
@@ -640,9 +667,13 @@ class CreateStock extends Component {
                                       })}
                                     >
                                       <input {...getInputProps()} />
-                                      <p style={{ textAlign: "center" }}>
-                                        Click to upload image
-                                      </p>
+                                      {!isDragActive &&
+                                        "Click here or drop a file to upload!"}
+                                      {isDragActive &&
+                                        !isDragReject &&
+                                        "Drop it like it's hot!"}
+                                      {isDragReject &&
+                                        "File type not accepted, sorry!"}
                                     </div>
                                   </div>
                                 )}
