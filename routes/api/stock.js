@@ -153,8 +153,81 @@ router.get(
           Stock.find()
             .then(stocks => {
               if (stocks) {
-                //we found the stock
-                res.json(stocks); //here we get all the stocks and send as response
+                let finalallstock = [];
+                const stockslen = stocks.length;
+                console.log("Stock Length is  : " + stockslen);
+
+                Warehouse.find().then(warehouse => {
+                  const warehouselen = warehouse.length;
+                  console.log("Warehouse Length is  : " + stockslen);
+                  for (var i = 0; i < stockslen; i++) {
+                    var calquantity = 0;
+
+                    console.log(
+                      "////working on ItemCode" + stocks[i].itemcode + "////"
+                    );
+
+                    for (var j = 0; j < warehouselen; j++) {
+                      for (
+                        var k = 0;
+                        k < warehouse[j].warehouseproducts.length;
+                        k++
+                      ) {
+                        if (
+                          warehouse[j].warehouseproducts[k].itemcode ==
+                          stocks[i].itemcode
+                        ) {
+                          console.log(
+                            "The length of current warehouseproducts Is : " +
+                              warehouse[j].warehouseproducts.length
+                          );
+
+                          console.log(
+                            "////Working on " +
+                              warehouse[j].warehouseaddress +
+                              " ////"
+                          );
+                          console.log(
+                            "Itemcode is " +
+                              warehouse[j].warehouseproducts[k].itemcode +
+                              "found where quantity is : " +
+                              warehouse[j].warehouseproducts[k].quantity
+                          );
+
+                          calquantity += parseInt(
+                            warehouse[j].warehouseproducts[k].quantity
+                          );
+                        }
+                      }
+                    }
+
+                    const singleitemdata = {
+                      _id: stocks[i]._id,
+                      itemname: stocks[i].itemname,
+                      itemcode: stocks[i].itemcode,
+                      machinepart: JSON.parse(stocks[i].machinepart),
+                      itemlength: stocks[i].itemlength,
+                      itemwidth: stocks[i].itemwidth,
+                      itemheight: stocks[i].itemheight,
+                      forcompany: JSON.parse(stocks[i].forcompany),
+                      hsncode: stocks[i].hsncode,
+                      rack: stocks[i].rack,
+                      minrate: stocks[i].minrate,
+                      rate: stocks[i].rate,
+                      maxrate: stocks[i].maxrate,
+                      quantity: calquantity,
+                      itemprimaryimg: stocks[i].itemprimaryimg
+                    };
+
+                    // Add to finalallstock array
+                    finalallstock.unshift(singleitemdata);
+                    var calquantity = 0; //set calquantity =0 for the next item
+                  }
+                  console.log("loop operation done");
+
+                  res.json(finalallstock);
+                  console.log("final response send");
+                });
               } else {
                 errors.message = "There are no stocks";
                 errors.className = "alert-danger";
@@ -430,6 +503,171 @@ router.post(
         }
       })
       .catch(err => res.status(404).json({ errors }));
+  }
+);
+
+// @route   GET api/stock/singleprodstock/:_id
+// @desc    Get stock by ID
+// @access  Private
+
+router.get(
+  "/singleprodstock/:id",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    var prodstk_id = req.params.id;
+
+    errors.message = "There Is No Product Stock found";
+    errors.className = "alert-danger";
+
+    Stock.findOne({ _id: prodstk_id })
+      .then(stock => {
+        /*let finalstockbyid = [];
+        const singleitemdata = {
+          _id: stock._id,
+          itemname: stock.itemname,
+          itemcode: stock.itemcode,
+          machinepart: JSON.parse(stock.machinepart),
+          itemlength: stock.itemlength,
+          itemwidth: stock.itemwidth,
+          itemheight: stock.itemheight,
+          forcompany: JSON.parse(stock.forcompany),
+          hsncode: stock.hsncode,
+          rack: stock.rack,
+          minrate: stock.minrate,
+          rate: stock.rate,
+          maxrate: stock.maxrate,
+          itemprimaryimg: stock.itemprimaryimg
+        };
+
+        finalstockbyid.unshift(singleitemdata);
+        res.json(finalstockbyid);*/
+        res.json(stock);
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+
+// @route   Post api/stock
+// @desc    Edit product stock by their id
+// @access  Private
+router.put(
+  `/updatesingleprodstock/:paramid`,
+  passport.authenticate("jwt", { session: false }),
+  (req, res, next) => {
+    // Get fields
+    const errors = {};
+
+    errors.message = "The Product Id is not found";
+    errors.className = "alert-danger";
+
+    Stock.findOne({ _id: req.params.paramid })
+      .then(stock => {
+        if (stock) {
+          // Update
+          Stock.findByIdAndUpdate(req.params.paramid, req.body, function(
+            //req.body => stockdata that we send from its action from [editStock]
+            err,
+            stock
+          ) {
+            if (err) return next(err);
+            res.json(stock);
+          });
+        }
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+
+// @route   DELETE api/stock
+// @desc    Delete product stock by thier id
+// @access  Private
+router.delete(
+  "/singleprodremove/:prodstock_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    var prodstk_id = req.params.prodstock_id;
+    errors.message = "The Product Id is not found";
+    errors.className = "alert-danger";
+
+    Stock.findOne({ _id: prodstk_id })
+      .then(stock => {
+        var articlenumreq = stock.articlenum;
+        var prodcolorreq = stock.prodcolor;
+        if (stock) {
+          Stock.findByIdAndRemove({ _id: prodstk_id }).then(res => {
+            console.log("product is removed from stock!!");
+          });
+        }
+      })
+      .catch(err => res.status(404).json({ errors }));
+
+    Warehouse.find()
+      .then(warehouses => {
+        if (warehouses) {
+          //we found the warehouses
+          //  res.json(warehouses);
+
+          console.log("Here First We Remove Stock");
+
+          var warehouseslength = warehouses.length;
+
+          for (i = 0; i < warehouseslength; i++) {
+            for (var j = 0; j < warehouses[i].warehouseproducts.length; j++) {
+              if (warehouses[i].warehouseproducts[j]._id == prodstk_id) {
+                // If you want to remove element at position x, use:
+                //someArray.splice(x, 1);
+                //array.splice(index, howmany, item1, ....., itemX)
+
+                console.log(
+                  "Run For id found of : " +
+                    warehouses[i].warehouseproducts[j].itemcode +
+                    " in warehouse address => " +
+                    warehouses[i].warehouseaddress +
+                    "AT INDEX OF warehouseproducts ARRAY =>" +
+                    j
+                );
+                if (warehouses[i].warehouseproducts.splice(j, 1)) {
+                  console.log(
+                    "Product Stock Remove Acc to Requested product stock id"
+                  );
+
+                  warehouses[i]
+                    .save()
+                    .then(res => {
+                      // res.json({ success: "Product is deleted successfully" });
+                      console.log("save success");
+                    })
+                    .catch(err =>
+                      res.status(404).json({
+                        warehouse: "not save fail"
+                      })
+                    );
+                } else {
+                  console.log("Not Remove");
+                }
+              }
+            }
+          }
+
+          console.log("Loop Operation Complete");
+          res.json({ success: "Product is deleted successfully" });
+        } else {
+          errors.message =
+            "There are no product stock id found in the warehouses";
+          errors.className = "alert-danger";
+          return res.status(404).json(errors);
+        }
+      })
+      .catch(err =>
+        res.status(404).json({
+          warehouse: "There are no product stock id found in the warehouses"
+        })
+      );
   }
 );
 module.exports = router;

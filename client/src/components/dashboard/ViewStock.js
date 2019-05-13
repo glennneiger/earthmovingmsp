@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withRouter, Link } from "react-router-dom";
 import {
-  getCurrentStock,
+  getCurrentAllStock,
   deleteStock,
   singleprodstockbyid
 } from "../../actions/stockActions";
@@ -29,7 +29,7 @@ class ViewStock extends Component {
     };
   }
   componentDidMount() {
-    this.props.getCurrentStock();
+    this.props.getCurrentAllStock();
 
     /*  $("button").on("click", function() {
       alert("test alert using jquery");
@@ -63,149 +63,193 @@ class ViewStock extends Component {
 
     const { stock, loading } = this.props.stock; //here we pass the stock props in with all the stocks contains and store in stocks const for used in this component
 
-    const stockdtall = this.state.stockdtall;
+    // const stockdtall = this.state.stockdtall;
 
-    const stockdtalllen = stockdtall.length;
+    //const stockdtalllen = stockdtall.length;
 
-    const columns = [
-      {
-        Header: "Item Image",
-        accessor: "itemprimaryimg",
-        maxWidth: 200,
-        filterable: false,
-        Cell: row => (
-          <span>
-            <center>
-              <img
-                style={{ maxWidth: "70px" }}
-                class=""
-                src={row.value}
-                alt="item primary img"
-              />
-            </center>
-          </span>
-        )
-      },
-      {
-        Header: "Item Code",
-        accessor: "itemcode",
-        maxWidth: 100,
-        filterable: true
-      },
-      {
-        Header: "Item Name",
-        accessor: "itemname",
-        maxWidth: 290,
-        filterable: true
-      },
-      {
-        Header: "Quantity",
-        accessor: "quantity",
-        maxWidth: 290,
-        filterable: true
-      },
-      {
-        Header: "Rate",
-        accessor: "rate",
-        maxWidth: 290,
-        filterable: true
-      },
-      {
-        Header: "Operation",
-        columns: [
-          {
-            Header: "Edit",
-            accessor: "_id",
-            maxWidth: 50,
-            sortable: false,
-            Cell: row => (
-              <span>
-                <center>
-                  <Link
-                    to={`/edit-stock/${row.value}`}
-                    className="ui basic button green"
-                    style={{
-                      color: "green",
-                      cursor: "pointer",
-                      fontSize: 25
-                    }}
-                  >
-                    <i class="fa fa-edit" />
-                  </Link>
-                </center>
-              </span>
-            )
-          },
-          {
-            Header: "Delete",
-            accessor: "_id",
-            maxWidth: 100,
-            sortable: false,
-            Cell: row => (
-              <span>
-                <center>
-                  <i
-                    class="fa fa-trash"
-                    onClick={this.onDeleteClick.bind(this, row.value)}
-                    style={{ color: "red", cursor: "pointer", fontSize: 25 }}
-                  />
-                </center>
-              </span>
-            )
-          },
-          {
-            Header: "Stock View",
-            accessor: "_id",
-            maxWidth: 100,
-            filterable: false,
-            Cell: row => (
-              <span>
-                <center>
-                  <Link
-                    target="_blank"
-                    to={`/show-stock/${row.value}`}
-                    className=""
-                    style={{
-                      textDecoration: "none",
-                      color: "#0085C3",
-                      cursor: "pointer",
-                      fontSize: 25
-                    }}
-                  >
-                    <i class="fa fa-eye" />
-                  </Link>
-                </center>
-              </span>
-            )
-          },
-          {
-            Header: "ADD STOCK",
-            accessor: "_id",
-            maxWidth: 120,
-            filterable: false,
-            Cell: row => (
-              <span>
-                <center>
-                  <Link
-                    target="_blank"
-                    to={`/add-on-existing-stock/${row.value}`}
-                    className=""
-                    style={{
-                      color: "#AF0808",
+    let stockContent;
+    let stockdtall;
+    let stockdtalllen;
+    let columns = [];
+    let csvContent;
+    if (stock === null) {
+      stockContent = <Spinner />;
+    } else {
+      stockdtall = stock;
+      stockdtalllen = stock.length;
+      csvContent = (
+        <CSVLink
+          data={stock}
+          filename={"Inventory-Stock.csv"}
+          className="btn btn-sm btn-success"
+        >
+          Export CSV
+        </CSVLink>
+      );
+      columns = [
+        {
+          Header: "Item Image",
+          accessor: "itemprimaryimg",
+          maxWidth: 200,
+          filterable: false,
+          Cell: row => (
+            <span>
+              <center>
+                <img
+                  style={{ maxWidth: "70px" }}
+                  class=""
+                  src={row.value}
+                  alt="item primary img"
+                />
+              </center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Code",
+          accessor: "itemcode",
+          maxWidth: 200,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Name",
+          accessor: "itemname",
+          maxWidth: 300,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Quantity",
+          accessor: "quantity",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Rate",
+          accessor: "rate",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Operation",
+          columns: [
+            {
+              Header: "Edit",
+              accessor: "_id",
+              maxWidth: 50,
+              sortable: false,
+              Cell: row => (
+                <span>
+                  <center>
+                    <Link
+                      to={`/edit-stock/${row.value}`}
+                      className="ui basic button green"
+                      style={{
+                        color: "green",
+                        cursor: "pointer",
+                        fontSize: 25
+                      }}
+                    >
+                      <i class="fa fa-edit" />
+                    </Link>
+                  </center>
+                </span>
+              )
+            },
+            {
+              Header: "Delete",
+              accessor: "_id",
+              maxWidth: 100,
+              sortable: false,
+              Cell: row => (
+                <span>
+                  <center>
+                    <i
+                      class="fa fa-trash"
+                      onClick={this.onDeleteClick.bind(this, row.value)}
+                      style={{
+                        color: "red",
+                        cursor: "pointer",
+                        fontSize: 25
+                      }}
+                    />
+                  </center>
+                </span>
+              )
+            },
+            {
+              Header: "Stock View",
+              accessor: "_id",
+              maxWidth: 100,
+              filterable: false,
+              Cell: row => (
+                <span>
+                  <center>
+                    <Link
+                      target="_blank"
+                      to={`/show-stock/${row.value}`}
+                      className=""
+                      style={{
+                        textDecoration: "none",
+                        color: "#0085C3",
+                        cursor: "pointer",
+                        fontSize: 25
+                      }}
+                    >
+                      <i class="fa fa-eye" />
+                    </Link>
+                  </center>
+                </span>
+              )
+            },
+            {
+              Header: "ADD STOCK",
+              accessor: "_id",
+              maxWidth: 120,
+              filterable: false,
+              Cell: row => (
+                <span>
+                  <center>
+                    <Link
+                      target="_blank"
+                      to={`/add-on-existing-stock/${row.value}`}
+                      className=""
+                      style={{
+                        color: "#AF0808",
 
-                      cursor: "pointer",
-                      fontSize: 25
-                    }}
-                  >
-                    <i class="fa fa-plus-circle" />
-                  </Link>
-                </center>
-              </span>
-            )
-          }
-        ]
-      }
-    ];
+                        cursor: "pointer",
+                        fontSize: 25
+                      }}
+                    >
+                      <i class="fa fa-plus-circle" />
+                    </Link>
+                  </center>
+                </span>
+              )
+            }
+          ]
+        }
+      ];
+    }
 
     return (
       <div>
@@ -243,40 +287,26 @@ class ViewStock extends Component {
                     backgroundColor: "#e6e6e6" /*, maxWidth: "800px" */
                   }}
                 >
-                  {" "}
-                  <div
-                    style={{
-                      padding: "10px",
-                      color: "#fff",
-                      textAlign: "right"
-                    }}
-                  >
-                    <span>
-                      <span>
-                        {" "}
-                        <CSVLink
-                          data={stockdtall}
-                          filename={"Inventory-Stock.csv"}
-                          className="btn btn-sm btn-success"
-                        >
-                          Export CSV
-                        </CSVLink>
-                      </span>
-
-                      <span>
-                        <p>
-                          {stockdtalllen === 0 ? (
-                            <span>
-                              <p> Total Stock Item: Loding..</p>
-                            </span>
-                          ) : (
-                            <span>
-                              <p> Total Stock Item: {stockdtalllen}</p>
-                            </span>
-                          )}
-                        </p>
-                      </span>
-                    </span>
+                  <div className="container row" style={{ padding: 20 }}>
+                    <div className="col-md-6">
+                      <p>
+                        {stock === 0 ? (
+                          <span>
+                            <p> Total Stock Item: Loding..</p>
+                          </span>
+                        ) : (
+                          <span>
+                            <p>
+                              Total Item:{" "}
+                              <b style={{ fontSize: 16 }}>{stockdtalllen}</b>
+                            </p>
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="col-md-6" style={{ textAlign: "right" }}>
+                      {stock && csvContent}
+                    </div>
                   </div>
                 </div>
 
@@ -337,5 +367,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getCurrentStock, deleteStock, singleprodstockbyid }
+  { getCurrentAllStock, deleteStock, singleprodstockbyid }
 )(withRouter(ViewStock));
