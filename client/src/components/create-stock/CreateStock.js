@@ -668,10 +668,10 @@ class CreateStock extends Component {
                                     >
                                       <input {...getInputProps()} />
                                       {!isDragActive &&
-                                        "Click here or drop a file to upload!"}
+                                        "Click here to upload item images!"}
                                       {isDragActive &&
                                         !isDragReject &&
-                                        "Drop it like it's hot!"}
+                                        "Click here to upload item images!"}
                                       {isDragReject &&
                                         "File type not accepted, sorry!"}
                                     </div>

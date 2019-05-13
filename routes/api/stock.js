@@ -348,6 +348,9 @@ router.post(
                     .then(warehouse => {
                       console.log(warehouse);
 
+                      /*
+                      console.log(warehouse);
+
                       //here we save the productsizeconfigs acc to requested prodwarehouse
                       console.log(
                         "saved the productsizeconfigs acc to requested prodwarehouse"
@@ -404,6 +407,7 @@ router.post(
                           }
                         }
                       });
+                      */
                     })
                     .catch(err => console.log("Error is : " + err));
                 });
