@@ -1,0 +1,47 @@
+.rtable {
+  vertical-align: center;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.rtable th {
+  font-size: 11px;
+  text-align: left;
+  color: black;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.rtable th,
+.rtable td {
+  padding: 6px 12px;
+  border: 1px solid #d9d7ce;
+}
+
+.rtable td {
+  color: black;
+}
+
+.table {
+  margin-bottom: 30px;
+}
+
+a {
+  color: #ff6680;
+}
+
+code {
+  background: #fffbcc;
+  font-size: 12px;
+}
+
+thead tr {
+  background-color: #f9f6ff;
+}
+
+thead th {
+  vertical-align: center;
+}

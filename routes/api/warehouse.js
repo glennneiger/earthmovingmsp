@@ -256,8 +256,6 @@ router.delete(
   }
 );
 
-module.exports = router;
-
 // @route   Post api/stock
 // @desc    Edit product stock by their id
 // @access  Private
@@ -288,3 +286,146 @@ router.put(
       .catch(err => res.status(404).json({ errors }));
   }
 );
+
+router.get(
+  "/singlewarehousealliteminfo/:id",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    var prodstk_id = req.params.id;
+
+    //console.log("requested article id is : " + prodstk_id);
+
+    errors.message = "There Is No article info found in Warehouse";
+    errors.className = "alert-danger";
+
+    Stock.findOne({ _id: prodstk_id })
+      .then(stock => {
+        //res.json(stock);
+        // console.log(stock);
+
+        var itemcodereq = stock.itemcode;
+
+        Warehouse.find()
+          .then(warehouses => {
+            if (warehouses) {
+              for (var i = 0; i < warehouses.length; i++) {
+                for (
+                  var j = 0;
+                  j < warehouses[i].warehouseproducts.length;
+                  j++
+                ) {
+                  /* console.log(
+                        "Here we calculate all pair acc to prodstk_id where totalctn should be greater then 0 in productsizeconfigs"
+                      );*/
+
+                  if (
+                    warehouses[i].warehouseproducts[j]._id == prodstk_id &&
+                    warehouses[i].warehouseproducts[j].quantity > 0
+                  ) {
+                    console.log(
+                      "From Warehouse Address : " +
+                        warehouses[i].warehouseaddress
+                    );
+                    console.log(
+                      "Warehouse warehouseproducts prodstk_id: " +
+                        warehouses[i].warehouseproducts[j]._id
+                    );
+
+                    console.log(
+                      "Warehouse -> warehouseproducts -> quantity : " +
+                        warehouses[i].warehouseproducts[j].quantity
+                    );
+
+                    warehsbyitemallres.quantity +=
+                      warehouses[i].warehouseproducts[j].quantity;
+                  }
+                }
+              }
+
+              res.json(warehsbyitemallres);
+            }
+          })
+          .catch(err =>
+            res.status(404).json({ warehouse: "There are no warehouses" })
+          );
+      })
+      .catch(err => res.status(404).json({ err }));
+  }
+);
+
+router.get(
+  "/singlewarehouseiteminfo/:id",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    var prodstk_id = req.params.id;
+
+    //console.log("requested article id is : " + prodstk_id);
+
+    errors.message = "There Is No article info found in Warehouse";
+    errors.className = "alert-danger";
+
+    Stock.findOne({ _id: prodstk_id })
+      .then(stock => {
+        //res.json(stock);
+        // console.log(stock);
+
+        var itemcodereq = stock.itemcode;
+
+        // console.log(itemcodereq);
+        // $and: [{ prodcolor: prodcolor }, { itemcode: itemcode }]
+
+        Warehouse.find()
+          .then(warehouses => {
+            if (warehouses) {
+              //console.log(warehouses);
+              //res.json(warehouses);
+
+              var warehsbyitemfinalresl = [];
+
+              var warehouseslength = warehouses.length;
+
+              for (var i = 0; i < warehouseslength; i++) {
+                for (
+                  var j = 0;
+                  j < warehouses[i].warehouseproducts.length;
+                  j++
+                ) {
+                  if (warehouses[i].warehouseproducts[j]._id == prodstk_id) {
+                    const whpbyreqiteminfo = {
+                      _id: warehouses[i]._id,
+                      warehouseaddress: warehouses[i].warehouseaddress,
+                      prodstk_id: warehouses[i].warehouseproducts[j]._id,
+                      quantity: warehouses[i].warehouseproducts[j].quantity,
+                      itemcode: warehouses[i].warehouseproducts[j].itemcode,
+                      rack: warehouses[i].warehouseproducts[j].rack
+                    };
+
+                    // Add to warehouseproducts array
+                    warehsbyitemfinalresl.unshift(whpbyreqiteminfo);
+                  }
+                }
+              }
+              // console.log("loop work done!!");
+
+              res.json(warehsbyitemfinalresl);
+            } else {
+              errors.message = "There are no warehouses";
+              errors.className = "alert-danger";
+              return res.status(404).json(errors);
+            }
+          })
+          .catch(err =>
+            res.status(404).json({ warehouse: "There are no warehouses" })
+          );
+      })
+      .catch(err => res.status(404).json({ err }));
+  }
+);
+
+module.exports = router;

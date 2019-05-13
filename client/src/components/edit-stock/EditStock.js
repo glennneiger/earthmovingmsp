@@ -69,7 +69,6 @@ class EditStock extends Component {
       itemheight,
       forcompany,
       hsncode,
-      rack,
       minrate,
       rate,
       maxrate
@@ -81,7 +80,6 @@ class EditStock extends Component {
       itemwidth,
       itemheight,
       hsncode,
-      rack,
       minrate,
       rate,
       maxrate
@@ -392,7 +390,7 @@ class EditStock extends Component {
                                 </div>*/}
 
                       <div class="form-row">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                           <TextFieldGroup
                             placeholder="Item Rate"
                             name="rate"
@@ -403,7 +401,7 @@ class EditStock extends Component {
                           />
                         </div>
 
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                           <TextFieldGroup
                             placeholder="Item Min Rate"
                             name="minrate"
@@ -413,7 +411,7 @@ class EditStock extends Component {
                             info="Item Min Rate"
                           />
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                           <TextFieldGroup
                             placeholder="Item Max Rate"
                             name="maxrate"
@@ -421,17 +419,6 @@ class EditStock extends Component {
                             onChange={this.onChange}
                             error={errors.maxrate}
                             info="Item Max Rate"
-                          />
-                        </div>
-                        <div class="form-group col-md-6">
-                          <TextFieldGroup
-                            placeholder="Rack"
-                            name="rack"
-                            type="text"
-                            value={this.state.singprodstk.rack}
-                            onChange={this.onChange}
-                            error={errors.rack}
-                            info="Put Rack"
                           />
                         </div>
                       </div>

@@ -400,7 +400,6 @@ router.post(
             forcompany: JSON.stringify(forcompanyobj),
             hsncode: stockFields.hsncode,
             itemwarehouse: stockFields.itemwarehouse,
-            rack: stockFields.rack,
             minrate: stockFields.minrate,
             rate: stockFields.rate,
             maxrate: stockFields.maxrate,
@@ -434,6 +433,7 @@ router.post(
                 user: req.user.id,
                 _id: prodstk_id,
                 itemcode: stockFields.itemcode,
+                rack: stockFields.rack,
                 quantity: stockFields.quantity
               };
 
@@ -596,7 +596,7 @@ router.delete(
 
     Stock.findOne({ _id: prodstk_id })
       .then(stock => {
-        var articlenumreq = stock.articlenum;
+        var itemcodereq = stock.itemcode;
         var prodcolorreq = stock.prodcolor;
         if (stock) {
           Stock.findByIdAndRemove({ _id: prodstk_id }).then(res => {
@@ -670,4 +670,5 @@ router.delete(
       );
   }
 );
+
 module.exports = router;

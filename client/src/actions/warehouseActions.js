@@ -4,6 +4,7 @@ import {
   GET_WAREHOUSE,
   WAREHOUSE_LOADING,
   GET_WAREHOUSE_BY_ID,
+  GET_SINGLE_PRODUCT_ALL_ITEM_WITH_TOTALQTY_WAREHOUSE_BY_ID,
   GET_ERRORS
 } from "./types";
 
@@ -132,4 +133,32 @@ export const deleteWarehousebyid = (id, history) => dispatch => {
         );
       });
   }
+};
+
+export const singleprodallpairwarehousebyid = id => dispatch => {
+  axios
+    .get(`/api/warehouse/singlewarehousealliteminfo/${id}`)
+    .then(res =>
+      dispatch({
+        type: GET_SINGLE_PRODUCT_ALL_ITEM_WITH_TOTALQTY_WAREHOUSE_BY_ID, //get article info by its id from warehouse
+        payload: res.data //so here is the actual warehouse
+      })
+    )
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+export const singleprodwarehouseitemsbyid = id => dispatch => {
+  axios
+    .get(`/api/warehouse/singlewarehouseiteminfo/${id}`)
+    .then(res =>
+      dispatch({
+        type: GET_WAREHOUSE_BY_ID, //get article info by its id from warehouse
+        payload: res.data //so here is the actual warehouse
+      })
+    )
+    .catch(err => {
+      console.log(err);
+    });
 };

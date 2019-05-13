@@ -44,6 +44,9 @@ const WarehouseSchema = new Schema({
         type: String,
         required: true
       },
+      rack: {
+        type: String
+      },
       quantity: {
         type: String,
         required: true

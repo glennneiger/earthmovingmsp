@@ -35,9 +35,6 @@ const StockSchema = new Schema({
     type: String,
     required: true
   },
-  rack: {
-    type: String
-  },
   minrate: {
     type: String
   },

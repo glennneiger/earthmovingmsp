@@ -32,6 +32,8 @@ import ViewStock from "./components/dashboard/ViewStock";
 
 import EditStock from "./components/edit-stock/EditStock";
 
+import ShowStock from "./components/show-stock/ShowStock";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -130,6 +132,13 @@ class App extends Component {
                   exact
                   path="/edit-stock/:id"
                   component={EditStock}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/show-stock/:id"
+                  component={ShowStock}
                 />
               </Switch>
             </div>
