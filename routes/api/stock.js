@@ -132,6 +132,52 @@ router.get(
   }
 );
 
+router.get(
+  "/viewallstock",
+  // passport.authenticate("jwt", { session: false }),
+  verifyToken,
+  (req, res) => {
+    jwt.verify(req.token, keys.secretOrKey, (err, authData) => {
+      //jwt.verify check user has authenticate token or not that he was get after successfully login and if he has authenticate token then he pass this middleware [HERE WE CHECK AUTHENTICATION]
+      if (err) {
+        res.sendStatus(403);
+        console.log("You Have No Authority To Access This API");
+      } else {
+        /*console.log(authData.role + " " + "Has Authority To Access This API");*/
+
+        if (authData.role == authorizedrole.superadminrodleid) {
+          //[HERE WE CHECK ONLY AUTHORIZE USER CAN ACCESS THIS API]
+
+          const errors = {};
+
+          Stock.find()
+            .then(stocks => {
+              if (stocks) {
+                //we found the stock
+                res.json(stocks); //here we get all the stocks and send as response
+              } else {
+                errors.message = "There are no stocks";
+                errors.className = "alert-danger";
+                return res.status(404).json(errors);
+              }
+            })
+            .catch(err =>
+              res.status(404).json({ stock: "There are no stocks" })
+            );
+        } else {
+          {
+            /*} console.log(
+              authData.role + " " + "have no Authority To Access This API"
+           );*/
+          }
+
+          res.sendStatus(403); //if user is authenticate successful but user is not authorize person so response will send forbidden//no access of this API
+        }
+      }
+    });
+  }
+);
+
 // @route   POST api/stock/addnewstock
 // @desc    Add addnewstock to stock
 // @access  Private
@@ -267,6 +313,9 @@ router.post(
               );
             }
           }
+          let itemprimaryimgurl =
+            "/uploads/productstockimg/" + req.files[0].filename;
+
           const stockcollectionData = {
             user: req.user.id,
             itemname: stockFields.itemname,
@@ -279,10 +328,10 @@ router.post(
             hsncode: stockFields.hsncode,
             itemwarehouse: stockFields.itemwarehouse,
             rack: stockFields.rack,
-            quantity: stockFields.quantity,
             minrate: stockFields.minrate,
             rate: stockFields.rate,
             maxrate: stockFields.maxrate,
+            itemprimaryimg: itemprimaryimgurl,
             productImage: productimgurls
           };
 
@@ -291,64 +340,39 @@ router.post(
             var prodstk_id = stock._id;
             console.log("product stock id of added itemcode is :" + prodstk_id);
 
+            //here we insert all itemncode details to the requested warehouse address
             Warehouse.findOne({
-              $and: [{ itemcode: stockFields.itemcode }]
+              warehouseaddress: stockFields.itemwarehouse
             }).then(warehouse => {
-              if (warehouse) {
-                //if its found user requested itemncode then it will throw error in res
-                errors.message =
-                  "ItemCode" +
-                  " " +
-                  stockFields.itemcode +
-                  "already in the Warehouse !! You cannot add it again !!";
-                errors.className = "alert-danger";
-                res.status(400).json(errors);
-              } else {
-                //here we insert all itemncode details to the requested warehouse address
-                Warehouse.findOne({
-                  warehouseaddress: stockFields.itemwarehouse
-                }).then(warehouse => {
-                  var warehousecapacity = warehouse.warehousecapacity;
-                  var warehouseaddress = warehouse.warehouseaddress;
+              var warehousecapacity = warehouse.warehousecapacity;
+              var warehouseaddress = warehouse.warehouseaddress;
 
-                  console.log(
-                    "Your ctn capacity of " +
-                      warehouseaddress +
-                      " is " +
-                      warehousecapacity
-                  );
-                  console.log(
-                    "here we unshift the current itemncode info with quantity in requested warehouse"
-                  );
+              console.log(
+                "Your ctn capacity of " +
+                  warehouseaddress +
+                  " is " +
+                  warehousecapacity
+              );
+              console.log(
+                "here we unshift the current itemncode info with quantity in requested warehouse"
+              );
 
-                  const warehouseprodfields = {
-                    user: req.user.id,
-                    _id: prodstk_id,
-                    itemname: stockFields.itemname,
-                    itemcode: stockFields.itemcode,
-                    machinepart: JSON.stringify(machinepartobj),
-                    itemlength: stockFields.itemlength,
-                    itemwidth: stockFields.itemwidth,
-                    itemheight: stockFields.itemheight,
-                    forcompany: JSON.stringify(forcompanyobj),
-                    hsncode: stockFields.hsncode,
-                    rack: stockFields.rack,
-                    quantity: stockFields.quantity,
-                    minrate: stockFields.minrate,
-                    rate: stockFields.rate,
-                    maxrate: stockFields.maxrate,
-                    productImage: productimgurls
-                  };
+              const warehouseprodfields = {
+                user: req.user.id,
+                _id: prodstk_id,
+                itemcode: stockFields.itemcode,
+                quantity: stockFields.quantity
+              };
 
-                  // Add to warehouseproducts array
-                  warehouse.warehouseproducts.unshift(warehouseprodfields);
+              // Add to warehouseproducts array
+              warehouse.warehouseproducts.unshift(warehouseprodfields);
 
-                  warehouse
-                    .save()
-                    .then(warehouse => {
-                      console.log(warehouse);
+              warehouse
+                .save()
+                .then(warehouse => {
+                  console.log(warehouse);
 
-                      /*
+                  /*
                       console.log(warehouse);
 
                       //here we save the productsizeconfigs acc to requested prodwarehouse
@@ -369,21 +393,10 @@ router.post(
                             stockFields.itemwarehouse
                           ) {
                             const warehouseprodfields = {
-                              user: req.user.id,
-                              _id: prodstk_id,
-                              itemname: stockFields.itemname,
-                              itemcode: stockFields.itemcode,
-                              machinepart: JSON.stringify(machinepartobj),
-                              itemlength: stockFields.itemlength,
-                              itemwidth: stockFields.itemwidth,
-                              itemheight: stockFields.itemheight,
-                              forcompany: JSON.stringify(forcompanyobj),
-                              hsncode: stockFields.hsncode,
-                              quantity: 0,
-                              minrate: stockFields.minrate,
-                              rate: stockFields.rate,
-                              maxrate: stockFields.maxrate,
-                              productImage: productimgurls
+                             user: req.user.id,
+                _id: prodstk_id,
+                itemcode: stockFields.itemcode,
+                quantity: stockFields.quantity
                             };
 
                             console.log(
@@ -408,10 +421,8 @@ router.post(
                         }
                       });
                       */
-                    })
-                    .catch(err => console.log("Error is : " + err));
-                });
-              }
+                })
+                .catch(err => console.log("Error is : " + err));
             });
 
             res.json(stock);

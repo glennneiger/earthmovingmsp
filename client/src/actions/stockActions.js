@@ -32,6 +32,32 @@ export const getCurrentStock = () => dispatch => {
     );
 };
 
+// Get current all stock for view-stock
+export const getCurrentAllStock = () => dispatch => {
+  dispatch(setAllStockLoading()); //here we dispatch function called setAllStockLoading() which will set the loading state True before it actually does the request
+  axios
+    .get("/api/stock/viewallstock")
+    .then(res =>
+      dispatch({
+        type: GET_STOCK,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_STOCK,
+        payload: {}
+      })
+    );
+};
+
+// Stock loading
+export const setAllStockLoading = () => {
+  return {
+    type: STOCK_LOADING //here we dont send payload only lets the reducer know stock is loading
+  };
+};
+
 // Get current stock by id
 export const singleprodstockbyid = id => dispatch => {
   axios

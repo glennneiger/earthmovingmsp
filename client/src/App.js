@@ -28,6 +28,8 @@ import EditWarehouse from "./components/edit-warehouse/EditWarehouse";
 
 import CreateStock from "./components/create-stock/CreateStock";
 
+import ViewStock from "./components/dashboard/ViewStock";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -115,6 +117,10 @@ class App extends Component {
                   path="/create-stock"
                   component={CreateStock}
                 />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute exact path="/view-stock" component={ViewStock} />
               </Switch>
             </div>
             <Footer />

@@ -47,6 +47,9 @@ const StockSchema = new Schema({
   maxrate: {
     type: String
   },
+  itemprimaryimg: {
+    type: String
+  },
   productImage: [],
   date: {
     type: Date,
