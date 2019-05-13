@@ -48,14 +48,10 @@ const WarehouseSchema = new Schema({
         type: String,
         required: true
       },
-      machinepart: [
-        {
-          machinepartname: {
-            type: String,
-            required: true
-          }
-        }
-      ],
+      machinepart: {
+        type: String,
+        required: true
+      },
       itemlength: {
         type: String
       },
@@ -65,22 +61,19 @@ const WarehouseSchema = new Schema({
       itemheight: {
         type: String
       },
-      forcompany: [
-        {
-          companyname: {
-            type: String,
-            required: true
-          }
-        }
-      ],
-      hsncode: {
+      forcompany: {
         type: String
+      },
+      hsncode: {
+        type: String,
+        required: true
       },
       rack: {
         type: String
       },
-      quatity: {
-        type: String
+      quantity: {
+        type: String,
+        required: true
       },
       minrate: {
         type: String
@@ -91,9 +84,7 @@ const WarehouseSchema = new Schema({
       maxrate: {
         type: String
       },
-      productImage: {
-        type: String
-      },
+      productImage: [],
       date: {
         type: Date,
         default: Date.now

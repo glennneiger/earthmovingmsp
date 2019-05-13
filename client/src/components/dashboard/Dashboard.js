@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { getCurrentProfile } from "../../actions/profileActions";
 
 import StockActions from "./StockActions";
 
@@ -21,9 +20,8 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    this.props.getCurrentProfile(); //here we call the getCurrentProfile when componentDidMount
+    //here we call the getCurrentProfile when componentDidMount
     //this.props.getCurrentSalesOrder();
-
     // this.props.getCurrentStock();
   }
 
@@ -38,7 +36,6 @@ class Dashboard extends Component {
   render() {
     const { open } = this.state;
     const { user } = this.props.auth;
-    const { profile, loading } = this.props.profile;
 
     return (
       <div>
@@ -199,17 +196,14 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  getCurrentProfile: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  profile: state.profile,
   auth: state.auth
 });
 
 export default connect(
   mapStateToProps,
-  { getCurrentProfile }
+  {}
 )(withRouter(Dashboard));
