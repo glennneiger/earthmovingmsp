@@ -24,7 +24,10 @@ class EditStock extends Component {
     super(props);
     this.state = {
       errors: {},
-      singprodstk: {}
+      singprodstk: {},
+      focused: false,
+      mpinput: "",
+      fcinput: ""
     };
 
     this.onChange = this.onChange.bind(this);
@@ -119,7 +122,9 @@ class EditStock extends Component {
   handlempRemoveItem(index) {
     return () => {
       this.setState(state => ({
-        machinepart: state.machinepart.filter((item, i) => i !== index)
+        machinepart: this.state.singprodstk.machinepart.filter(
+          (item, i) => i !== index
+        )
       }));
     };
   }
@@ -329,65 +334,77 @@ class EditStock extends Component {
                         </div>
                       </div>
 
-                      {/*}       <div class="form-row">
+                      <div class="form-row">
                         <div
                           class="form-group col-md-6"
                           style={{ backgroundColor: "#e4e4e4" }}
                         >
                           <label>
                             <ul style={styles.container}>
-                              {this.state.singprodstk.machinepart.map(
-                                (item, i) => (
-                                  <li
-                                    key={i}
-                                    style={styles.machinepart}
-                                    onClick={this.handlempRemoveItem(i)}
-                                  >
-                                    {item}
-                                    <span>(x)</span>
-                                  </li>
-                                )
+                              {console.log(
+                                "machinepart is : " +
+                                  typeof this.state.singprodstk.machinepart
                               )}
-                              <input
+                              {this.state.singprodstk.machinepart &&
+                                this.state.singprodstk.machinepart.map(
+                                  (item, i) => (
+                                    <li
+                                      key={i}
+                                      style={styles.machinepart}
+                                      //  onClick={this.handlempRemoveItem(i)}
+                                    >
+                                      {console.log(
+                                        "item is : " +
+                                          item +
+                                          " " +
+                                          "where key is : " +
+                                          i
+                                      )}
+                                      {item}
+                                      {/*} <span>(x)</span>*/}
+                                    </li>
+                                  )
+                                )}
+                              {/*} <input
                                 style={styles.machinepartinput}
                                 value={this.state.mpinput}
                                 onChange={this.handlempInputChange}
                                 onKeyDown={this.handlempInputKeyDown}
-                              />
+                                      />*/}
                             </ul>
                             <span>* Put Machine Part Names</span>
                           </label>
                         </div>
-
                         <div
                           class="form-group col-md-6"
                           style={{ backgroundColor: "#e4e4e4" }}
                         >
                           <label>
                             <ul style={styles.container}>
-                              {this.state.singprodstk.forcompany.map(
-                                (item, i) => (
-                                  <li
-                                    key={i}
-                                    style={styles.forcompany}
-                                    onClick={this.handlefcRemoveItem(i)}
-                                  >
-                                    {item}
-                                    <span>(x)</span>
-                                  </li>
-                                )
-                              )}
-                              <input
+                              {this.state.singprodstk.forcompany &&
+                                this.state.singprodstk.forcompany.map(
+                                  (item, i) => (
+                                    <li
+                                      key={i}
+                                      style={styles.forcompany}
+                                      // onClick={this.handlefcRemoveItem(i)}
+                                    >
+                                      {item}
+                                      {/*} <span>(x)</span>*/}
+                                    </li>
+                                  )
+                                )}
+                              {/*}   <input
                                 style={styles.forcompanyinput}
                                 value={this.state.fcinput}
                                 onChange={this.handlefcInputChange}
                                 onKeyDown={this.handlefcInputKeyDown}
-                              />
+                                  />*/}
                             </ul>
                             <span>Put For Company Names</span>
                           </label>
                         </div>
-                                </div>*/}
+                      </div>
 
                       <div class="form-row">
                         <div class="form-group col-md-4">

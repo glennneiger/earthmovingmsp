@@ -524,27 +524,27 @@ router.get(
 
     Stock.findOne({ _id: prodstk_id })
       .then(stock => {
-        /*let finalstockbyid = [];
+        //let finalstockbyid;
         const singleitemdata = {
           _id: stock._id,
           itemname: stock.itemname,
           itemcode: stock.itemcode,
-          machinepart: JSON.parse(stock.machinepart),
+          machinepart: Object.values(JSON.parse(stock.machinepart)),
           itemlength: stock.itemlength,
           itemwidth: stock.itemwidth,
           itemheight: stock.itemheight,
-          forcompany: JSON.parse(stock.forcompany),
+          forcompany: Object.values(JSON.parse(stock.forcompany)),
           hsncode: stock.hsncode,
-          rack: stock.rack,
           minrate: stock.minrate,
           rate: stock.rate,
           maxrate: stock.maxrate,
           itemprimaryimg: stock.itemprimaryimg
         };
 
-        finalstockbyid.unshift(singleitemdata);
-        res.json(finalstockbyid);*/
-        res.json(stock);
+        //finalstockbyid.push(singleitemdata);
+        console.log(singleitemdata);
+        res.json(singleitemdata);
+        //res.json(stock);
       })
       .catch(err => res.status(404).json({ errors }));
   }
