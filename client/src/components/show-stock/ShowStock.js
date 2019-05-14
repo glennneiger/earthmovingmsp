@@ -292,7 +292,7 @@ class ShowStock extends Component {
                     <tr>
                       <th
                         style={{
-                          backgroundColor: "#940909",
+                          backgroundColor: "#0085C3",
                           textAlign: "center"
                         }}
                       >

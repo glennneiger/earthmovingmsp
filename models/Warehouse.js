@@ -48,7 +48,7 @@ const WarehouseSchema = new Schema({
         type: String
       },
       quantity: {
-        type: String,
+        type: Number,
         required: true
       },
       date: {

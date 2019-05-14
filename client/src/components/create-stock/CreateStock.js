@@ -519,7 +519,11 @@ class CreateStock extends Component {
                                         onClick={this.handlempRemoveItem(i)}
                                       >
                                         {item}
-                                        <span>(x)</span>
+                                        <span
+                                          style={{ color: "red", padding: 5 }}
+                                        >
+                                          (x)
+                                        </span>
                                       </li>
                                     ))}
                                     <input
@@ -546,7 +550,11 @@ class CreateStock extends Component {
                                         onClick={this.handlefcRemoveItem(i)}
                                       >
                                         {item}
-                                        <span>(x)</span>
+                                        <span
+                                          style={{ color: "red", padding: 5 }}
+                                        >
+                                          (x)
+                                        </span>
                                       </li>
                                     ))}
                                     <input
@@ -641,53 +649,50 @@ class CreateStock extends Component {
                             {/*}   // Note that there will be nothing logged when files
                             are dropped*/}
 
-                            <div
-                              style={{
-                                backgroundColor: "azure",
-                                padding: "25px"
-                              }}
+                            <Dropzone
+                              onDrop={this.handleOnDrop}
+                              multiple={true}
+                              accept={acceptedFileTypes}
+                              maxSize={itemImageMaxSize}
                             >
-                              <Dropzone
-                                onDrop={this.handleOnDrop}
-                                multiple={true}
-                                accept={acceptedFileTypes}
-                                maxSize={itemImageMaxSize}
-                              >
-                                {({
-                                  getRootProps,
-                                  getInputProps,
-                                  isDragActive,
-                                  isDragReject
-                                }) => (
-                                  <div className="container">
-                                    <div
-                                      {...getRootProps({
-                                        className: "dropzone",
-                                        onDrop: event => event.stopPropagation()
-                                      })}
-                                    >
-                                      <input {...getInputProps()} />
-                                      {!isDragActive &&
-                                        "Click here to upload item images!"}
-                                      {isDragActive &&
-                                        !isDragReject &&
-                                        "Click here to upload item images!"}
-                                      {isDragReject &&
-                                        "File type not accepted, sorry!"}
-                                    </div>
+                              {({
+                                getRootProps,
+                                getInputProps,
+                                isDragActive,
+                                isDragReject
+                              }) => (
+                                <div className="col-md-4 btn btn-primary">
+                                  <div
+                                    {...getRootProps({
+                                      className: "dropzone",
+                                      onDrop: event => event.stopPropagation()
+                                    })}
+                                  >
+                                    <input {...getInputProps()} />
+                                    {!isDragActive &&
+                                      "click here to choose images"}
+                                    {isDragActive &&
+                                      !isDragReject &&
+                                      "click here to choose images"}
+                                    {isDragReject &&
+                                      "File type not accepted, sorry!"}
                                   </div>
-                                )}
-                              </Dropzone>
-                            </div>
+                                </div>
+                              )}
+                            </Dropzone>
+                            <p>
+                              Image Upload Config:
+                              <br />
+                              1) max upload 4 images
+                              <br />
+                              2) max size 250kb/image
+                            </p>
 
                             {itemfiles && (
                               <div class="container">
                                 <div class="row">
                                   <hr />
                                   <div class="col-md-6">{itemfiles}</div>
-                                  <div class="col-md-6">
-                                    <p style={{ color: "green" }}>done</p>
-                                  </div>
                                 </div>
                               </div>
                             )}

@@ -20,13 +20,13 @@ const StockSchema = new Schema({
     required: true
   },
   itemlength: {
-    type: String
+    type: Number
   },
   itemwidth: {
-    type: String
+    type: Number
   },
   itemheight: {
-    type: String
+    type: Number
   },
   forcompany: {
     type: String
@@ -36,13 +36,13 @@ const StockSchema = new Schema({
     required: true
   },
   minrate: {
-    type: String
+    type: Number
   },
   rate: {
-    type: String
+    type: Number
   },
   maxrate: {
-    type: String
+    type: Number
   },
   itemprimaryimg: {
     type: String
