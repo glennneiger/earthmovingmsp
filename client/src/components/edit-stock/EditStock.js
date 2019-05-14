@@ -25,6 +25,8 @@ class EditStock extends Component {
     this.state = {
       errors: {},
       singprodstk: {},
+      machinepart: [],
+      forcompany: [],
       focused: false,
       mpinput: "",
       fcinput: ""
@@ -49,8 +51,11 @@ class EditStock extends Component {
       .get(`/api/stock/singleprodstock/` + this.props.match.params.id)
       .then(res => {
         this.setState({ singprodstk: res.data });
+        this.setState({ machinepart: res.data.machinepart });
+        this.setState({ forcompany: res.data.forcompany });
+        //   console.log("machinepart is : " + this.state.machinepart);
 
-        console.log(this.state.singprodstk);
+        //console.log(this.state.singprodstk);
       });
   }
 
@@ -66,22 +71,25 @@ class EditStock extends Component {
     const {
       itemname,
       itemcode,
-      machinepart,
       itemlength,
       itemwidth,
       itemheight,
-      forcompany,
       hsncode,
       minrate,
       rate,
       maxrate
-    } = this.state.singprodstk;
+    } = this.state.singprodstk; //take prev value that was set in repsonse
+
+    let machinepart = JSON.stringify(this.state.machinepart);
+    let forcompany = JSON.stringify(this.state.forcompany);
 
     const stockData = {
       itemname,
       itemlength,
       itemwidth,
       itemheight,
+      machinepart,
+      forcompany,
       hsncode,
       minrate,
       rate,
@@ -122,13 +130,10 @@ class EditStock extends Component {
   handlempRemoveItem(index) {
     return () => {
       this.setState(state => ({
-        machinepart: this.state.singprodstk.machinepart.filter(
-          (item, i) => i !== index
-        )
+        machinepart: state.machinepart.filter((item, i) => i !== index)
       }));
     };
   }
-
   ///////////////
 
   handlefcInputChange(evt) {
@@ -342,35 +347,28 @@ class EditStock extends Component {
                           <label>
                             <ul style={styles.container}>
                               {console.log(
-                                "machinepart is : " +
-                                  typeof this.state.singprodstk.machinepart
+                                "machinepart type is : " +
+                                  typeof this.state.machinepart
                               )}
-                              {this.state.singprodstk.machinepart &&
-                                this.state.singprodstk.machinepart.map(
-                                  (item, i) => (
-                                    <li
-                                      key={i}
-                                      style={styles.machinepart}
-                                      //  onClick={this.handlempRemoveItem(i)}
-                                    >
-                                      {console.log(
-                                        "item is : " +
-                                          item +
-                                          " " +
-                                          "where key is : " +
-                                          i
-                                      )}
-                                      {item}
-                                      {/*} <span>(x)</span>*/}
-                                    </li>
-                                  )
-                                )}
-                              {/*} <input
+                              {this.state.machinepart &&
+                                this.state.machinepart.map((item, i) => (
+                                  <li
+                                    key={i}
+                                    style={styles.machinepart}
+                                    onClick={this.handlempRemoveItem(i)}
+                                  >
+                                    {item}
+                                    <span style={{ color: "red", padding: 5 }}>
+                                      (x)
+                                    </span>
+                                  </li>
+                                ))}
+                              <input
                                 style={styles.machinepartinput}
                                 value={this.state.mpinput}
                                 onChange={this.handlempInputChange}
                                 onKeyDown={this.handlempInputKeyDown}
-                                      />*/}
+                              />
                             </ul>
                             <span>* Put Machine Part Names</span>
                           </label>
@@ -381,25 +379,25 @@ class EditStock extends Component {
                         >
                           <label>
                             <ul style={styles.container}>
-                              {this.state.singprodstk.forcompany &&
-                                this.state.singprodstk.forcompany.map(
-                                  (item, i) => (
-                                    <li
-                                      key={i}
-                                      style={styles.forcompany}
-                                      // onClick={this.handlefcRemoveItem(i)}
-                                    >
-                                      {item}
-                                      {/*} <span>(x)</span>*/}
-                                    </li>
-                                  )
-                                )}
-                              {/*}   <input
+                              {this.state.forcompany &&
+                                this.state.forcompany.map((item, i) => (
+                                  <li
+                                    key={i}
+                                    style={styles.forcompany}
+                                    onClick={this.handlefcRemoveItem(i)}
+                                  >
+                                    {item}
+                                    <span style={{ color: "red", padding: 5 }}>
+                                      (x)
+                                    </span>
+                                  </li>
+                                ))}
+                              <input
                                 style={styles.forcompanyinput}
                                 value={this.state.fcinput}
                                 onChange={this.handlefcInputChange}
                                 onKeyDown={this.handlefcInputKeyDown}
-                                  />*/}
+                              />
                             </ul>
                             <span>Put For Company Names</span>
                           </label>

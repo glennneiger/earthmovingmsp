@@ -16,8 +16,7 @@ const StockSchema = new Schema({
     required: true
   },
   machinepart: {
-    type: String,
-    required: true
+    type: String
   },
   itemlength: {
     type: Number

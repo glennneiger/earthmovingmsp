@@ -199,6 +199,7 @@ class CreateStock extends Component {
   }
 
   handlempInputKeyDown(evt) {
+    console.log("this.state.machinepart is : " + typeof this.state.machinepart);
     if (evt.keyCode === 13) {
       const { value } = evt.target;
 
