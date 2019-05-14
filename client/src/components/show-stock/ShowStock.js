@@ -52,7 +52,7 @@ class ShowStock extends Component {
     this.state = {
       errors: {},
       show: false,
-      modelconfigid: ""
+      warehouseid: ""
       //singprodstk: {}
     };
 
@@ -93,19 +93,32 @@ class ShowStock extends Component {
     // this.props.editStock(stockData, this.props.history);
   }
 
-  showModalClick = (id, prodwarehouseorigin) => {
-    this.setState({ show: true, modelconfigid: id });
-    console.log("modelconfigid set to : " + id);
-    console.log("warehouse origin is : " + prodwarehouseorigin);
+  showModalClick = (
+    warehouseid,
+    warehouseaddress,
+    prodstk_id,
+    itemcode,
+    quantity
+  ) => {
+    this.setState({ show: true, warehouseid: warehouseid });
+    console.log("warehouseid set to : " + warehouseid);
+    console.log("item warehouse address is : " + warehouseaddress);
 
-    var prodconfigsid = id;
-    var prodwarehouseorigin = prodwarehouseorigin;
+    var warehouseid = warehouseid;
+    var warehouseaddress = warehouseaddress;
+    var prodstk_id = prodstk_id;
+    var itemcode = itemcode;
+    var quantity = quantity;
 
-    this.props.ProductSizeConfigsByid(prodconfigsid, prodwarehouseorigin);
+    this.props.singleprodstockbyid(prodstk_id);
+
+    this.props.singleprodwarehouseitemsbyid(prodstk_id);
+
+    // this.props.ProductSizeConfigsByid(prodconfigsid, prodwarehouseorigin);
   };
   hideModalClick = () => {
-    this.setState({ show: false, modelconfigid: "" });
-    console.log("modelconfigid set to : '' ");
+    this.setState({ show: false, warehouseid: "" });
+    console.log("warehouseid set to : '' ");
   };
 
   render() {
@@ -179,7 +192,7 @@ class ShowStock extends Component {
                     }}
                   >
                     <center>
-                      <Link
+                      {/*}  <Link
                         target="_blank"
                         to={`/remove-on-existing-stock/${
                           warehouseartbyid._id
@@ -194,7 +207,27 @@ class ShowStock extends Component {
                         }}
                       >
                         Remove Qty Here
-                      </Link>
+                      </Link>*/}
+                      <button
+                        onClick={e =>
+                          this.showModalClick(
+                            warehouseartbyid._id,
+                            warehouseartbyid.warehouseaddress,
+                            warehouseartbyid.prodstk_id,
+                            warehouseartbyid.itemcode,
+                            warehouseartbyid.quantity
+                          )
+                        }
+                        // onClick={this.onAddtocartClick.bind(this, row.value)}
+                        className="btn btn-default"
+                        style={{
+                          textDecoration: "none",
+                          color: "#fff",
+                          backgroundColor: "red"
+                        }}
+                      >
+                        Remove Qty Here
+                      </button>
                     </center>
                   </td>
                 </tr>
@@ -231,7 +264,6 @@ class ShowStock extends Component {
           <div>
             <div className="col-12 row">
               <br />
-              <div className="col-1">&#8205;</div>
               <div class="col-3">
                 <div class="card card-bordered">
                   {stockbyid.itemprimaryimg ? (
@@ -247,8 +279,8 @@ class ShowStock extends Component {
                 </div>
               </div>
 
-              <div className="col-5">
-                <table className="table table-striped table-hover rtable">
+              <div className="col-9">
+                <table className="table table-striped table-hover rtable table-responsive">
                   {stockbyid ? (
                     <thead>
                       <tr>
@@ -349,6 +381,19 @@ class ShowStock extends Component {
                 {showstockid ? showstockid : <div />}
               </ol>
               <div />
+              <div
+                className="col-md"
+                style={{
+                  backgroundColor: "#EBEBEB",
+                  textAlign: "center"
+                }}
+              >
+                <Modal show={this.state.show} handleClose={this.hideModalClick}>
+                  <p>warehouse id : {this.state.warehouseid}</p>
+
+                  <p>Here We Will Work On Remove on Existing Stock</p>
+                </Modal>
+              </div>
 
               {showstockcontent ? showstockcontent : <div />}
             </div>
