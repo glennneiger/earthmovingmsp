@@ -214,7 +214,7 @@ router.get(
                       itemheight: stocks[i].itemheight,
                       forcompany: JSON.parse(stocks[i].forcompany),
                       hsncode: stocks[i].hsncode,
-                      rack: stocks[i].rack,
+                      //    rack: stocks[i].rack,
                       minrate: stocks[i].minrate,
                       rate: stocks[i].rate,
                       maxrate: stocks[i].maxrate,
@@ -287,7 +287,7 @@ router.post(
     if (req.body.hsncode) stockFields.hsncode = req.body.hsncode;
     if (req.body.itemwarehouse)
       stockFields.itemwarehouse = req.body.itemwarehouse;
-    if (req.body.rack) stockFields.rack = req.body.rack;
+    //if (req.body.rack) stockFields.rack = req.body.rack;
     if (req.body.quantity) stockFields.quantity = req.body.quantity;
     if (req.body.minrate) stockFields.minrate = req.body.minrate;
     if (req.body.rate) stockFields.rate = req.body.rate;
@@ -436,7 +436,7 @@ router.post(
                 user: req.user.id,
                 _id: prodstk_id,
                 itemcode: stockFields.itemcode,
-                rack: stockFields.rack,
+                //  rack: stockFields.rack,
                 quantity: stockFields.quantity
               };
 
@@ -685,7 +685,7 @@ router.post(
     const prodwarehouse = req.body.prodwarehouse;
     const prodorigin = req.body.prodorigin;
     const reqquantity = req.body.quantity;
-    const reqrack = req.body.rack;
+    //const reqrack = req.body.rack;
 
     console.log("////work on addonexisting stock////");
 
@@ -694,8 +694,8 @@ router.post(
       itemcode,
       prodwarehouse,
       prodorigin,
-      reqquantity,
-      reqrack
+      reqquantity
+      //  reqrack
     );
 
     var newitmentrywithqty = true;
@@ -717,7 +717,7 @@ router.post(
               prodwarehouse: prodwarehouse,
               prodorigin: prodorigin,
               quantity: reqquantity,
-              rack: reqrack,
+              //  rack: reqrack,
               operation: "addonexistingprodstock"
             };
 
@@ -804,7 +804,7 @@ router.post(
             prodwarehouse: prodwarehouse,
             prodorigin: prodorigin,
             quantity: reqquantity,
-            rack: reqrack,
+            // rack: reqrack,
             operation: "addonexistingprodstock"
           };
 
@@ -813,7 +813,7 @@ router.post(
             user: req.user.id,
             _id: prodstk_id,
             itemcode: itemcode,
-            rack: reqrack,
+            //   rack: reqrack,
             quantity: reqquantity
           };
 

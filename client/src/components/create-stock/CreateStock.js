@@ -73,7 +73,7 @@ class CreateStock extends Component {
       forcompany: [],
       hsncode: "",
       itemwarehouse: "",
-      rack: "",
+      //  rack: "",
       quantity: "",
       minrate: "",
       rate: "",
@@ -130,7 +130,7 @@ class CreateStock extends Component {
       forcompany,
       hsncode,
       itemwarehouse,
-      rack,
+      //  rack,
       quantity,
       minrate,
       rate,
@@ -153,7 +153,7 @@ class CreateStock extends Component {
     stockData.append("forcompany", JSON.stringify(forcompany));
     stockData.append("hsncode", hsncode);
     stockData.append("itemwarehouse", itemwarehouse);
-    stockData.append("rack", rack);
+    // stockData.append("rack", rack);
     stockData.append("quantity", quantity);
     stockData.append("minrate", minrate);
     stockData.append("rate", rate);
@@ -286,7 +286,7 @@ class CreateStock extends Component {
       forcompany,
       hsncode,
       itemwarehouse,
-      rack,
+      // rack,
       quantity,
       minrate,
       rate,
@@ -630,7 +630,7 @@ class CreateStock extends Component {
                                 />
                               </div>
 
-                              <div class="form-group col-md-6">
+                              {/*}   <div class="form-group col-md-6">
                                 <TextFieldGroup
                                   placeholder="Rack"
                                   name="rack"
@@ -640,7 +640,7 @@ class CreateStock extends Component {
                                   error={errors.rack}
                                   info="Put Rack"
                                 />
-                              </div>
+                                    </div>*/}
                             </div>
                             {/*}  <input
                               type="file"

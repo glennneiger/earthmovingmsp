@@ -42,6 +42,12 @@ thead tr {
   background-color: #f9f6ff;
 }
 
-thead th {
-  vertical-align: center;
+.table thead th {
+  vertical-align: inherit;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.rtable td {
+  color: black;
+  vertical-align: inherit;
 }

@@ -170,13 +170,7 @@ class ShowStock extends Component {
                       textAlign: "center"
                     }}
                   >
-                    <center>
-                      Itemcode: {warehouseartbyid.itemcode}
-                      <br />{" "}
-                      {warehouseartbyid.rack && (
-                        <p>Rack: {warehouseartbyid.rack}</p>
-                      )}
-                    </center>
+                    <center>Itemcode: {warehouseartbyid.itemcode}</center>
                   </th>
                   <td
                     style={{
