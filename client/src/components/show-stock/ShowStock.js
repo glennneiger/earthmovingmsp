@@ -12,7 +12,8 @@ import StockActions from "../dashboard/StockActions";
 import {
   createStock,
   editStock,
-  singleprodstockbyid
+  singleprodstockbyid,
+  removeonexistprodstock
 } from "../../actions/stockActions";
 
 import { singleprodwarehouseitemsbyid } from "../../actions/warehouseActions";
@@ -52,7 +53,12 @@ class ShowStock extends Component {
     this.state = {
       errors: {},
       show: false,
-      warehouseid: ""
+      warehouseid: "",
+      warehouseaddress: "",
+      prodstk_id: "",
+      itemcode: "",
+      availableqty: "",
+      removeqty: ""
       //singprodstk: {}
     };
 
@@ -93,6 +99,51 @@ class ShowStock extends Component {
     // this.props.editStock(stockData, this.props.history);
   }
 
+  removeQtyFinally = (
+    warehouseid,
+    warehouseaddress,
+    prodstk_id,
+    itemcode,
+    removeqty
+  ) => {
+    const { availableqty } = this.state;
+
+    if (availableqty == "" || parseInt(availableqty) <= 0) {
+      alert("Your Item Has 0 or Empty Available Quantity");
+    } else if (removeqty == "" || parseInt(removeqty) <= 0) {
+      alert(
+        "The Item removing quantity : " + removeqty + "should be greater then 0"
+      );
+    } else if (parseInt(removeqty) > parseInt(availableqty)) {
+      alert(
+        "The Item removing quantity : " +
+          removeqty +
+          "should be less then available quantity : " +
+          availableqty
+      );
+    }
+
+    const RemoveStockData = {
+      warehouseid: warehouseid,
+      warehouseaddress: warehouseaddress,
+      prodstk_id: prodstk_id,
+      itemcode: itemcode,
+      removeqty: removeqty
+    };
+
+    if (
+      !(availableqty == "" || parseInt(availableqty) <= 0) &&
+      !(removeqty == "" || parseInt(removeqty) < 0) &&
+      !(parseInt(removeqty) > parseInt(availableqty))
+    ) {
+      console.log("great validation check success");
+
+      console.log("RemoveStockData is : " + RemoveStockData);
+      console.table(RemoveStockData);
+      this.props.removeonexistprodstock(RemoveStockData, this.props.history);
+    }
+  };
+
   showModalClick = (
     warehouseid,
     warehouseaddress,
@@ -100,7 +151,14 @@ class ShowStock extends Component {
     itemcode,
     quantity
   ) => {
-    this.setState({ show: true, warehouseid: warehouseid });
+    this.setState({
+      show: true,
+      warehouseid: warehouseid,
+      warehouseaddress: warehouseaddress,
+      prodstk_id: prodstk_id,
+      itemcode: itemcode,
+      availableqty: quantity
+    });
     console.log("warehouseid set to : " + warehouseid);
     console.log("item warehouse address is : " + warehouseaddress);
 
@@ -108,21 +166,19 @@ class ShowStock extends Component {
     var warehouseaddress = warehouseaddress;
     var prodstk_id = prodstk_id;
     var itemcode = itemcode;
-    var quantity = quantity;
+    var availableqty = availableqty;
 
-    this.props.singleprodstockbyid(prodstk_id);
+    // this.props.singleprodstockbyid(prodstk_id);
 
-    this.props.singleprodwarehouseitemsbyid(prodstk_id);
-
-    // this.props.ProductSizeConfigsByid(prodconfigsid, prodwarehouseorigin);
+    //this.props.singleprodwarehouseitemsbyid(prodstk_id);
   };
   hideModalClick = () => {
-    this.setState({ show: false, warehouseid: "" });
+    this.setState({ show: false, warehouseid: "", removeqty: "" });
     console.log("warehouseid set to : '' ");
   };
 
   render() {
-    const { errors } = this.state;
+    const { errors, itemcode, removeqty } = this.state;
 
     const { warehousebyid, loading } = this.props.warehouse;
 
@@ -383,9 +439,58 @@ class ShowStock extends Component {
                 }}
               >
                 <Modal show={this.state.show} handleClose={this.hideModalClick}>
-                  <p>warehouse id : {this.state.warehouseid}</p>
+                  <div className="container">
+                    <div className="row">
+                      <div className="col-md-12">
+                        <center>
+                          <div
+                            class="form-group col-md-6"
+                            style={{ padding: 25 }}
+                          >
+                            <p>
+                              Warehouse Address : {this.state.warehouseaddress}
+                            </p>
+                            <p>Available Qty : {this.state.availableqty}</p>
+                            <TextFieldGroup
+                              placeholder="Itemcode"
+                              name="itemcode"
+                              value={itemcode}
+                              onChange={this.onChange}
+                              error={errors.itemcode}
+                              info="Item Code"
+                              disabled
+                            />
+                            <br />
 
-                  <p>Here We Will Work On Remove on Existing Stock</p>
+                            <TextFieldGroup
+                              placeholder="Remove Quantity"
+                              name="removeqty"
+                              value={removeqty}
+                              onChange={this.onChange}
+                              error={errors.removeqty}
+                              info="Total Quantity Remove"
+                            />
+                            <br />
+
+                            <input
+                              onClick={e =>
+                                this.removeQtyFinally(
+                                  this.state.warehouseid,
+                                  this.state.warehouseaddress,
+                                  this.state.prodstk_id,
+                                  this.state.itemcode,
+                                  this.state.removeqty
+                                )
+                              }
+                              type="button"
+                              value="Remove"
+                              className="btn btn-info btn-block mt-4"
+                            />
+                          </div>
+                        </center>
+                      </div>
+                    </div>
+                  </div>
                 </Modal>
               </div>
 
@@ -416,6 +521,7 @@ export default connect(
     createStock,
     editStock,
     singleprodstockbyid,
-    singleprodwarehouseitemsbyid
+    singleprodwarehouseitemsbyid,
+    removeonexistprodstock
   }
 )(withRouter(ShowStock));

@@ -191,8 +191,6 @@ router.post(
     if (req.body.warehousecapacity)
       stockFields.warehousecapacity = req.body.warehousecapacity;
 
-    //if (req.body.racks) stockFields.racks = req.body.racks;
-
     if (req.body.warehouseImage) {
       if (req.file.path) {
         console.log("file path is set");
@@ -403,7 +401,6 @@ router.get(
                       prodstk_id: warehouses[i].warehouseproducts[j]._id,
                       quantity: warehouses[i].warehouseproducts[j].quantity,
                       itemcode: warehouses[i].warehouseproducts[j].itemcode
-                      //    rack: warehouses[i].warehouseproducts[j].rack
                     };
 
                     // Add to warehouseproducts array

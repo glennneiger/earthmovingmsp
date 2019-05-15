@@ -25,7 +25,6 @@ class AddWarehouse extends Component {
       warehousepincode: "",
       warehousecity: "",
       warehousecapacity: "",
-      racks: "",
       warehouseImage: "",
       errors: {}
     };
@@ -63,7 +62,6 @@ class AddWarehouse extends Component {
       warehousepincode,
       warehousecity,
       warehousecapacity,
-      racks,
       warehouseImage
     } = this.state;
 
@@ -75,7 +73,6 @@ class AddWarehouse extends Component {
     warehouseData.append("warehousecity", warehousecity);
 
     warehouseData.append("warehousecapacity", warehousecapacity);
-    warehouseData.append("racks", racks);
 
     warehouseData.append("warehouseImage", warehouseImage);
     console.log(warehouseData);
@@ -91,8 +88,7 @@ class AddWarehouse extends Component {
       warehouseaddress,
       warehousepincode,
       warehousecity,
-      warehousecapacity,
-      racks
+      warehousecapacity
     } = this.state;
 
     return (
@@ -209,16 +205,6 @@ class AddWarehouse extends Component {
                                     onChange={this.onChange}
                                     error={errors.warehousecapacity}
                                     info="Put the Warehouse Capacity"
-                                  />
-                                </div>
-                                <div class="form-group col-md-4">
-                                  <TextFieldGroup
-                                    placeholder="racks"
-                                    name="racks"
-                                    value={racks}
-                                    onChange={this.onChange}
-                                    error={errors.racks}
-                                    info="Put the total racks in warehouse"
                                   />
                                 </div>
 

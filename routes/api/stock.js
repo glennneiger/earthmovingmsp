@@ -52,6 +52,8 @@ const stock = require("../../models/Stock");
 // Load Warehouse Model
 const Warehouse = require("../../models/Warehouse");
 
+// Load NewStockHistory Model
+const NewStockHistory = require("../../models/NewStockHistory");
 // Load ExistingStockHistory Model
 const ExistingStockHistory = require("../../models/ExistingStockHistory");
 
@@ -158,17 +160,17 @@ router.get(
               if (stocks) {
                 let finalallstock = [];
                 const stockslen = stocks.length;
-                console.log("Stock Length is  : " + stockslen);
+                //   console.log("Stock Length is  : " + stockslen);
 
                 Warehouse.find().then(warehouse => {
                   const warehouselen = warehouse.length;
-                  console.log("Warehouse Length is  : " + stockslen);
+                  //  console.log("Warehouse Length is  : " + stockslen);
                   for (var i = 0; i < stockslen; i++) {
                     var calquantity = 0;
 
-                    console.log(
+                    /*  console.log(
                       "////working on ItemCode" + stocks[i].itemcode + "////"
-                    );
+                    );*/
 
                     for (var j = 0; j < warehouselen; j++) {
                       for (
@@ -180,7 +182,7 @@ router.get(
                           warehouse[j].warehouseproducts[k].itemcode ==
                           stocks[i].itemcode
                         ) {
-                          console.log(
+                          /*  console.log(
                             "The length of current warehouseproducts Is : " +
                               warehouse[j].warehouseproducts.length
                           );
@@ -195,7 +197,7 @@ router.get(
                               warehouse[j].warehouseproducts[k].itemcode +
                               "found where quantity is : " +
                               warehouse[j].warehouseproducts[k].quantity
-                          );
+                          );*/
 
                           calquantity += parseInt(
                             warehouse[j].warehouseproducts[k].quantity
@@ -226,10 +228,10 @@ router.get(
                     finalallstock.unshift(singleitemdata);
                     var calquantity = 0; //set calquantity =0 for the next item
                   }
-                  console.log("loop operation done");
+                  // console.log("loop operation done");
 
                   res.json(finalallstock);
-                  console.log("final response send");
+                  // console.log("final response send");
                 });
               } else {
                 errors.message = "There are no stocks";
@@ -412,6 +414,30 @@ router.post(
 
           new Stock(stockcollectionData).save().then(stock => {
             console.log("stock is saved in stock collection");
+            const newstockhistoryData = {
+              user: req.user.id,
+              itemname: stockFields.itemname,
+              itemcode: stockFields.itemcode,
+              machinepart: JSON.stringify(machinepartobj),
+              itemlength: stockFields.itemlength,
+              itemwidth: stockFields.itemwidth,
+              itemheight: stockFields.itemheight,
+              forcompany: JSON.stringify(forcompanyobj),
+              hsncode: stockFields.hsncode,
+              itemwarehouse: stockFields.itemwarehouse,
+              minrate: stockFields.minrate,
+              rate: stockFields.rate,
+              maxrate: stockFields.maxrate,
+              itemprimaryimg: itemprimaryimgurl,
+              productImage: productimgurls
+            };
+            //here we first save the history of newly stock add in collection NewStockHistory
+            new NewStockHistory(newstockhistoryData)
+              .save()
+              .then(newstockhistory => {
+                console.log("NewStockHistory is saved");
+              });
+
             var prodstk_id = stock._id;
             console.log("product stock id of added itemcode is :" + prodstk_id);
 
@@ -685,7 +711,6 @@ router.post(
     const prodwarehouse = req.body.prodwarehouse;
     const prodorigin = req.body.prodorigin;
     const reqquantity = req.body.quantity;
-    //const reqrack = req.body.rack;
 
     console.log("////work on addonexisting stock////");
 
@@ -695,7 +720,6 @@ router.post(
       prodwarehouse,
       prodorigin,
       reqquantity
-      //  reqrack
     );
 
     var newitmentrywithqty = true;
@@ -717,7 +741,6 @@ router.post(
               prodwarehouse: prodwarehouse,
               prodorigin: prodorigin,
               quantity: reqquantity,
-              //  rack: reqrack,
               operation: "addonexistingprodstock"
             };
 
@@ -804,7 +827,6 @@ router.post(
             prodwarehouse: prodwarehouse,
             prodorigin: prodorigin,
             quantity: reqquantity,
-            // rack: reqrack,
             operation: "addonexistingprodstock"
           };
 
@@ -813,7 +835,6 @@ router.post(
             user: req.user.id,
             _id: prodstk_id,
             itemcode: itemcode,
-            //   rack: reqrack,
             quantity: reqquantity
           };
 
@@ -843,166 +864,102 @@ router.post(
 );
 
 //REMOVE ON EXISTING PRODUCT STOCK
+router.post(
+  "/removeonexistingprodstock", //here we can pass multiple middlewares like for upload and authentication
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    const errors = {};
+    errors.message = "There Is No Warehouse Found";
+    errors.className = "alert-danger";
 
-router.post("/removeonexistingprodstock", function(req, res) {
-  const errors = {};
-  errors.message = "There Is No Warehouse Found";
-  errors.className = "alert-danger";
+    const warehouseid = req.body.warehouseid;
+    const warehouseaddress = req.body.warehouseaddress;
+    const prodstk_id = req.body.prodstk_id;
+    const itemcode = req.body.itemcode;
+    const reqremoveqty = req.body.removeqty;
 
-  const prodstk_id = req.body.prodstk_id;
+    console.log("////work on removeonexisting stock////");
 
-  const warehouseid = req.body.warehouseid;
-  const warehouseaddress = req.body.warehouseaddress;
-  const prodsizeconfig_id = req.body.prodsizeconfig_id;
-  const configname = req.body.configname;
-  const reqtotalctn = req.body.totalctn;
+    console.log(
+      "Received data is : " + warehouseid,
+      itemcode,
+      warehouseaddress,
+      prodstk_id,
+      reqremoveqty
+    );
 
-  console.log(
-    "Received data is : " + prodstk_id,
-    warehouseid,
-    warehouseaddress,
-    prodsizeconfig_id,
-    reqtotalctn,
-    configname
-  );
-
-  console.log("work on updatation");
-  Warehouse.findOne({
-    $and: [{ _id: warehouseid }, { warehouseaddress: warehouseaddress }]
-  })
-    .then(warehouse => {
-      for (var i = 0; i < warehouse.warehouseproducts.length; i++) {
-        for (
-          var j = 0;
-          j < warehouse.warehouseproducts[i].productsizeconfigs.length;
-          j++
-        ) {
-          if (
-            warehouse.warehouseproducts[i]._id == prodstk_id &&
-            warehouse.warehouseproducts[i].productsizeconfigs[j]._id ==
-              prodsizeconfig_id
-          ) {
+    Warehouse.findOne({
+      $and: [{ _id: warehouseid }, { warehouseaddress: warehouseaddress }]
+    })
+      .then(warehouse => {
+        for (var i = 0; i < warehouse.warehouseproducts.length; i++) {
+          if (warehouse.warehouseproducts[i]._id == prodstk_id) {
             console.log(
-              "Updating Warehouse Address: " + warehouse.warehouseaddress
+              "Updating Item Warehouse Address: " + warehouse.warehouseaddress
             );
             console.log(
-              "article stock id is:" +
+              "item id is:" +
                 warehouse.warehouseproducts[i]._id +
                 " where " +
-                "=> totalctn of config id" +
-                warehouse.warehouseproducts[i].productsizeconfigs[j]._id +
-                " is:=>" +
-                warehouse.warehouseproducts[i].productsizeconfigs[j].totalctn
+                "=> totalqty is : " +
+                warehouse.warehouseproducts[i].quantity
             );
-            var origintotalctn =
-              warehouse.warehouseproducts[i].productsizeconfigs[j].totalctn;
+            var origintotalqty = warehouse.warehouseproducts[i].quantity;
 
-            if (parseInt(reqtotalctn) > parseInt(origintotalctn)) {
+            if (parseInt(reqremoveqty) > parseInt(origintotalqty)) {
               errors.message =
                 "You Cannot Remove : " +
-                parseInt(reqtotalctn) +
-                " CTN of Article Num : " +
-                warehouse.warehouseproducts[i].articlenum +
-                ", where color is :" +
-                warehouse.warehouseproducts[i].prodcolor +
-                " Becasue There are available CTN is : " +
-                origintotalctn +
-                " Of The Config : " +
-                warehouse.warehouseproducts[i].productsizeconfigs[j].configname;
+                parseInt(reqremoveqty) +
+                " Quantity of ItemCode : " +
+                warehouse.warehouseproducts[i].itemcode +
+                " Becasue There are available Quantity is : " +
+                origintotalqty;
               errors.className = "alert-danger";
 
               console.log(
                 "You Cannot Remove : " +
-                  parseInt(reqtotalctn) +
-                  " CTN of Article Num" +
-                  warehouse.warehouseproducts[i].articlenum +
-                  ", where color is :" +
-                  warehouse.warehouseproducts[i].prodcolor +
-                  "Becasue There are available CTN is : " +
-                  origintotalctn +
-                  " Of The Config : " +
-                  warehouse.warehouseproducts[i].productsizeconfigs[j]
-                    .configname
+                  parseInt(reqremoveqty) +
+                  " Quantity of ItemCode : " +
+                  warehouse.warehouseproducts[i].itemcode +
+                  " Becasue There are available Quantity is : " +
+                  origintotalqty
               );
 
               res.status(400).json(errors);
               console.log(
-                "exit from if statement after check reqtotalctn should be less then available totalctn acc to warehouse address of corresponding to requested article"
+                "exit from if statement after check reqremoveqty should be less then available origintotalqty acc to warehouse address of corresponding to requested item"
               );
               //loopexit
               break;
             } else {
               console.log(
-                "run if requested ctn is less then available ctn acc to warehouse address and its id of corresponding to requested article"
+                "run if requested qty is less then available qty acc to warehouse address and its id of corresponding to requested item"
               );
 
-              console.log("type of totalctn is : " + typeof origintotalctn);
+              console.log("type of quantity is : " + typeof origintotalqty);
 
               console.log(
-                "original totalctn is : " +
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].totalctn
+                "original quantity is : " +
+                  warehouse.warehouseproducts[i].quantity
               );
 
               console.log(
-                "requesting remove totalctn is : " + parseInt(reqtotalctn)
+                "requesting remove quantity is : " + parseInt(reqremoveqty)
               );
 
-              var updatedtotalctn = origintotalctn - parseInt(reqtotalctn);
+              var updatedtotalqty = origintotalqty - parseInt(reqremoveqty);
 
-              warehouse.warehouseproducts[i].productsizeconfigs[
-                j
-              ].totalctn = updatedtotalctn; //HERE WE UPDATE TOTALCTN OF ARTICLE IF IT CAME BACK IN ITERATION SO IT HAS UPDATED TOTALCTN
+              warehouse.warehouseproducts[i].quantity = updatedtotalqty; //HERE WE UPDATE TOTALQTY OF Item IF IT CAME BACK IN ITERATION SO IT HAS UPDATED TOTALQty
               console.log(
-                "final updated value of totalctn after addition is =>> " +
-                  updatedtotalctn
+                "final updated value of total quantity after remove is =>> " +
+                  updatedtotalqty
               );
 
               const existingstkdata = {
-                prodstk_id: warehouse.warehouseproducts[i]._id,
-                articlenum: warehouse.warehouseproducts[i].articlenum,
-                prodcolor: warehouse.warehouseproducts[i].prodcolor,
-                prodcateg: warehouse.warehouseproducts[i].prodcateg,
-                prodwarehouse: warehouse.warehouseaddress,
-                totalctn: reqtotalctn,
-                productImage: warehouse.warehouseproducts[i].productImage,
-                config_id:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j]
-                    .config_id,
-                configname:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j]
-                    .configname,
-                sizem40:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizem40,
-                sizem41:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizem41,
-                sizem42:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizem42,
-                sizem43:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizem43,
-                sizem44:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizem44,
-                sizem45:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizem45,
-                sizem46:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizem46,
-                sizem47:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizem47,
-                sizew35:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizew35,
-                sizew36:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizew36,
-                sizew37:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizew37,
-                sizew38:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizew38,
-                sizew39:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizew39,
-                sizew40:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizew40,
-                sizew41:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizew41,
-                sizew42:
-                  warehouse.warehouseproducts[i].productsizeconfigs[j].sizew42,
+                prodstk_id: prodstk_id,
+                itemcode: itemcode,
+                prodwarehouse: warehouseaddress,
+                quantity: reqremoveqty,
                 operation: "removeonexistingprodstock"
               };
 
@@ -1027,9 +984,8 @@ router.post("/removeonexistingprodstock", function(req, res) {
             }
           }
         }
-      }
-    })
-    .catch(err => res.status(404).json({ errors }));
-});
-
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
 module.exports = router;

@@ -64,8 +64,7 @@ class EditWarehouse extends Component {
       warehouseaddress,
       warehousepincode,
       warehousecity,
-      warehousecapacity,
-      racks
+      warehousecapacity
     } = this.state.singwarehousestk;
 
     const warehouseData = {
@@ -73,8 +72,7 @@ class EditWarehouse extends Component {
       warehouseaddress,
       warehousepincode,
       warehousecity,
-      warehousecapacity,
-      racks
+      warehousecapacity
     };
 
     const paramid = this.props.match.params.id;
@@ -216,16 +214,6 @@ class EditWarehouse extends Component {
                                     onChange={this.onChange}
                                     error={errors.warehousecapacity}
                                     info="Put the Warehouse Capacity"
-                                  />
-                                </div>
-                                <div class="form-group col-md-4">
-                                  <TextFieldGroup
-                                    placeholder="* Racks"
-                                    name="racks"
-                                    value={this.state.singwarehousestk.racks}
-                                    onChange={this.onChange}
-                                    error={errors.racks}
-                                    info="Put the total racks"
                                   />
                                 </div>
 

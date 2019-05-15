@@ -33,7 +33,6 @@ class AddonExistingStock extends Component {
       itemcode: "",
       prodwarehouse: "",
       prodorigin: "",
-      rack: "",
       quantity: "",
       errors: {}
       //singprodstk: {}
@@ -82,7 +81,7 @@ class AddonExistingStock extends Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const { prodwarehouse, prodorigin, quantity, rack, itemcode } = this.state;
+    const { prodwarehouse, prodorigin, quantity, itemcode } = this.state;
 
     if (prodwarehouse == "" || prodwarehouse == 0) {
       alert("Please Select Warehouse from the List!!");
@@ -99,8 +98,7 @@ class AddonExistingStock extends Component {
       itemcode: itemcode,
       prodwarehouse: prodwarehouse,
       prodorigin: prodorigin,
-      quantity: quantity,
-      rack: rack
+      quantity: quantity
     };
 
     if (
@@ -125,7 +123,6 @@ class AddonExistingStock extends Component {
       prodwarehouse,
       prodorigin,
       quantity,
-      rack,
       itemcode
     } = this.state;
 
@@ -226,16 +223,6 @@ class AddonExistingStock extends Component {
                         />
                       </div>
 
-                      <div class="form-group col-md-4">
-                        <TextFieldGroup
-                          placeholder="Rack"
-                          name="rack"
-                          value={rack}
-                          onChange={this.onChange}
-                          error={errors.rack}
-                          info="Put the Item Rack"
-                        />
-                      </div>
                       <div class="form-group col-md-4">
                         <TextFieldGroup
                           placeholder="Item Origin"

@@ -24,9 +24,6 @@ const WarehouseSchema = new Schema({
   warehousecapacity: {
     type: String
   },
-  racks: {
-    type: String
-  },
   warehouseImage: {
     type: String
   },
