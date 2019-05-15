@@ -36,6 +36,8 @@ import ShowStock from "./components/show-stock/ShowStock";
 
 import AddonExistingStock from "./components/add-prodstk-on-existing-stock/AddonExistingStock";
 
+import StockTransfer from "./components/stock-transfer/StockTransfer";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -148,6 +150,13 @@ class App extends Component {
                   exact
                   path="/add-on-existing-stock/:id"
                   component={AddonExistingStock}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/stock-transfer"
+                  component={StockTransfer}
                 />
               </Switch>
             </div>

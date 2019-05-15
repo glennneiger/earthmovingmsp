@@ -5,6 +5,8 @@ import {
   WAREHOUSE_LOADING,
   GET_WAREHOUSE_BY_ID,
   GET_SINGLE_PRODUCT_ALL_ITEM_WITH_TOTALQTY_WAREHOUSE_BY_ID,
+  GET_ORIGIN_WAREHOUSE_PROD_STOCKS,
+  GET_ORIGIN_WAREHOUSE_PROD_STOCKS_LOADING,
   GET_ERRORS
 } from "./types";
 
@@ -161,4 +163,30 @@ export const singleprodwarehouseitemsbyid = id => dispatch => {
     .catch(err => {
       console.log(err);
     });
+};
+
+// Get current all stock by origin address
+export const getCurrentOriginWareStock = prodwarehouseorigin => dispatch => {
+  dispatch(setoriginwarehouseLoading()); //here we dispatch function called setoriginwarehouseLoading() which will set the loading state True before it actually does the request
+  axios
+    .get(`/api/warehouse/originprodstockall/${prodwarehouseorigin}`)
+    .then(res =>
+      dispatch({
+        type: GET_ORIGIN_WAREHOUSE_PROD_STOCKS,
+        payload: res.data //so here is the actual GET_ORIGIN_WAREHOUSE_PROD_STOCKS
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_ORIGIN_WAREHOUSE_PROD_STOCKS,
+        payload: {}
+      })
+    );
+};
+
+// warehouse loading
+export const setoriginwarehouseLoading = () => {
+  return {
+    type: GET_ORIGIN_WAREHOUSE_PROD_STOCKS_LOADING //here we dont send payload only lets the reducer know warehouse is loading
+  };
 };

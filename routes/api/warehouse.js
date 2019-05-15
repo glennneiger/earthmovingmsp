@@ -47,6 +47,9 @@ const validateAddnewWarehouseInput = require("../../validation/addnewarehouse");
 // Load User Model
 const User = require("../../models/User");
 
+// Load Stock Model
+const Stock = require("../../models/Stock");
+
 // Load Warehouse Model
 const Warehouse = require("../../models/Warehouse");
 
@@ -420,6 +423,90 @@ router.get(
           .catch(err =>
             res.status(404).json({ warehouse: "There are no warehouses" })
           );
+      })
+      .catch(err => res.status(404).json({ err }));
+  }
+);
+
+router.get(
+  "/originprodstockall/:prodwarehouse_origin",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+    errors.message = "The Warehouse Origin is not found";
+    errors.className = "alert-danger";
+
+    Warehouse.findOne({ warehouseaddress: req.params.prodwarehouse_origin })
+      .then(warehouse => {
+        // console.log("Requested Warehouse Address : " + warehouse);
+        var finalwarehouseproducts = [];
+        var sizesarr = [];
+        //res.json({ warehouse });
+
+        var warehousename = warehouse.warehousename;
+        var warehouseaddress = warehouse.warehouseaddress;
+
+        //   console.log("The Origin Warehouse Name is : " + warehousename);
+
+        //  console.log("The Origin Warehouse Address is : " + warehouseaddress);
+
+        {
+          /* console.log(
+          "The length of the warehouseproducts is : " + warehouseproductslen
+        );
+       */
+        }
+
+        async function checksome2() {
+          for (var i = 0; i < warehouse.warehouseproducts.length; i++) {
+            if (warehouse.warehouseproducts[i].quantity > 0) {
+              let availableqty = warehouse.warehouseproducts[i].quantity;
+
+              let promise = new Promise((resolve, reject) => {
+                setTimeout(
+                  () =>
+                    resolve(
+                      Stock.findOne({
+                        _id: warehouse.warehouseproducts[i]._id
+                      }).then(stock => {
+                        console.log("////found stock///");
+
+                        const wareproducts = {
+                          _id: stock._id,
+                          itemcode: stock.itemcode,
+                          quantity: availableqty,
+                          itemname: stock.itemname,
+                          machinepart: stock.machinepart,
+                          itemlength: stock.itemlength,
+                          itemwidth: stock.itemwidth,
+                          itemheight: stock.itemheight,
+                          forcompany: stock.forcompany,
+                          hsncode: stock.hsncode,
+                          minrate: stock.minrate,
+                          rate: stock.rate,
+                          maxrate: stock.maxrate,
+                          itemprimaryimg: stock.itemprimaryimg
+                        };
+                        // console.log(wareproducts);
+                        finalwarehouseproducts.unshift(wareproducts);
+                      })
+                    ),
+                  100
+                );
+              });
+
+              let result = await promise; // wait till the promise resolves (*)
+
+              if (result) {
+                console.log("after update deduction" + prodwarehousetransfer); // "done!"
+              }
+            } else {
+              console.log("Finding ALL STOCK Acc To Condition");
+            }
+          }
+        }
+
+        checksome2().then(() => res.json({ finalwarehouseproducts }));
       })
       .catch(err => res.status(404).json({ err }));
   }
