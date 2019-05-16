@@ -13,6 +13,7 @@ const path = require("path");
 const users = require("./routes/api/users");
 const stock = require("./routes/api/stock");
 const warehouse = require("./routes/api/warehouse");
+const warehousetransfer = require("./routes/api/warehousetransfer");
 
 const app = express();
 
@@ -127,6 +128,7 @@ app.locals.errors = null;
 app.use("/api/users", users);
 app.use("/api/stock", stock);
 app.use("/api/warehouse", warehouse);
+app.use("/api/warehousetransfer", warehousetransfer);
 
 const port = process.env.PORT || 5000;
 

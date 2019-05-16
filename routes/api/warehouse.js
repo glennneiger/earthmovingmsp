@@ -429,14 +429,14 @@ router.get(
 );
 
 router.get(
-  "/originprodstockall/:prodwarehouse_origin",
+  "/originprodstockall/:prodwarehouseorigin",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const errors = {};
     errors.message = "The Warehouse Origin is not found";
     errors.className = "alert-danger";
 
-    Warehouse.findOne({ warehouseaddress: req.params.prodwarehouse_origin })
+    Warehouse.findOne({ warehouseaddress: req.params.prodwarehouseorigin })
       .then(warehouse => {
         // console.log("Requested Warehouse Address : " + warehouse);
         var finalwarehouseproducts = [];

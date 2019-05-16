@@ -5,6 +5,7 @@ import profileReducer from "./profileReducer";
 import warehouseReducer from "./warehouseReducer";
 
 import stockReducer from "./stockReducer";
+import warehousetransferReducer from "./warehousetransferReducer";
 
 import messageReducer from "./reducer_message";
 
@@ -14,5 +15,6 @@ export default combineReducers({
   flashMessage: messageReducer,
   profile: profileReducer,
   stock: stockReducer,
-  warehouse: warehouseReducer
+  warehouse: warehouseReducer,
+  warehousetransfer: warehousetransferReducer
 });
