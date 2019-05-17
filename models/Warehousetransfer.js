@@ -16,7 +16,7 @@ const WarehousetransferSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "users"
       },
-      _id: {
+      prodstk_id: {
         type: String,
         required: true
       },
@@ -24,11 +24,15 @@ const WarehousetransferSchema = new Schema({
         type: String,
         required: true
       },
-      /*
-      rack: {
-        type: String
-      },*/
-      quantity: {
+      prodwarehouseorigin: {
+        type: String,
+        required: true
+      },
+      prodwarehousetransfer: {
+        type: String,
+        required: true
+      },
+      quantitytrans: {
         type: Number,
         required: true
       },

@@ -21,6 +21,8 @@ import {
   getCurrentOriginWareStock
 } from "../../actions/warehouseActions";
 
+import { createWareHouseTransfer } from "../../actions/warehousetransAction";
+
 import isEmpty from "../../validation/is-empty";
 
 import Spinner from "../common/Spinner";
@@ -52,136 +54,7 @@ const Modal = ({ handleClose, show, children }) => {
   );
 };
 
-class MyTable extends Component {
-  render() {
-    return (
-      <ReactTable
-        data={this.props.mydata}
-        columns={[
-          {
-            Header: "Sno",
-            id: "row",
-            maxWidth: 50,
-            filterable: false,
-            sortable: false,
-            Cell: row => {
-              return <div>{row.index + 1}</div>;
-            }
-          },
-          {
-            Header: "Product Image",
-            accessor: "itemprimaryimg",
-            maxWidth: 350,
-            Cell: row => (
-              <span>
-                <center>
-                  <img
-                    style={{ maxWidth: "70px" }}
-                    class=""
-                    src={row.value}
-                    alt="product img"
-                  />
-                </center>
-              </span>
-            )
-          },
-          {
-            Header: "Item Code",
-            accessor: "itemcode",
-            maxWidth: 100,
-            filterable: true
-          },
-          {
-            Header: "Available Qty",
-            accessor: "quantity",
-            maxWidth: 290,
-            filterable: true
-          },
-          {
-            Header: "Transfer Qty",
-            accessor: "_id",
-            maxWidth: 350,
-            Cell: row => (
-              <div key={row.index}>
-                <TextFieldGroup
-                  type="number"
-                  placeholder={`* Transfer Qty #${row.index} `}
-                  //  onChange={this.handleInputChange.bind(this, row.index)}
-                  onChange={e => this.props.action(row.index, e.target.value)}
-                  value={this.props.itemquantitytransfer[row.index]}
-                />
-              </div>
-            )
-          },
-          {
-            Header: "Operation",
-            columns: [
-              {
-                Header: "Transfer",
-                accessor: "_id",
-                maxWidth: 100,
-                sortable: false,
-                Cell: row => (
-                  <span>
-                    <center>
-                      <button
-                        onClick={e =>
-                          this.onTransferStockClick(
-                            row.value,
-                            this.props.itemquantitytransfer[row.index]
-                          )
-                        }
-                        // onClick={this.onAddtocartClick.bind(this, row.value)}
-                        className="btn btn-default"
-                        style={{
-                          textDecoration: "none",
-                          color: "white",
-                          backgroundColor: "#0085C3"
-                        }}
-                      >
-                        Transfer
-                      </button>
-                    </center>
-                  </span>
-                )
-              },
-              {
-                Header: "Stock View",
-                accessor: "_id",
-                maxWidth: 100,
-                filterable: false,
-                Cell: row => (
-                  <span>
-                    <center>
-                      <Link
-                        target="_blank"
-                        to={`/show-stock/${row.value}`}
-                        style={{
-                          textDecoration: "none",
-                          color: "rgb(0, 133, 195)",
-                          fontSize: 25
-                        }}
-                      >
-                        <i class="fa fa-eye" />
-                      </Link>
-                    </center>
-                  </span>
-                )
-              }
-            ]
-          }
-        ]}
-        defaultPageSize={5}
-        pageSizeOptions={[5, 10, 15, 20, 25, 30, 35, 40, 50]}
-        style={{
-          height: "600px", // This will force the table body to overflow and scroll, since there is not enough room
-          maxWidth: "100%"
-        }}
-        className="-striped -highlight"
-      />
-    );
-  }
-}
+const Input = TextFieldGroup;
 
 class StockTransfer extends Component {
   constructor(props) {
@@ -189,24 +62,21 @@ class StockTransfer extends Component {
     this.state = {
       prodwarehouseorigin: "",
       prodwarehousetransfer: "",
-      itemquantitytransfer: [],
+      proditemtransfer: [],
       actionadd: "add",
       actiondec: "dec",
       actiondelete: "delete",
       show: false,
       modelconfigid: "",
+      testinput: "",
       errors: {}
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-
-    // Bind the this context to the handleInputChange function
-    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   componentDidMount() {
-    console.log("componentDidMount is called !!");
     this.props.getCurrentStock();
     this.props.getCurrentWarehouses();
 
@@ -214,7 +84,6 @@ class StockTransfer extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log("componentDidUpdate is called !!");
     const { prodwarehouseorigin } = this.state;
     if (this.state.prodwarehouseorigin == "" || 0) {
       console.log("select origin");
@@ -224,6 +93,50 @@ class StockTransfer extends Component {
         this.props.getCurrentOriginWareStock(this.state.prodwarehouseorigin);
         console.log("value is : " + this.state.prodwarehouseorigin);
       }
+    }
+  }
+
+  onTransferStockClick(prodstk_id, quantitytrans) {
+    //console.log("prodstk_id is : " + prodstk_id);
+    //console.log("quantitytrans is : " + quantitytrans);
+
+    const { prodwarehouseorigin, prodwarehousetransfer } = this.state;
+
+    if (prodwarehouseorigin == "" || prodwarehouseorigin == 0) {
+      alert("Please Select Origin Warehouse from the List!!");
+    } else if (prodwarehousetransfer == "" || prodwarehousetransfer == 0) {
+      alert("Please Select Transfer Warehouse from the List!!");
+    } else if (prodwarehousetransfer == prodwarehouseorigin) {
+      alert("Stock Cannot Be Transfer in Same Warehouse!!");
+    } else if (parseInt(quantitytrans) <= 0) {
+      alert(
+        "The Stock Transfer Item : " + quantitytrans + " be greater then 0"
+      );
+    } else if (quantitytrans == null) {
+      alert("The Stock Transfer Item : " + quantitytrans + " Cannot Be Empty");
+    }
+
+    if (
+      !(quantitytrans == null) &&
+      !(prodwarehouseorigin == "" || prodwarehouseorigin == 0) &&
+      !(prodwarehousetransfer == "" || prodwarehousetransfer == 0) &&
+      !(prodwarehousetransfer == prodwarehouseorigin) &&
+      !(parseInt(quantitytrans) <= 0)
+    ) {
+      console.log("great validation check success");
+      console.log(
+        "Stock Transfer data would be : " + prodstk_id,
+        prodwarehouseorigin,
+        prodwarehousetransfer,
+        quantitytrans
+      );
+      this.props.createWareHouseTransfer(
+        prodstk_id,
+        prodwarehouseorigin,
+        prodwarehousetransfer,
+        quantitytrans,
+        this.props.history
+      );
     }
   }
 
@@ -241,27 +154,19 @@ class StockTransfer extends Component {
     this.setState({ prodwarehouseorigin: e.target.value });
   };
 
-  handleInputChange(index, newValue) {
-    //console.log("array index:" + index);
-    // var itemquantitytransfer = this.state.itemquantitytransfer.slice(); // Make a copy of the itemquantitytransfer first.
+  handleInputChange = (index, _id, e) => {
+    var proditemtransfer = this.state.proditemtransfer.slice();
 
-    //copy the array first
-    const updatedArray = [...this.state.itemquantitytransfer];
+    proditemtransfer[index] = e.target.value;
 
-    updatedArray[index] = newValue; // Update it with the modified itemquantitytransfer.
-    this.setState({ itemquantitytransfer: updatedArray }); // Update the state.
+    console.log("prodstk_id is " + _id);
+    console.log("index is " + index);
+    console.log("e.target.value is :" + e.target.value);
 
-    // console.log("product ctn transfer array is : " + itemquantitytransfer);
+    this.setState({ proditemtransfer: proditemtransfer });
 
-    {
-      /*}  console.log(
-      "product ctn transfer array len is : " + itemquantitytransfer.length
-    );
-
-  */
-    }
-  }
-
+    // console.log("e.currentTarget.value is :" + e.currentTarget.value);
+  };
   onSubmit(e) {
     e.preventDefault();
 
@@ -286,7 +191,7 @@ class StockTransfer extends Component {
     prosizeconfig_id,
     prodwarehouseorigin,
     prodwarehousetransfer,
-    ctntrans,
+    quantitytrans,
     actiondelete
   ) {
     //console.log(prosizeconfig_id, actiondelete);
@@ -295,16 +200,18 @@ class StockTransfer extends Component {
       prosizeconfig_id,
       prodwarehouseorigin,
       prodwarehousetransfer,
-      ctntrans,
+      quantitytrans,
       actiondelete,
       this.props.history
     );
   }
+
   render() {
     const {
       prodwarehouseorigin,
       prodwarehousetransfer,
-      itemquantitytransfer
+      proditemtransfer,
+      testinput
     } = this.state;
 
     const { errors } = this.state;
@@ -343,6 +250,120 @@ class StockTransfer extends Component {
         // console.log(warehouseoptions);
       }
     }
+
+    const columns = [
+      {
+        Header: "Sno",
+        id: "row",
+        maxWidth: 50,
+        filterable: false,
+        sortable: false,
+        Cell: row => {
+          return <div>{row.index + 1}</div>;
+        }
+      },
+      {
+        Header: "Product Image",
+        accessor: "itemprimaryimg",
+        maxWidth: 350,
+        Cell: row => (
+          <span>
+            <center>
+              <img
+                style={{ maxWidth: "70px" }}
+                class=""
+                src={row.value}
+                alt="product img"
+              />
+            </center>
+          </span>
+        )
+      },
+      {
+        Header: "Item Code",
+        accessor: "itemcode",
+        maxWidth: 100,
+        filterable: true
+      },
+      {
+        Header: "Available Qty",
+        accessor: "quantity",
+        maxWidth: 290,
+        filterable: true
+      },
+      {
+        Header: "Transfer Qty",
+        accessor: "_id",
+        maxWidth: 350,
+        Cell: row => (
+          <Input
+            key={row.value}
+            type="number"
+            placeholder="* Transfer Qty"
+            //onChange={this.handleInputChange.bind(this, row.index)}
+            onChange={this.handleInputChange.bind(this, row.index, row.value)}
+            value={proditemtransfer[row.index]}
+          />
+        )
+      },
+      {
+        Header: "Operation",
+        columns: [
+          {
+            Header: "Transfer",
+            accessor: "_id",
+            maxWidth: 100,
+            sortable: false,
+            Cell: row => (
+              <span>
+                <center>
+                  <button
+                    onClick={e =>
+                      this.onTransferStockClick(
+                        row.value,
+                        proditemtransfer[row.index]
+                      )
+                    }
+                    // onClick={this.onAddtocartClick.bind(this, row.value)}
+                    className="btn btn-default"
+                    style={{
+                      textDecoration: "none",
+                      color: "white",
+                      backgroundColor: "#0085C3"
+                    }}
+                  >
+                    Transfer
+                  </button>
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Stock View",
+            accessor: "_id",
+            maxWidth: 100,
+            filterable: false,
+            Cell: row => (
+              <span>
+                <center>
+                  <Link
+                    target="_blank"
+                    to={`/show-stock/${row.value}`}
+                    style={{
+                      textDecoration: "none",
+                      color: "rgb(0, 133, 195)",
+                      fontSize: 25
+                    }}
+                  >
+                    <i class="fa fa-eye" />
+                  </Link>
+                </center>
+              </span>
+            )
+          }
+        ]
+      }
+    ];
 
     return (
       <div>
@@ -413,27 +434,16 @@ class StockTransfer extends Component {
                   ) : (
                     <div>
                       {/*console.log(originwarehousestks)*/}
-                      {/*originwarehousestks.finalwarehouseproducts &&
-                        originwarehousestks.finalwarehouseproducts.map(
-                          (item, index) => {
-                            return (
-                              <TextFieldGroup
-                                key={item._id}
-                                type="number"
-                                placeholder={`* Transfer Qty #${index} `}
-                                //  onChange={this.handleInputChange.bind(this, row.index)}
-                                onChange={e =>
-                                  this.handleInputChange(index, e.target.value)
-                                }
-                                value={this.state.itemquantitytransfer[index]}
-                              />
-                            );
-                          }
-                        )*/}
-                      <MyTable
-                        action={this.handleInputChange}
-                        itemquantitytransfer={itemquantitytransfer}
-                        mydata={originwarehousestks.finalwarehouseproducts}
+                      <ReactTable
+                        data={originwarehousestks.finalwarehouseproducts}
+                        columns={columns}
+                        defaultPageSize={5}
+                        pageSizeOptions={[5, 10, 15, 20, 25, 30, 35, 40, 50]}
+                        style={{
+                          height: "600px", // This will force the table body to overflow and scroll, since there is not enough room
+                          maxWidth: "100%"
+                        }}
+                        className="-striped -highlight"
                       />
                     </div>
                   )}
@@ -467,5 +477,10 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getCurrentStock, getCurrentWarehouses, getCurrentOriginWareStock }
+  {
+    getCurrentStock,
+    getCurrentWarehouses,
+    getCurrentOriginWareStock,
+    createWareHouseTransfer
+  }
 )(withRouter(StockTransfer));
