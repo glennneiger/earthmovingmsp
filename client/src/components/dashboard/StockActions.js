@@ -140,7 +140,7 @@ class StockActions extends Component {
 
                         <li>
                           <Link
-                            to="/product-barcode-generator"
+                            to="/advanced-inventory-search"
                             className="nav-link"
                           >
                             <span>Advanced Search</span>

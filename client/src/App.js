@@ -50,6 +50,8 @@ import WarehouseTransferHistory from "./components/warehouse-prodstk-transfer-hi
 
 import WarehouseTransferHistoryByDate from "./components/warehouse-transfer-history-by-date/WarehouseTransferHistoryByDate";
 
+import AdvancedInventorySearch from "./components/advanced-inventory-search/AdvancedInventorySearch";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -214,6 +216,13 @@ class App extends Component {
                   exact
                   path="/warehouse-transfer-history-by-date/:date"
                   component={WarehouseTransferHistoryByDate}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/advanced-inventory-search"
+                  component={AdvancedInventorySearch}
                 />
               </Switch>
             </div>

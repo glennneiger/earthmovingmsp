@@ -511,5 +511,92 @@ router.get(
       .catch(err => res.status(404).json({ err }));
   }
 );
+/////////////
+router.get(
+  "/viewalladvsearchstock",
+  // passport.authenticate("jwt", { session: false }),
+  verifyToken,
+  (req, res) => {
+    jwt.verify(req.token, keys.secretOrKey, (err, authData) => {
+      //jwt.verify check user has authenticate token or not that he was get after successfully login and if he has authenticate token then he pass this middleware [HERE WE CHECK AUTHENTICATION]
+      if (err) {
+        res.sendStatus(403);
+        console.log("You Have No Authority To Access This API");
+      } else {
+        let querystr = "mcpartname1";
+        /*console.log(authData.role + " " + "Has Authority To Access This API");*/
 
+        if (authData.role == authorizedrole.superadminrodleid) {
+          //[HERE WE CHECK ONLY AUTHORIZE USER CAN ACCESS THIS API]
+
+          const errors = {};
+          Stock.find()
+            .then(stocks => {
+              if (stocks) {
+                let finalallstock = [];
+                const stockslen = stocks.length;
+                //   console.log("Stock Length is  : " + stockslen);
+
+                for (var i = 0; i < stockslen; i++) {
+                  if (
+                    querystr == stocks[i].itemcode ||
+                    querystr == stocks[i].itemname ||
+                    querystr == stocks[i].itemlength ||
+                    querystr == stocks[i].itemheight ||
+                    querystr == stocks[i].itemwidth ||
+                    querystr == stocks[i].hsncode ||
+                    stocks[i].machinepart.includes(querystr) ||
+                    stocks[i].forcompany.includes(querystr)
+                  ) {
+                    const singleitemdata = {
+                      _id: stocks[i]._id,
+                      itemname: stocks[i].itemname,
+                      itemcode: stocks[i].itemcode,
+                      machinepart: JSON.parse(stocks[i].machinepart),
+                      itemlength: stocks[i].itemlength,
+                      itemwidth: stocks[i].itemwidth,
+                      itemheight: stocks[i].itemheight,
+                      forcompany: JSON.parse(stocks[i].forcompany),
+                      hsncode: stocks[i].hsncode,
+                      //    rack: stocks[i].rack,
+                      minrate: stocks[i].minrate,
+                      rate: stocks[i].rate,
+                      maxrate: stocks[i].maxrate,
+                      itemprimaryimg: stocks[i].itemprimaryimg
+                    };
+
+                    // Add to finalallstock array
+                    finalallstock.unshift(singleitemdata);
+                    console.log("//////some data////");
+                    console.log(finalallstock);
+
+                    // console.log(JSON.parse(stocks[i].machinepart))
+                    //  console.log(stocks[i].machinepart.includes(querystr));
+                  }
+                }
+                res.json({ finalallstock });
+              } else {
+                errors.message = "There are no stocks";
+                errors.className = "alert-danger";
+                return res.status(404).json(errors);
+              }
+            })
+            .catch(err =>
+              res.status(404).json({ stock: "There are no stocks" })
+            );
+        } else {
+          {
+            /*} console.log(
+              authData.role + " " + "have no Authority To Access This API"
+           );*/
+          }
+
+          res.sendStatus(403); //if user is authenticate successful but user is not authorize person so response will send forbidden//no access of this API
+        }
+      }
+    });
+  }
+);
+
+////////////
 module.exports = router;

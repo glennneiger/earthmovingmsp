@@ -4,6 +4,8 @@ import {
   GET_SINGLE_PRODUCT_ALL_ITEM_WITH_TOTALQTY_WAREHOUSE_BY_ID,
   GET_ORIGIN_WAREHOUSE_PROD_STOCKS,
   GET_ORIGIN_WAREHOUSE_PROD_STOCKS_LOADING,
+  GET_ADVANCED_INVENTYORY_SEARCH_RESULT,
+  GET_ADVANCED_INVENTYORY_SEARCH_RESULT_LOADING,
   GET_ERRORS
 } from "../actions/types";
 
@@ -12,7 +14,8 @@ const initialState = {
   loading: false,
   warehousebyid: null,
   originwarehousestks: null,
-  allpairwithtotalqtyinfo: null
+  allpairwithtotalqtyinfo: null,
+  advsearchresult: null
 };
 
 export default function(state = initialState, action) {
@@ -39,6 +42,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         originwarehousestks: action.payload, //if there are so stocks get filled with payload
+        loading: false
+      };
+    case GET_ADVANCED_INVENTYORY_SEARCH_RESULT:
+      return {
+        ...state,
+        advsearchresult: action.payload,
         loading: false
       };
 
