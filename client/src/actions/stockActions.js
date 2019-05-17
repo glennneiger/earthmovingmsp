@@ -8,6 +8,12 @@ import {
   STOCK_EDITED_BY_ID,
   ADD_ON_EXISTING_PRODUCT_STOCK,
   REMOVE_ON_EXISTING_PRODUCT_STOCK,
+  GET_NEW_STOCK_HISTORY_DATES,
+  GET_NEW_STOCK_HISTORY_DATES_LOADING,
+  GET_NEW_STOCKS_HISTORY_BY_DATE,
+  GET_EXISTING_STOCK_HISTORY_DATES,
+  GET_EXISTING_STOCK_HISTORY_DATES_LOADING,
+  GET_EXISTING_STOCKS_HISTORY_BY_DATE,
   GET_ERRORS
 } from "./types";
 
@@ -245,4 +251,105 @@ export const removeonexistprodstock = (
 
 ////////////////////////////////////////////////
 
+// Get unique product stock dates acc to collection data of newstockhistory
+export const getNewStockHistoryProdStockDates = () => dispatch => {
+  dispatch(setNewStockHistoryProdStockLoading()); //here we dispatch function called setStockLoading() which will set the loading state True before it actually does the request
+  axios
+    .get("/api/stock/newstockhistoryall")
+    .then(res =>
+      dispatch({
+        type: GET_NEW_STOCK_HISTORY_DATES,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_NEW_STOCK_HISTORY_DATES,
+        payload: {}
+      })
+    );
+};
+
+// Stock loading
+export const setNewStockHistoryProdStockLoading = () => {
+  return {
+    type: GET_NEW_STOCK_HISTORY_DATES_LOADING //here we dont send payload only lets the reducer know stock is loading
+  };
+};
+
+// Get current stock by id
+export const getNewStockHistorybyDate = date => dispatch => {
+  axios
+    .get(`/api/stock/newstockhistorybydate/${date}`)
+    .then(res =>
+      dispatch({
+        type: GET_NEW_STOCKS_HISTORY_BY_DATE,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err => {
+      console.log(err);
+
+      {
+        /* dispatch(
+        sendFlashMessage(
+          err.response.data.errors.message,
+          err.response.data.errors.className
+        )
+      );
+        */
+      }
+    });
+};
+
+// Get unique product stock dates acc to collection data of newstockhistory
+export const getExistingStockHistoryProdStockDates = () => dispatch => {
+  dispatch(setExistingStockHistoryProdStockLoading()); //here we dispatch function called setStockLoading() which will set the loading state True before it actually does the request
+  axios
+    .get("/api/stock/existingstockhistoryall")
+    .then(res =>
+      dispatch({
+        type: GET_EXISTING_STOCK_HISTORY_DATES,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_EXISTING_STOCK_HISTORY_DATES,
+        payload: {}
+      })
+    );
+};
+
+// Stock loading
+export const setExistingStockHistoryProdStockLoading = () => {
+  return {
+    type: GET_EXISTING_STOCK_HISTORY_DATES_LOADING //here we dont send payload only lets the reducer know stock is loading
+  };
+};
+
+// Get current stock by id
+export const getExistingStockHistorybyDate = date => dispatch => {
+  axios
+    .get(`/api/stock/existingstockhistorybydate/${date}`)
+    .then(res =>
+      dispatch({
+        type: GET_EXISTING_STOCKS_HISTORY_BY_DATE,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err => {
+      console.log(err);
+
+      {
+        /* dispatch(
+        sendFlashMessage(
+          err.response.data.errors.message,
+          err.response.data.errors.className
+        )
+      );
+        */
+      }
+    });
+};
 ///////////////////

@@ -47,6 +47,10 @@ const NewStockHistorySchema = new Schema({
     type: String
   },
   productImage: [],
+  quantity: {
+    type: String,
+    required: true
+  },
   date: {
     type: Date,
     default: Date.now

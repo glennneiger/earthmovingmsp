@@ -58,7 +58,8 @@ class ShowStock extends Component {
       prodstk_id: "",
       itemcode: "",
       availableqty: "",
-      removeqty: ""
+      removeqty: "",
+      itemprimaryimg: ""
       //singprodstk: {}
     };
 
@@ -71,16 +72,14 @@ class ShowStock extends Component {
     this.props.singleprodstockbyid(this.props.match.params.id);
 
     this.props.singleprodwarehouseitemsbyid(this.props.match.params.id);
-    {
-      /*}  axios
+
+    axios
       .get(`/api/stock/singleprodstock/` + this.props.match.params.id)
       .then(res => {
-        this.setState({ singprodstk: res.data });
+        this.setState({ itemprimaryimg: res.data.itemprimaryimg });
 
-        console.log(this.state.singprodstk);
+        console.log(this.state.itemprimaryimg);
       });
-    */
-    }
   }
 
   onChange = e => {
@@ -106,7 +105,7 @@ class ShowStock extends Component {
     itemcode,
     removeqty
   ) => {
-    const { availableqty } = this.state;
+    const { availableqty, itemprimaryimg } = this.state;
 
     if (availableqty == "" || parseInt(availableqty) <= 0) {
       alert("Your Item Has 0 or Empty Available Quantity");
@@ -128,7 +127,8 @@ class ShowStock extends Component {
       warehouseaddress: warehouseaddress,
       prodstk_id: prodstk_id,
       itemcode: itemcode,
-      removeqty: removeqty
+      removeqty: removeqty,
+      itemprimaryimg: itemprimaryimg
     };
 
     if (

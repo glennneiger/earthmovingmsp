@@ -54,8 +54,6 @@ const Modal = ({ handleClose, show, children }) => {
   );
 };
 
-const Input = TextFieldGroup;
-
 class StockTransfer extends Component {
   constructor(props) {
     super(props);
@@ -296,7 +294,7 @@ class StockTransfer extends Component {
         accessor: "_id",
         maxWidth: 350,
         Cell: row => (
-          <Input
+          <TextFieldGroup
             key={row.value}
             type="number"
             placeholder="* Transfer Qty"

@@ -36,6 +36,10 @@ const WarehousetransferSchema = new Schema({
         type: Number,
         required: true
       },
+      itemprimaryimg: {
+        type: String,
+        required: true
+      },
       date: {
         type: Date,
         default: Date.now

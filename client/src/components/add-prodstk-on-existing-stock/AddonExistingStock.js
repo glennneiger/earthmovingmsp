@@ -34,6 +34,7 @@ class AddonExistingStock extends Component {
       prodwarehouse: "",
       prodorigin: "",
       quantity: "",
+      itemprimaryimg: "",
       errors: {}
       //singprodstk: {}
     };
@@ -52,7 +53,10 @@ class AddonExistingStock extends Component {
     axios
       .get(`/api/stock/singleprodstock/` + this.props.match.params.id)
       .then(res => {
-        this.setState({ itemcode: res.data.itemcode }); //here we call singleprodstock api second time for setstate the itemcode
+        this.setState({
+          itemcode: res.data.itemcode,
+          itemprimaryimg: res.data.itemprimaryimg
+        }); //here we call singleprodstock api second time for setstate the itemcode
 
         console.log(res.data.itemcode);
       });
@@ -81,7 +85,13 @@ class AddonExistingStock extends Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const { prodwarehouse, prodorigin, quantity, itemcode } = this.state;
+    const {
+      prodwarehouse,
+      prodorigin,
+      quantity,
+      itemcode,
+      itemprimaryimg
+    } = this.state;
 
     if (prodwarehouse == "" || prodwarehouse == 0) {
       alert("Please Select Warehouse from the List!!");
@@ -98,7 +108,8 @@ class AddonExistingStock extends Component {
       itemcode: itemcode,
       prodwarehouse: prodwarehouse,
       prodorigin: prodorigin,
-      quantity: quantity
+      quantity: quantity,
+      itemprimaryimg: itemprimaryimg
     };
 
     if (

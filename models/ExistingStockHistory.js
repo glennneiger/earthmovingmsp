@@ -26,6 +26,10 @@ const ExistingStockHistorySchema = new Schema({
     type: Number,
     required: true
   },
+  itemprimaryimg: {
+    type: String,
+    required: true
+  },
   operation: {
     type: String,
     required: true

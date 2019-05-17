@@ -38,6 +38,18 @@ import AddonExistingStock from "./components/add-prodstk-on-existing-stock/Addon
 
 import StockTransfer from "./components/stock-transfer/StockTransfer";
 
+import NewStockHistory from "./components/new-prodstk-history/NewStockHistory";
+
+import NewStockHistoryByDate from "./components/new-stock-history-by-date/NewStockHistoryByDate";
+
+import ExistingStockHistory from "./components/existing-prodstk-history/ExistingStockHistory";
+
+import ExistingStockHistoryByDate from "./components/existing-stock-history-by-date/ExistingStockHistoryByDate";
+
+import WarehouseTransferHistory from "./components/warehouse-prodstk-transfer-history/warehouse-transfer-history";
+
+import WarehouseTransferHistoryByDate from "./components/warehouse-transfer-history-by-date/WarehouseTransferHistoryByDate";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -157,6 +169,51 @@ class App extends Component {
                   exact
                   path="/stock-transfer"
                   component={StockTransfer}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/new-stock-history"
+                  component={NewStockHistory}
+                />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/new-stock-history-by-date/:date"
+                  component={NewStockHistoryByDate}
+                />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/existing-stock-history"
+                  component={ExistingStockHistory}
+                />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/existing-stock-history-by-date/:date"
+                  component={ExistingStockHistoryByDate}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/warehouse-transfer-history"
+                  component={WarehouseTransferHistory}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/warehouse-transfer-history-by-date/:date"
+                  component={WarehouseTransferHistoryByDate}
                 />
               </Switch>
             </div>

@@ -429,7 +429,8 @@ router.post(
               rate: stockFields.rate,
               maxrate: stockFields.maxrate,
               itemprimaryimg: itemprimaryimgurl,
-              productImage: productimgurls
+              productImage: productimgurls,
+              quantity: stockFields.quantity
             };
             //here we first save the history of newly stock add in collection NewStockHistory
             new NewStockHistory(newstockhistoryData)
@@ -711,7 +712,7 @@ router.post(
     const prodwarehouse = req.body.prodwarehouse;
     const prodorigin = req.body.prodorigin;
     const reqquantity = req.body.quantity;
-
+    const itemprimaryimg = req.body.itemprimaryimg;
     console.log("////work on addonexisting stock////");
 
     console.log(
@@ -719,7 +720,8 @@ router.post(
       itemcode,
       prodwarehouse,
       prodorigin,
-      reqquantity
+      reqquantity,
+      itemprimaryimg
     );
 
     var newitmentrywithqty = true;
@@ -741,7 +743,8 @@ router.post(
               prodwarehouse: prodwarehouse,
               prodorigin: prodorigin,
               quantity: reqquantity,
-              operation: "addonexistingprodstock"
+              operation: "addonexistingprodstock",
+              itemprimaryimg: itemprimaryimg
             };
 
             console.log(
@@ -827,7 +830,8 @@ router.post(
             prodwarehouse: prodwarehouse,
             prodorigin: prodorigin,
             quantity: reqquantity,
-            operation: "addonexistingprodstock"
+            operation: "addonexistingprodstock",
+            itemprimaryimg: itemprimaryimg
           };
 
           console.log("req.user.id is : " + req.user.id);
@@ -877,6 +881,7 @@ router.post(
     const prodstk_id = req.body.prodstk_id;
     const itemcode = req.body.itemcode;
     const reqremoveqty = req.body.removeqty;
+    const itemprimaryimg = req.body.itemprimaryimg;
 
     console.log("////work on removeonexisting stock////");
 
@@ -885,7 +890,8 @@ router.post(
       itemcode,
       warehouseaddress,
       prodstk_id,
-      reqremoveqty
+      reqremoveqty,
+      itemprimaryimg
     );
 
     Warehouse.findOne({
@@ -960,7 +966,8 @@ router.post(
                 itemcode: itemcode,
                 prodwarehouse: warehouseaddress,
                 quantity: reqremoveqty,
-                operation: "removeonexistingprodstock"
+                operation: "removeonexistingprodstock",
+                itemprimaryimg: itemprimaryimg
               };
 
               warehouse
@@ -988,4 +995,227 @@ router.post(
       .catch(err => res.status(404).json({ errors }));
   }
 );
+
+//////////NEW STOCK HISTORY API
+
+router.get(
+  "/newstockhistoryall",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    errors.message = "There Is No Product Stock found";
+    errors.className = "alert-danger";
+
+    NewStockHistory.find()
+      .then(newstockhistory => {
+        // res.json(newstockhistory);
+
+        var newstockhistorylen = newstockhistory.length;
+        console.log("The Length of newstockhistory is : " + newstockhistorylen);
+
+        var newstockhistoryarr = [];
+
+        for (var i = 0; i < newstockhistorylen; i++) {
+          if (newstockhistoryarr == "") {
+            var createddate = newstockhistory[i].date;
+
+            const arrayobjdata = {
+              date: createddate.toDateString()
+            };
+            // Add to newstockhistoryarr array
+            newstockhistoryarr.unshift(arrayobjdata);
+
+            console.log("The Created Date is : " + createddate.toDateString());
+          }
+        }
+
+        console.log("first entry insert!!");
+
+        var newstockhistoryarrlen = Object.keys(newstockhistoryarr).length;
+
+        console.log(
+          "The Length of newstockhistoryarr is : " + newstockhistoryarrlen
+        );
+
+        for (var i = 0; i < newstockhistorylen; i++) {
+          for (var j = 0; j < newstockhistoryarrlen; j++) {
+            if (
+              newstockhistory[i].date.toDateString() !=
+              newstockhistoryarr[j].date
+            ) {
+              var createddate = newstockhistory[i].date;
+
+              const arrayobjdata = {
+                date: createddate.toDateString()
+              };
+              // Add to newstockhistoryarr array
+              newstockhistoryarr.unshift(arrayobjdata);
+
+              console.log(
+                "The Created Date is : " + createddate.toDateString()
+              );
+            }
+          }
+        }
+
+        res.json(newstockhistoryarr); //here we get the unique date from the NewStockHistory collection data
+        //eg: Wed Mar 06 2019,Thu Mar 07 2019 etc
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+
+router.get(
+  "/newstockhistorybydate/:date",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    errors.message = "There Is No Product Stock found";
+    errors.className = "alert-danger";
+
+    var createddate = req.params.date;
+    console.log(
+      "find all product stock that created on date is : " + createddate
+    );
+
+    NewStockHistory.find()
+      .then(newstockhistory => {
+        //res.json(newstockhistory);
+        var newstockhistorylen = newstockhistory.length;
+        console.log("The Length of newstockhistory is : " + newstockhistorylen);
+
+        var stockhistorybydate = [];
+
+        for (var i = 0; i < newstockhistorylen; i++) {
+          if (newstockhistory[i].date.toDateString() == createddate) {
+            // Add to stockhistorybydate array
+            stockhistorybydate.unshift(newstockhistory[i]);
+          }
+        }
+        res.json(stockhistorybydate); //here we get the  product stock acc to requested created date
+        //eg: Wed Mar 06 2019,Thu Mar 07 2019 etc
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+/////////////
+
+/////EXISTING STOCK HISTORY API///////
+
+router.get(
+  "/existingstockhistoryall",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    errors.message = "There Is No Product Stock found";
+    errors.className = "alert-danger";
+
+    ExistingStockHistory.find()
+      .then(existingstockhistory => {
+        // res.json(existingstockhistory);
+
+        var existingstockhistorylen = existingstockhistory.length;
+        console.log(
+          "The Length of existingstockhistory is : " + existingstockhistorylen
+        );
+
+        var existingstockhistoryarr = [];
+
+        for (var i = 0; i < existingstockhistorylen; i++) {
+          if (existingstockhistoryarr == "") {
+            var createddate = existingstockhistory[i].date;
+
+            const arrayobjdata = {
+              date: createddate.toDateString()
+            };
+            // Add to newstockhistoryarr array
+            existingstockhistoryarr.unshift(arrayobjdata);
+
+            console.log("The Created Date is : " + createddate.toDateString());
+          }
+        }
+
+        console.log("first entry insert!!");
+
+        var existingstockhistoryarrlen = Object.keys(existingstockhistoryarr)
+          .length;
+
+        console.log(
+          "The Length of existingstockhistoryarr is : " +
+            existingstockhistoryarrlen
+        );
+
+        for (var i = 0; i < existingstockhistorylen; i++) {
+          for (var j = 0; j < existingstockhistoryarrlen; j++) {
+            if (
+              existingstockhistory[i].date.toDateString() !=
+              existingstockhistoryarr[j].date
+            ) {
+              var createddate = existingstockhistory[i].date;
+
+              const arrayobjdata = {
+                date: createddate.toDateString()
+              };
+              // Add to existingstockhistoryarr array
+              existingstockhistoryarr.unshift(arrayobjdata);
+
+              console.log(
+                "The Created Date is : " + createddate.toDateString()
+              );
+            }
+          }
+        }
+
+        res.json(existingstockhistoryarr); //here we get the unique date from the ExistingStockHistory collection data
+        //eg: Wed Mar 06 2019,Thu Mar 07 2019 etc
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+
+router.get(
+  "/existingstockhistorybydate/:date",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    errors.message = "There Is No Product Stock found";
+    errors.className = "alert-danger";
+
+    var createddate = req.params.date;
+    console.log(
+      "find all product stock that created on date is : " + createddate
+    );
+
+    ExistingStockHistory.find()
+      .then(existingstockhistory => {
+        //res.json(existingstockhistory);
+        var existingstockhistorylen = existingstockhistory.length;
+        console.log(
+          "The Length of existingstockhistory is : " + existingstockhistorylen
+        );
+
+        var stockhistorybydate = [];
+
+        for (var i = 0; i < existingstockhistorylen; i++) {
+          if (existingstockhistory[i].date.toDateString() == createddate) {
+            // Add to stockhistorybydate array
+            stockhistorybydate.unshift(existingstockhistory[i]);
+          }
+        }
+        res.json(stockhistorybydate); //here we get the  product stock acc to requested created date
+        //eg: Wed Mar 06 2019,Thu Mar 07 2019 etc
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+/////////////////////////
+
 module.exports = router;

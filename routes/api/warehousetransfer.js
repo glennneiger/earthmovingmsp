@@ -42,9 +42,15 @@ router.get(
 
     var availabletotalqty = 0;
 
+    var itemprimaryimg;
+
     const errors = {};
     errors.message = "The Product Stock Cannot Transfer";
     errors.className = "alert-danger";
+
+    Stock.findOne({ _id: prodstk_id }).then(stock => {
+      itemprimaryimg = stock.itemprimaryimg;
+    });
 
     Warehouse.findOne({ warehouseaddress: prodwarehouseorigin })
       .then(warehouse => {
@@ -110,7 +116,8 @@ router.get(
                   itemcode: itemcode,
                   prodwarehouseorigin: prodwarehouseorigin,
                   prodwarehousetransfer: prodwarehousetransfer,
-                  quantitytrans: quantitytrans
+                  quantitytrans: quantitytrans,
+                  itemprimaryimg: itemprimaryimg
                 };
 
                 console.log(
@@ -307,5 +314,127 @@ router.get(
   }
 );
 
+// @route   GET api/warehousetransfer/warehousetransferhistoryall
+// @desc    Get warehousetransferhistoryall
+// @access  Private
+
+/////// WAREHOUSE TRANSFER HISTORY API/////
+router.get(
+  "/warehousetransferhistoryall",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    errors.message = "There Is No Warehouse Transfer found";
+    errors.className = "alert-danger";
+
+    Warehousetransfer.find()
+      .then(warehosuetransfer => {
+        // res.json(warehosuetransfer);
+
+        var warehosuetransferlen = warehosuetransfer.length;
+        console.log(
+          "The Length of warehosuetransfer is : " + warehosuetransferlen
+        );
+
+        var warehosuetransferarr = [];
+
+        for (var i = 0; i < warehosuetransferlen; i++) {
+          if (warehosuetransferarr == "") {
+            var createddate = warehosuetransfer[i].date;
+
+            const arrayobjdata = {
+              date: createddate.toDateString()
+            };
+            // Add to newstockhistoryarr array
+            warehosuetransferarr.unshift(arrayobjdata);
+
+            console.log("The Created Date is : " + createddate.toDateString());
+          }
+        }
+
+        console.log("first entry insert!!");
+
+        var warehosuetransferarrlen = Object.keys(warehosuetransferarr).length;
+
+        console.log(
+          "The Length of warehosuetransferarr is : " + warehosuetransferarrlen
+        );
+
+        for (var i = 0; i < warehosuetransferlen; i++) {
+          for (var j = 0; j < warehosuetransferarrlen; j++) {
+            if (
+              warehosuetransfer[i].date.toDateString() !=
+              warehosuetransferarr[j].date
+            ) {
+              var createddate = warehosuetransfer[i].date;
+
+              const arrayobjdata = {
+                date: createddate.toDateString()
+              };
+              // Add to warehosuetransferarr array
+              warehosuetransferarr.unshift(arrayobjdata);
+
+              console.log(
+                "The Created Date is : " + createddate.toDateString()
+              );
+            }
+          }
+        }
+
+        res.json(warehosuetransferarr); //here we get the unique date from the Warehousetransfer collection data
+        //eg: Wed Mar 06 2019,Thu Mar 07 2019 etc
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+
+router.get(
+  "/warehousetransferhistorybydate/:date",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    errors.message = "There Is No Warehouse Transfer found";
+    errors.className = "alert-danger";
+
+    var createddate = req.params.date;
+    console.log(
+      "find all product stock that created on date is : " + createddate
+    );
+
+    Warehousetransfer.find()
+      .then(warehosuetransfer => {
+        //res.json(warehosuetransfer);
+        var warehosuetransferlen = warehosuetransfer.length;
+        console.log(
+          "The Length of warehosuetransfer is : " + warehosuetransferlen
+        );
+
+        var stockhistorybydate = [];
+
+        for (var i = 0; i < warehosuetransferlen; i++) {
+          if (warehosuetransfer[i].date.toDateString() == createddate) {
+            for (
+              var j = 0;
+              j < warehosuetransfer[i].warehousetransproducts.length;
+              j++
+            ) {
+              // Add to stockhistorybydate array
+              stockhistorybydate.unshift(
+                warehosuetransfer[i].warehousetransproducts[j]
+              );
+            }
+          }
+        }
+        res.json(stockhistorybydate); //here we get the  product stock acc to requested created date
+        //eg: Wed Mar 06 2019,Thu Mar 07 2019 etc
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+
+//////////////////////////
 //Exports
 module.exports = router;
