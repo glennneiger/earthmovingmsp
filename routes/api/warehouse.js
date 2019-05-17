@@ -513,7 +513,7 @@ router.get(
 );
 /////////////
 router.get(
-  "/viewalladvsearchstock",
+  "/viewalladvsearchstock/:querystr",
   // passport.authenticate("jwt", { session: false }),
   verifyToken,
   (req, res) => {
@@ -523,7 +523,10 @@ router.get(
         res.sendStatus(403);
         console.log("You Have No Authority To Access This API");
       } else {
-        let querystr = "mcpartname1";
+        var querystr = req.params.querystr;
+
+        console.log("querystr is : " + querystr);
+        //  let querystr = "mcpartname1";
         /*console.log(authData.role + " " + "Has Authority To Access This API");*/
 
         if (authData.role == authorizedrole.superadminrodleid) {

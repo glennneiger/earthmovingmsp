@@ -7,6 +7,8 @@ import {
   GET_SINGLE_PRODUCT_ALL_ITEM_WITH_TOTALQTY_WAREHOUSE_BY_ID,
   GET_ORIGIN_WAREHOUSE_PROD_STOCKS,
   GET_ORIGIN_WAREHOUSE_PROD_STOCKS_LOADING,
+  GET_ADVANCED_INVENTYORY_SEARCH_RESULT,
+  GET_ADVANCED_INVENTYORY_SEARCH_RESULT_LOADING,
   GET_ERRORS
 } from "./types";
 
@@ -188,5 +190,33 @@ export const getCurrentOriginWareStock = prodwarehouseorigin => dispatch => {
 export const setoriginwarehouseLoading = () => {
   return {
     type: GET_ORIGIN_WAREHOUSE_PROD_STOCKS_LOADING //here we dont send payload only lets the reducer know warehouse is loading
+  };
+};
+
+///////////
+
+// Get current all stock by origin address
+export const getAdvSearchInvStock = querystr => dispatch => {
+  dispatch(setadvsearchstockLoading()); //here we dispatch function called setoriginwarehouseLoading() which will set the loading state True before it actually does the request
+  axios
+    .get(`/api/warehouse/viewalladvsearchstock/${querystr}`)
+    .then(res =>
+      dispatch({
+        type: GET_ADVANCED_INVENTYORY_SEARCH_RESULT,
+        payload: res.data //so here is the actual GET_ORIGIN_WAREHOUSE_PROD_STOCKS
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_ADVANCED_INVENTYORY_SEARCH_RESULT,
+        payload: {}
+      })
+    );
+};
+
+// warehouse loading
+export const setadvsearchstockLoading = () => {
+  return {
+    type: GET_ADVANCED_INVENTYORY_SEARCH_RESULT_LOADING //here we dont send payload only lets the reducer know warehouse is loading
   };
 };

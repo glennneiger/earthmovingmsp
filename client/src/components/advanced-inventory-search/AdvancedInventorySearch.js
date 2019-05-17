@@ -15,6 +15,8 @@ import {
   singleprodstockbyid
 } from "../../actions/stockActions";
 
+import { getAdvSearchInvStock } from "../../actions/warehouseActions";
+
 import StockActions from "../dashboard/StockActions";
 
 import Spinner from "../common/Spinner";
@@ -25,8 +27,12 @@ class AdvancedInventorySearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      advsearchdtall: []
+      advsearchdtall: [],
+      querystr: ""
     };
+
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
   componentDidMount() {
     this.props.getCurrentAllStock();
@@ -36,7 +42,7 @@ class AdvancedInventorySearch extends Component {
     });
 */
 
-    axios
+    /*  axios
       .get("/api/warehouse/viewalladvsearchstock")
       .then(response => {
         const advsearchdtall = response.data;
@@ -45,8 +51,38 @@ class AdvancedInventorySearch extends Component {
       })
       .catch(error => {
         console.log(error);
-      });
+      });*/
   }
+
+  onChange = e => {
+    switch (e.target.name) {
+      case "productImage":
+        this.setState({ productImage: e.target.files[0] });
+        break;
+      default:
+        this.setState({ [e.target.name]: e.target.value });
+    }
+  };
+
+  onSubmit = () => {
+    const { querystr } = this.state;
+
+    console.log(querystr);
+    if (querystr) {
+      this.props.getAdvSearchInvStock(querystr);
+    } else {
+      console.log("search something..");
+    }
+  };
+
+  handleKeyPress = event => {
+    const { querystr } = this.state;
+
+    if (event.key == "Enter" && querystr) {
+      console.log("enter press here! ");
+      this.props.getAdvSearchInvStock(querystr);
+    }
+  };
 
   onDeleteClick(id) {
     this.props.deleteStock(id, this.props.history); //this.props.history => this allows to do redirect functionality in deleteStock -> this action for this we use withRouter when we export class component
@@ -59,6 +95,8 @@ class AdvancedInventorySearch extends Component {
   }
 
   render() {
+    const { querystr } = this.state;
+
     const { user } = this.props.auth;
 
     const { stock } = this.props.stock; //here we pass the stock props in with all the stocks contains and store in stocks const for used in this component
@@ -81,7 +119,7 @@ class AdvancedInventorySearch extends Component {
       advsearchdtalllen = advsearchresult.length;
       csvContent = (
         <CSVLink
-          data={advsearchresult}
+          data={advsearchresult.finalallstock}
           filename={"Inventory-advsearchresult.csv"}
           className="btn btn-sm btn-success"
         >
@@ -130,8 +168,8 @@ class AdvancedInventorySearch extends Component {
           )
         },
         {
-          Header: "Quantity",
-          accessor: "quantity",
+          Header: "Length",
+          accessor: "itemlength",
           maxWidth: 290,
           filterable: true,
           Cell: row => (
@@ -141,8 +179,41 @@ class AdvancedInventorySearch extends Component {
           )
         },
         {
-          Header: "Rate",
-          accessor: "rate",
+          Header: "Width",
+          accessor: "itemwidth",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Height",
+          accessor: "itemheight",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Machine Parts",
+          accessor: "machinepart",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Company Names",
+          accessor: "forcompany",
           maxWidth: 290,
           filterable: true,
           Cell: row => (
@@ -154,50 +225,6 @@ class AdvancedInventorySearch extends Component {
         {
           Header: "Operation",
           columns: [
-            {
-              Header: "Edit",
-              accessor: "_id",
-              maxWidth: 50,
-              sortable: false,
-              Cell: row => (
-                <span>
-                  <center>
-                    <Link
-                      to={`/edit-stock/${row.value}`}
-                      className="ui basic button green"
-                      style={{
-                        color: "green",
-                        cursor: "pointer",
-                        fontSize: 25
-                      }}
-                    >
-                      <i class="fa fa-edit" />
-                    </Link>
-                  </center>
-                </span>
-              )
-            },
-            {
-              Header: "Delete",
-              accessor: "_id",
-              maxWidth: 100,
-              sortable: false,
-              Cell: row => (
-                <span>
-                  <center>
-                    <i
-                      class="fa fa-trash"
-                      onClick={this.onDeleteClick.bind(this, row.value)}
-                      style={{
-                        color: "red",
-                        cursor: "pointer",
-                        fontSize: 25
-                      }}
-                    />
-                  </center>
-                </span>
-              )
-            },
             {
               Header: "Stock View",
               accessor: "_id",
@@ -218,31 +245,6 @@ class AdvancedInventorySearch extends Component {
                       }}
                     >
                       <i class="fa fa-eye" />
-                    </Link>
-                  </center>
-                </span>
-              )
-            },
-            {
-              Header: "ADD STOCK",
-              accessor: "_id",
-              maxWidth: 120,
-              filterable: false,
-              Cell: row => (
-                <span>
-                  <center>
-                    <Link
-                      target="_blank"
-                      to={`/add-on-existing-stock/${row.value}`}
-                      className=""
-                      style={{
-                        color: "#AF0808",
-
-                        cursor: "pointer",
-                        fontSize: 25
-                      }}
-                    >
-                      <i class="fa fa-plus-circle" />
                     </Link>
                   </center>
                 </span>
@@ -302,18 +304,28 @@ class AdvancedInventorySearch extends Component {
                         <div class="d-flex justify-content-center h-100">
                           <div class="searchbar">
                             <input
+                              onKeyPress={this.handleKeyPress}
                               class="search_input"
                               type="text"
-                              name=""
-                              placeholder="Search by item code, item name and machine part..."
+                              name="querystr"
+                              value={querystr}
+                              onChange={this.onChange}
+                              placeholder="Search by item code, item name and machine part,company name..."
                             />
-                            <a href="#" class="search_icon">
+                            <a
+                              href="javascript:void(0)"
+                              class="search_icon"
+                              onClick={this.onSubmit}
+                            >
                               <i class="fa fa-search" />
                             </a>
                           </div>
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    {csvContent && csvContent}
                   </div>
                 </div>
 
@@ -324,7 +336,7 @@ class AdvancedInventorySearch extends Component {
                         <div>
                           {/*{console.log(advsearchdtall)}*/}
                           <ReactTable
-                            data={advsearchdtall}
+                            data={advsearchdtall.finalallstock}
                             columns={columns}
                             defaultPageSize={5}
                             pageSizeOptions={[
@@ -363,7 +375,8 @@ AdvancedInventorySearch.propTypes = {
   auth: PropTypes.object.isRequired,
   stock: PropTypes.object.isRequired,
   warehouse: PropTypes.object.isRequired,
-  deleteStock: PropTypes.func.isRequired
+  deleteStock: PropTypes.func.isRequired,
+  getAdvSearchInvStock: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -374,5 +387,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getCurrentAllStock, deleteStock, singleprodstockbyid }
+  { getCurrentAllStock, deleteStock, singleprodstockbyid, getAdvSearchInvStock }
 )(withRouter(AdvancedInventorySearch));
