@@ -4,7 +4,7 @@ import $ from "jquery";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-import "./showexistingstockhist.css";
+import "./showdeletedstockhist.css";
 import warehousetransferimg from "./img/warehouse_transfer2.png";
 
 import { Link } from "react-router-dom";
@@ -14,14 +14,14 @@ import PropTypes from "prop-types";
 
 import StockActions from "../dashboard/StockActions";
 
-import { getExistingStockHistorybyDate } from "../../actions/stockActions";
+import { getDeletedStockHistoryByDate } from "../../actions/stockActions";
 
 import Spinner from "../common/Spinner";
 
 import Moment from "react-moment";
 import { parse } from "url";
 
-class ExistingStockHistoryByDate extends Component {
+class DeletedStockHistoryByDate extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -36,7 +36,7 @@ class ExistingStockHistoryByDate extends Component {
     // this.props.getAllWarehoustransHistory();
     // this.props.singlewarehousetranshis(this.props.match.params.id);
 
-    this.props.getExistingStockHistorybyDate(this.props.match.params.date);
+    this.props.getDeletedStockHistoryByDate(this.props.match.params.date);
     {
       /*} axios
       .get(`/api/salesorder/singlepsalesorder/` + this.props.match.params.id)
@@ -100,7 +100,7 @@ class ExistingStockHistoryByDate extends Component {
         );
       }
 
-      pdf.save("ExistingStockHistoryReciept.pdf");
+      pdf.save("DeletedStockHistoryReciept.pdf");
     });
   }
 
@@ -143,206 +143,135 @@ class ExistingStockHistoryByDate extends Component {
     const { errors } = this.state;
 
     const {
-      existingstockhistorybydate,
+      deletedstockhistorybydate,
       existingstockhistoryloading
     } = this.props.stock;
 
-    let showexistingstockhistory;
-    let showexistingstockhistorydate;
+    let showdeletedstockhistory;
+    let showdeletedstockhistorydate;
 
-    let newstockhistorydata;
+    let deletedstockhistorydata;
 
-    if (existingstockhistorybydate === null) {
-      showexistingstockhistory = <Spinner />;
+    if (deletedstockhistorybydate === null) {
+      showdeletedstockhistory = <Spinner />;
     } else {
-      if (Object.keys(existingstockhistorybydate).length > 0) {
-        showexistingstockhistorydate = (
+      if (Object.keys(deletedstockhistorybydate).length > 0) {
+        showdeletedstockhistorydate = (
           <li className="breadcrumb-item active">
             {this.props.match.params.date}
           </li>
         );
       }
-      if (Object.keys(existingstockhistorybydate).length > 0) {
-        newstockhistorydata = existingstockhistorybydate.map(
-          (existingstkhisdata, index) => {
+      if (Object.keys(deletedstockhistorybydate).length > 0) {
+        deletedstockhistorydata = deletedstockhistorybydate.map(
+          (deletedstkhisdata, index) => {
             return (
-              <div className="card" key={`${existingstkhisdata._id}`}>
+              <div className="card" key={`${deletedstkhisdata._id}`}>
                 {" "}
-                {existingstkhisdata.operation == "addonexistingprodstock" && (
-                  <div
-                    class="card-header text-light"
-                    style={{ backgroundColor: "green" }}
-                  >
-                    <p>
-                      <strong style={{ color: "#fff" }}>
-                        Action Performed : Stock Added
-                      </strong>
-                    </p>
-                  </div>
-                )}
-                {existingstkhisdata.operation ==
-                  "removeonexistingprodstock" && (
-                  <div
-                    class="card-header text-light"
-                    style={{ backgroundColor: "#c70000" }}
-                  >
-                    <p>
-                      <strong style={{ color: "#fff" }}>
-                        Action Performed : Stock Removed
-                      </strong>
-                    </p>
-                  </div>
-                )}
-                {existingstkhisdata.operation == "editonexistingprodstock" && (
-                  <div
-                    class="card-header text-light"
-                    style={{ backgroundColor: "#b3b300" }}
-                  >
-                    <p>
-                      <strong style={{ color: "#fff" }}>
-                        Action Performed : Stock Edited
-                      </strong>
-                    </p>
-                  </div>
-                )}
+                <div
+                  class="card-header text-light"
+                  style={{ backgroundColor: "#c70000" }}
+                >
+                  <p>
+                    <strong style={{ color: "#fff" }}>
+                      Action Performed : Stock Deleted
+                    </strong>
+                  </p>
+                </div>
                 <div className="row">
                   <div className="col-4">
                     <img
                       style={{ width: "150px", border: "1px solid black" }}
                       class="img-responsive"
-                      src={existingstkhisdata.itemprimaryimg}
+                      src={deletedstkhisdata.itemprimaryimg}
                       alt="product image"
                     />
                   </div>
 
                   <div className="col-8">
-                    {existingstkhisdata.itemcode && (
+                    {deletedstkhisdata.itemcode && (
                       <p className="product-name">
                         <strong>
-                          Item Code : {existingstkhisdata.itemcode}
+                          Item Code : {deletedstkhisdata.itemcode}
                         </strong>
                       </p>
                     )}
-                    {existingstkhisdata.eitemname && (
+                    {deletedstkhisdata.itemname && (
                       <p className="product-name">
+                        <small>Item Name : {deletedstkhisdata.itemname}</small>
+                      </p>
+                    )}
+
+                    {deletedstkhisdata.itemlength && (
+                      <p>
                         <small>
-                          Item Name <b>Edited</b> :{" "}
-                          {existingstkhisdata.eitemname}
+                          Item Length : {deletedstkhisdata.itemlength}
+                        </small>
+                      </p>
+                    )}
+                    {deletedstkhisdata.itemwidth && (
+                      <p>
+                        <small>
+                          Item Width : {deletedstkhisdata.itemwidth}
+                        </small>
+                      </p>
+                    )}
+                    {deletedstkhisdata.itemheight && (
+                      <p>
+                        <small>
+                          Item Height : {deletedstkhisdata.itemheight}
+                        </small>
+                      </p>
+                    )}
+                    {deletedstkhisdata.machinepart && (
+                      <p>
+                        <small>
+                          Item M/C Parts : {deletedstkhisdata.machinepart}
+                        </small>
+                      </p>
+                    )}
+                    {deletedstkhisdata.forcompany && (
+                      <p>
+                        <small>
+                          Item Company : {deletedstkhisdata.forcompany}
+                        </small>
+                      </p>
+                    )}
+                    {deletedstkhisdata.hsncode && (
+                      <p>
+                        <small>
+                          Item Hsn Code : {deletedstkhisdata.hsncode}
+                        </small>
+                      </p>
+                    )}
+                    {deletedstkhisdata.minrate && (
+                      <p>
+                        <small>
+                          Item Min Rate : {deletedstkhisdata.minrate}
+                        </small>
+                      </p>
+                    )}
+                    {deletedstkhisdata.rate && (
+                      <p>
+                        <small>Item Rate : {deletedstkhisdata.rate}</small>
+                      </p>
+                    )}
+                    {deletedstkhisdata.maxrate && (
+                      <p>
+                        <small>
+                          Item Max Rate : {deletedstkhisdata.maxrate}
                         </small>
                       </p>
                     )}
 
-                    {existingstkhisdata.eitemlength && (
+                    {deletedstkhisdata.date && (
                       <p>
                         <small>
-                          Item Length <b style={{ color: "#B3B300" }}>Edited</b>{" "}
-                          : {existingstkhisdata.eitemlength}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.eitemwidth && (
-                      <p>
-                        <small>
-                          Item Width <b style={{ color: "#B3B300" }}>Edited</b>{" "}
-                          : {existingstkhisdata.eitemwidth}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.eitemheight && (
-                      <p>
-                        <small>
-                          Item Height <b style={{ color: "#B3B300" }}>Edited</b>{" "}
-                          : {existingstkhisdata.eitemheight}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.emachinepart && (
-                      <p>
-                        <small>
-                          Item M/C Parts{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.emachinepart}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.eforcompany && (
-                      <p>
-                        <small>
-                          Item Company{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eforcompany}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.ehsncode && (
-                      <p>
-                        <small>
-                          Item Hsn Code{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.ehsncode}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.eminrate && (
-                      <p>
-                        <small>
-                          Item Min Rate{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eminrate}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.erate && (
-                      <p>
-                        <small>
-                          Item Rate <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.erate}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.emaxrate && (
-                      <p>
-                        <small>
-                          Item Max Rate{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.emaxrate}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.prodwarehouse && (
-                      <p>
-                        <small>
-                          warehouse: {existingstkhisdata.prodwarehouse}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.prodorigin && (
-                      <p>
-                        <small>
-                          Warehouse Origin:{" "}
-                          <b>{existingstkhisdata.prodorigin}</b>
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.quantity && (
-                      <p>
-                        <small>
-                          Total Quantity: <b>{existingstkhisdata.quantity}</b>
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.date && (
-                      <p>
-                        <small>
-                          Created Date:{" "}
+                          Deleted Date:{" "}
                           <b>
                             {" "}
                             <Moment format="YYYY/MM/DD hh:mm A">
-                              {existingstkhisdata.date}
+                              {deletedstkhisdata.date}
                             </Moment>
                           </b>
                         </small>
@@ -355,7 +284,7 @@ class ExistingStockHistoryByDate extends Component {
           }
         );
 
-        showexistingstockhistory = (
+        showdeletedstockhistory = (
           <div>
             <div className="col-12 row">
               <br />
@@ -378,7 +307,7 @@ class ExistingStockHistoryByDate extends Component {
                 <table className="table table-striped table-hover  rtable">
                   <thead>
                     <tr>
-                      <th>Existing Stock History Date</th>
+                      <th>Deleted Stock History Date</th>
                       <td>{this.props.match.params.date}</td>
                     </tr>
 
@@ -410,11 +339,11 @@ class ExistingStockHistoryByDate extends Component {
               <div className="col-1">&#8205;</div>
 
               <div className="col-3">
-                <h5>Existing Stock History</h5>
+                <h5>Deleted Stock History</h5>
                 <hr />
               </div>
 
-              <div className="col-8">{newstockhistorydata}</div>
+              <div className="col-8">{deletedstockhistorydata}</div>
             </div>
           </div>
         );
@@ -433,13 +362,11 @@ class ExistingStockHistoryByDate extends Component {
                   <Link to="/">Dashboard</Link>
                 </li>
                 <li className="breadcrumb-item active">
-                  <Link to="/existing-stock-history">
-                    Existing Stock History
-                  </Link>
+                  <Link to="/deleted-stock-history">Deleted Stock History</Link>
                 </li>
 
-                {showexistingstockhistorydate ? (
-                  showexistingstockhistorydate
+                {showdeletedstockhistorydate ? (
+                  showdeletedstockhistorydate
                 ) : (
                   <div />
                 )}
@@ -455,7 +382,7 @@ class ExistingStockHistoryByDate extends Component {
                   marginRight: "auto"
                 }}
               >
-                {showexistingstockhistory ? showexistingstockhistory : <div />}
+                {showdeletedstockhistory ? showdeletedstockhistory : <div />}
               </div>
             </div>
           </div>
@@ -470,9 +397,9 @@ class ExistingStockHistoryByDate extends Component {
   }
 }
 
-ExistingStockHistoryByDate.propTypes = {
+DeletedStockHistoryByDate.propTypes = {
   errors: PropTypes.object.isRequired,
-  getExistingStockHistorybyDate: PropTypes.func.isRequired
+  getDeletedStockHistoryByDate: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -483,6 +410,6 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   {
-    getExistingStockHistorybyDate
+    getDeletedStockHistoryByDate
   }
-)(withRouter(ExistingStockHistoryByDate));
+)(withRouter(DeletedStockHistoryByDate));

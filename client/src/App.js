@@ -46,6 +46,10 @@ import ExistingStockHistory from "./components/existing-prodstk-history/Existing
 
 import ExistingStockHistoryByDate from "./components/existing-stock-history-by-date/ExistingStockHistoryByDate";
 
+import DeletedStockHistory from "./components/deleted-prodstk-history/DeletedStockHistory";
+
+import DeletedStockHistoryByDate from "./components/deleted-stock-history-by-date/DeletedStockHistoryByDate";
+
 import WarehouseTransferHistory from "./components/warehouse-prodstk-transfer-history/warehouse-transfer-history";
 
 import WarehouseTransferHistoryByDate from "./components/warehouse-transfer-history-by-date/WarehouseTransferHistoryByDate";
@@ -204,6 +208,23 @@ class App extends Component {
                   component={ExistingStockHistoryByDate}
                 />
               </Switch>
+
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/deleted-stock-history"
+                  component={DeletedStockHistory}
+                />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/deleted-stock-history-by-date/:date"
+                  component={DeletedStockHistoryByDate}
+                />
+              </Switch>
+
               <Switch>
                 <PrivateRoute
                   exact

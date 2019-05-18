@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import axios from "axios";
-import "./css/newstockhistory.css";
+import "./css/deletedstockhistory.css";
 
 import { CSVLink } from "react-csv";
 
@@ -25,7 +25,7 @@ import Spinner from "../common/Spinner";
 
 import Moment from "react-moment";
 
-class NewStockHistory extends Component {
+class DeletedStockHistory extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -45,7 +45,7 @@ class NewStockHistory extends Component {
 */
 
     axios
-      .get("/api/stock/existingstockhistoryall")
+      .get("/api/stock/deletedstockhistoryall")
       .then(response => {
         const stockdtall = response.data;
         //console.log(stockdtall);
@@ -88,7 +88,7 @@ class NewStockHistory extends Component {
         }
       },
       {
-        Header: "CREATED DATE",
+        Header: "Deleted DATE",
         accessor: "date",
         filterable: true
       },
@@ -104,11 +104,11 @@ class NewStockHistory extends Component {
                 <center>
                   <Link
                     target="_blank"
-                    to={`/existing-stock-history-by-date/${row.value}`}
+                    to={`/deleted-stock-history-by-date/${row.value}`}
                     className="btn btn-primary"
                     style={{ textDecoration: "none", color: "white" }}
                   >
-                    All Stock By Date
+                    All Deleted Stock By Date
                   </Link>
                 </center>
               </span>
@@ -125,7 +125,7 @@ class NewStockHistory extends Component {
           <li className="breadcrumb-item">
             <Link to="/">Dashboard</Link>
           </li>
-          <li className="breadcrumb-item active">Edited Stock History</li>
+          <li className="breadcrumb-item active">Deleted Stock History</li>
         </ol>
 
         <div className="col-12 row">
@@ -137,7 +137,7 @@ class NewStockHistory extends Component {
                   style={{ backgroundColor: "#0085C3", maxWidth: "800px" }}
                 >
                   <h4 style={{ padding: "10px", color: "#fff" }}>
-                    Edited Stock History
+                    Deleted Stock History
                   </h4>
                 </div>
 
@@ -158,7 +158,7 @@ class NewStockHistory extends Component {
                         {" "}
                         <CSVLink
                           data={stockdtall}
-                          filename={"EditedStock-History-Dates.csv"}
+                          filename={"DeletedStock-History-Dates.csv"}
                           className="btn btn-sm btn-success"
                         >
                           Export CSV
@@ -225,7 +225,7 @@ class NewStockHistory extends Component {
   }
 }
 
-NewStockHistory.propTypes = {
+DeletedStockHistory.propTypes = {
   getCurrentProfile: PropTypes.func.isRequired,
   getCurrentStock: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
@@ -252,4 +252,4 @@ export default connect(
     getExistingStockHistoryProdStockDates,
     getExistingStockHistorybyDate
   }
-)(withRouter(NewStockHistory));
+)(withRouter(DeletedStockHistory));

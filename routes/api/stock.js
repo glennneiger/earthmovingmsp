@@ -57,6 +57,9 @@ const NewStockHistory = require("../../models/NewStockHistory");
 // Load ExistingStockHistory Model
 const ExistingStockHistory = require("../../models/ExistingStockHistory");
 
+// Load DeletedStockHistory Model
+const DeletedStockHistory = require("../../models/DeletedStockHistory");
+
 // @route   GET api/stock/test
 // @desc    Tests Stock route
 // @access  Public
@@ -590,21 +593,156 @@ router.put(
     // Get fields
     const errors = {};
 
+    const eitemname = req.body.itemname;
+    const eitemlength = req.body.itemlength;
+    const eitemwidth = req.body.itemwidth;
+    const eitemheight = req.body.itemheight;
+    const emachinepart = req.body.machinepart;
+    const eforcompany = req.body.forcompany;
+    const ehsncode = req.body.hsncode;
+    const eminrate = req.body.minrate;
+    const erate = req.body.rate;
+    const emaxrate = req.body.maxrate;
+
+    console.log(
+      "edit stock new value received : " + eitemname,
+      eitemlength,
+      eitemwidth,
+      eitemheight,
+      emachinepart,
+      eforcompany,
+      ehsncode,
+      eminrate,
+      erate,
+      emaxrate
+    );
+
     errors.message = "The Product Id is not found";
     errors.className = "alert-danger";
+
+    const iseditstockobjfill = true;
 
     Stock.findOne({ _id: req.params.paramid })
       .then(stock => {
         if (stock) {
-          // Update
-          Stock.findByIdAndUpdate(req.params.paramid, req.body, function(
-            //req.body => stockdata that we send from its action from [editStock]
-            err,
-            stock
+          var previtemname = stock.itemname;
+          var previtemlength = stock.itemlength;
+          var previtemwidth = stock.itemwidth;
+          var previtemheight = stock.itemheight;
+          var prevmachinepart = stock.machinepart;
+          var prevforcompany = stock.forcompany;
+          var prevhsncode = stock.hsncode;
+          var prevminrate = stock.minrate;
+          var prevrate = stock.rate;
+          var prevmaxrate = stock.maxrate;
+
+          if (
+            previtemname == eitemname &&
+            previtemlength == eitemlength &&
+            previtemwidth == eitemwidth &&
+            previtemheight == eitemheight &&
+            prevmachinepart == emachinepart &&
+            prevforcompany == eforcompany &&
+            prevhsncode == ehsncode &&
+            prevminrate == eminrate &&
+            prevrate == erate &&
+            prevmaxrate == emaxrate
           ) {
-            if (err) return next(err);
+            /* Object.assign(existingstkdata, {
+              noeditstock: "stock is not edited"
+            });*/
+            console.log(
+              "All the edit stock field are same as prev in stock collection!!"
+            );
             res.json(stock);
-          });
+          } else {
+            // Promise
+            const CheckifConditions = new Promise((resolve, reject) => {
+              if (iseditstockobjfill) {
+                console.log(
+                  "edit stock field are not same as prev in stock collection!!"
+                );
+                const existingstkdata = {
+                  prodstk_id: stock._id,
+                  itemcode: stock.itemcode,
+                  operation: "editonexistingprodstock",
+                  itemprimaryimg: stock.itemprimaryimg
+                };
+
+                if (previtemname != eitemname) {
+                  Object.assign(existingstkdata, { eitemname: eitemname });
+                }
+                if (previtemlength != eitemlength) {
+                  Object.assign(existingstkdata, { eitemlength: eitemlength });
+                }
+                if (previtemwidth != eitemwidth) {
+                  Object.assign(existingstkdata, { eitemwidth: eitemwidth });
+                }
+                if (previtemheight != eitemheight) {
+                  Object.assign(existingstkdata, { eitemheight: eitemheight });
+                }
+                if (prevmachinepart != emachinepart) {
+                  Object.assign(existingstkdata, {
+                    emachinepart: emachinepart
+                  });
+                }
+                if (prevforcompany != eforcompany) {
+                  Object.assign(existingstkdata, { eforcompany: eforcompany });
+                }
+                if (prevhsncode != ehsncode) {
+                  Object.assign(existingstkdata, { ehsncode: ehsncode });
+                }
+                if (prevminrate != eminrate) {
+                  Object.assign(existingstkdata, { eminrate: eminrate });
+                }
+                if (prevrate != erate) {
+                  Object.assign(existingstkdata, { erate: erate });
+                }
+                if (prevmaxrate != emaxrate) {
+                  Object.assign(existingstkdata, { emaxrate: emaxrate });
+                }
+
+                return resolve(existingstkdata);
+              } else {
+                var reason = new Error("Your Existingstkdata IS NOT FILL");
+                return reject(reason);
+              }
+            });
+            // call our promise
+            const Donow = () => {
+              CheckifConditions.then(existingstkdata => {
+                // Great!,existingstkdata obj has data received in promise
+                // console.log(existingstkdata);
+                // Update
+                Stock.findByIdAndUpdate(req.params.paramid, req.body, function(
+                  //req.body => stockdata that we send from its action from [editStock]
+                  err,
+                  stock
+                ) {
+                  if (err) {
+                    return next(err);
+                  }
+
+                  //Then We save the history of edited stock in collection ExistingStockHistory
+                  new ExistingStockHistory(existingstkdata)
+                    .save()
+                    .then(existingstockhistory => {
+                      console.log(existingstkdata);
+                      res.json(existingstockhistory);
+                      console.log("ADD ExistingStockHistory is saved");
+                    })
+                    .catch(err => res.status(404).json({ err }));
+
+                  //  console.log(existingstkdata);
+                  // res.json(stock);
+                });
+              }).catch(error => {
+                // ops, you're friend is not ready :o
+                console.log(error.message);
+              });
+            };
+            Donow();
+          }
         }
       })
       .catch(err => res.status(404).json({ errors }));
@@ -626,11 +764,35 @@ router.delete(
 
     Stock.findOne({ _id: prodstk_id })
       .then(stock => {
-        var itemcodereq = stock.itemcode;
-        var prodcolorreq = stock.prodcolor;
+        const deletedstkdata = {
+          prodstk_id: stock._id,
+          itemcode: stock.itemcode,
+          itemname: stock.itemname,
+          itemlength: stock.itemlength,
+          itemwidth: stock.itemwidth,
+          itemheight: stock.itemheight,
+          machinepart: stock.machinepart,
+          forcompany: stock.forcompany,
+          hsncode: stock.hsncode,
+          minrate: stock.minrate,
+          rate: stock.rate,
+          maxrate: stock.maxrate,
+          operation: "deletedprodstock",
+          itemprimaryimg: stock.itemprimaryimg
+        };
+
         if (stock) {
           Stock.findByIdAndRemove({ _id: prodstk_id }).then(res => {
             console.log("product is removed from stock!!");
+            //Then We save the history of deleted stock
+            new DeletedStockHistory(deletedstkdata)
+              .save()
+              .then(deletedstkdata => {
+                console.log(deletedstkdata);
+                //   res.json(existingstockhistory);
+                console.log("DeletedStockHistory is saved");
+              })
+              .catch(err => res.status(404).json({ err }));
           });
         }
       })
@@ -1208,6 +1370,120 @@ router.get(
           if (existingstockhistory[i].date.toDateString() == createddate) {
             // Add to stockhistorybydate array
             stockhistorybydate.unshift(existingstockhistory[i]);
+          }
+        }
+        res.json(stockhistorybydate); //here we get the  product stock acc to requested created date
+        //eg: Wed Mar 06 2019,Thu Mar 07 2019 etc
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+/////////////////////////
+
+/////Deleted STOCK HISTORY API///////
+
+router.get(
+  "/deletedstockhistoryall",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    errors.message = "There Is No Deleted Product Stock found";
+    errors.className = "alert-danger";
+
+    DeletedStockHistory.find()
+      .then(deletedstockhistory => {
+        // res.json(deletedstockhistory);
+
+        var deletedstockhistorylen = deletedstockhistory.length;
+        console.log(
+          "The Length of deletedstockhistory is : " + deletedstockhistorylen
+        );
+
+        var deletedstockhistoryarr = [];
+
+        for (var i = 0; i < deletedstockhistorylen; i++) {
+          if (deletedstockhistoryarr == "") {
+            var createddate = deletedstockhistory[i].date;
+
+            const arrayobjdata = {
+              date: createddate.toDateString()
+            };
+            // Add to newstockhistoryarr array
+            deletedstockhistoryarr.unshift(arrayobjdata);
+
+            console.log("The Created Date is : " + createddate.toDateString());
+          }
+        }
+
+        console.log("first entry insert!!");
+
+        var deletedstockhistoryarrlen = Object.keys(deletedstockhistoryarr)
+          .length;
+
+        console.log(
+          "The Length of deletedstockhistoryarr is : " +
+            deletedstockhistoryarrlen
+        );
+
+        for (var i = 0; i < deletedstockhistorylen; i++) {
+          for (var j = 0; j < deletedstockhistoryarrlen; j++) {
+            if (
+              deletedstockhistory[i].date.toDateString() !=
+              deletedstockhistoryarr[j].date
+            ) {
+              var createddate = deletedstockhistory[i].date;
+
+              const arrayobjdata = {
+                date: createddate.toDateString()
+              };
+              // Add to deletedstockhistoryarr array
+              deletedstockhistoryarr.unshift(arrayobjdata);
+
+              console.log(
+                "The Created Date is : " + createddate.toDateString()
+              );
+            }
+          }
+        }
+
+        res.json(deletedstockhistoryarr); //here we get the unique date from the DeletedStockHistory collection data
+        //eg: Wed Mar 06 2019,Thu Mar 07 2019 etc
+      })
+      .catch(err => res.status(404).json({ errors }));
+  }
+);
+
+router.get(
+  "/deletedstockhistorybydate/:date",
+
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    errors.message = "There Is No Deleted Product Stock found";
+    errors.className = "alert-danger";
+
+    var deleteddate = req.params.date;
+    console.log(
+      "find all product stock that deleted on date is : " + deleteddate
+    );
+
+    DeletedStockHistory.find()
+      .then(deletedstockhistory => {
+        //res.json(deletedstockhistory);
+        var deletedstockhistorylen = deletedstockhistory.length;
+        console.log(
+          "The Length of deletedstockhistory is : " + deletedstockhistorylen
+        );
+
+        var stockhistorybydate = [];
+
+        for (var i = 0; i < deletedstockhistorylen; i++) {
+          if (deletedstockhistory[i].date.toDateString() == deleteddate) {
+            // Add to stockhistorybydate array
+            stockhistorybydate.unshift(deletedstockhistory[i]);
           }
         }
         res.json(stockhistorybydate); //here we get the  product stock acc to requested created date

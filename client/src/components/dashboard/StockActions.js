@@ -113,20 +113,29 @@ class StockActions extends Component {
                           <ul className="submenuinsideli">
                             <li>
                               <Link
-                                to="/existing-stock-history"
-                                className="nav-link"
-                              >
-                                <span>Existing Stocks</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link
                                 to="/new-stock-history"
                                 className="nav-link"
                               >
                                 <span>New Stocks</span>
                               </Link>
                             </li>
+                            <li>
+                              <Link
+                                to="/existing-stock-history"
+                                className="nav-link"
+                              >
+                                <span>Edited Stocks</span>
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                to="/deleted-stock-history"
+                                className="nav-link"
+                              >
+                                <span>Deleted Stocks</span>
+                              </Link>
+                            </li>
+
                             <li>
                               <Link
                                 to="/warehouse-transfer-history"

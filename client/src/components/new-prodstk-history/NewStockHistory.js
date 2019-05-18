@@ -158,7 +158,7 @@ class NewStockHistory extends Component {
                         {" "}
                         <CSVLink
                           data={stockdtall}
-                          filename={"Inventory-Stock.csv"}
+                          filename={"NewStock-History-Dates.csv"}
                           className="btn btn-sm btn-success"
                         >
                           Export CSV
@@ -169,11 +169,11 @@ class NewStockHistory extends Component {
                         <p>
                           {stockdtalllen === 0 ? (
                             <span>
-                              <p> Total Stock Item: Loding..</p>
+                              <p> Total Dates: Loding..</p>
                             </span>
                           ) : (
                             <span>
-                              <p> Total Stock Item: {stockdtalllen}</p>
+                              <p> Total Dates: {stockdtalllen}</p>
                             </span>
                           )}
                         </p>

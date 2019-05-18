@@ -14,6 +14,8 @@ import {
   GET_EXISTING_STOCK_HISTORY_DATES,
   GET_EXISTING_STOCK_HISTORY_DATES_LOADING,
   GET_EXISTING_STOCKS_HISTORY_BY_DATE,
+  GET_DELETED_STOCK_HISTORY_DATES_LOADING,
+  GET_DELETED_STOCKS_HISTORY_BY_DATE,
   GET_ERRORS
 } from "./types";
 
@@ -353,3 +355,54 @@ export const getExistingStockHistorybyDate = date => dispatch => {
     });
 };
 ///////////////////
+
+// Get unique product stock dates acc to collection data of deletedstockhistories
+export const getDeletedStockHistoryProdStockDates = () => dispatch => {
+  dispatch(setDeletedStockHistoryProdStockLoading()); //here we dispatch function called setDeletedStockHistoryProdStockLoading() which will set the loading state True before it actually does the request
+  axios
+    .get("/api/stock/deletedstockhistoryall")
+    .then(res =>
+      dispatch({
+        type: GET_DELETED_STOCKS_HISTORY_BY_DATE,
+        payload: res.data //so here is the actual deleted stock
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_DELETED_STOCKS_HISTORY_BY_DATE,
+        payload: {}
+      })
+    );
+};
+
+// Stock loading
+export const setDeletedStockHistoryProdStockLoading = () => {
+  return {
+    type: GET_DELETED_STOCK_HISTORY_DATES_LOADING //here we dont send payload only lets the reducer know stock is loading
+  };
+};
+
+// Get deleted stock by id
+export const getDeletedStockHistoryByDate = date => dispatch => {
+  axios
+    .get(`/api/stock/deletedstockhistorybydate/${date}`)
+    .then(res =>
+      dispatch({
+        type: GET_DELETED_STOCKS_HISTORY_BY_DATE,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err => {
+      console.log(err);
+
+      {
+        /* dispatch(
+        sendFlashMessage(
+          err.response.data.errors.message,
+          err.response.data.errors.className
+        )
+      );
+        */
+      }
+    });
+};

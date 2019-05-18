@@ -8,7 +8,9 @@ import {
   GET_NEW_STOCKS_HISTORY_BY_DATE,
   GET_EXISTING_STOCK_HISTORY_DATES,
   GET_EXISTING_STOCK_HISTORY_DATES_LOADING,
-  GET_EXISTING_STOCKS_HISTORY_BY_DATE
+  GET_EXISTING_STOCKS_HISTORY_BY_DATE,
+  GET_DELETED_STOCK_HISTORY_DATES_LOADING,
+  GET_DELETED_STOCKS_HISTORY_BY_DATE
 } from "../actions/types";
 
 const initialState = {
@@ -20,7 +22,9 @@ const initialState = {
   newstockhistorybydate: null,
   existingstockhistory: null,
   existingstockhistoryloading: false,
-  existingstockhistorybydate: null
+  existingstockhistorybydate: null,
+  deletedstockhistoryloading: false,
+  deletedstockhistorybydate: null
 };
 
 export default function(state = initialState, action) {
@@ -81,6 +85,18 @@ export default function(state = initialState, action) {
         ...state,
         existingstockhistorybydate: action.payload, //if there are so existingstockhistorybydate get filled with payload
         existingstockhistoryloading: false
+      };
+
+    case GET_DELETED_STOCK_HISTORY_DATES_LOADING:
+      return {
+        ...state,
+        deletedstockhistoryloading: true
+      };
+    case GET_DELETED_STOCKS_HISTORY_BY_DATE:
+      return {
+        ...state,
+        deletedstockhistorybydate: action.payload, //if there are so deletedstockhistory get filled with payload
+        deletedstockhistoryloading: false
       };
 
     default:

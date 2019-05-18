@@ -15,16 +15,44 @@ const ExistingStockHistorySchema = new Schema({
     type: String,
     required: true
   },
+  eitemname: {
+    type: String
+  },
+  eitemlength: {
+    type: String
+  },
+  eitemwidth: {
+    type: String
+  },
+  eitemheight: {
+    type: String
+  },
+  emachinepart: {
+    type: String
+  },
+  eforcompany: {
+    type: String
+  },
+  ehsncode: {
+    type: String
+  },
+  eminrate: {
+    type: String
+  },
+  erate: {
+    type: String
+  },
+  emaxrate: {
+    type: String
+  },
   prodwarehouse: {
-    type: String,
-    required: true
+    type: String
   },
   prodorigin: {
     type: String
   },
   quantity: {
-    type: Number,
-    required: true
+    type: Number
   },
   itemprimaryimg: {
     type: String,
