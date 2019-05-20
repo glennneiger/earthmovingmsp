@@ -435,6 +435,29 @@ router.get(
   }
 );
 
+router.get(
+  "/singlewarehousetranshistory/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    Warehousetransfer.findOne({ _id: req.params.id })
+      .then(warehousetransfer => {
+        if (!warehousetransfer) {
+          errors.nowarehousetransfer = "There are no warehousetransfer";
+          return res.status(404).json(errors);
+        }
+
+        res.json(warehousetransfer);
+      })
+      .catch(err =>
+        res
+          .status(404)
+          .json({ warehousetransfer: "There are no warehousetransfer" })
+      );
+  }
+);
+
 //////////////////////////
 //Exports
 module.exports = router;

@@ -88,7 +88,7 @@ class NewStockHistory extends Component {
         }
       },
       {
-        Header: "CREATED DATE",
+        Header: "Edited Date",
         accessor: "date",
         filterable: true
       },

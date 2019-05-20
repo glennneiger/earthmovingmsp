@@ -124,10 +124,10 @@ export const createWareHouseTransfer = (
     .get(
       `/api/warehousetransfer/addnewwarehousetransfer/${prodstk_id}&${prodwarehouseorigin}&${prodwarehousetransfer}&${quantitytrans}`
     )
-    /*.then(response =>
+    .then(response =>
       history.push("/show-warehouse-transfer/" + response.data._id)
-    )*/
-    .then(res => history.push("/"))
+    )
+    //.then(res => history.push("/"))
     .then(() => {
       // console.log(message + className);
       dispatch(setcreateWareHouseTransferLoadingStop()); //here we dispatch function called setcreateWareHouseTransferLoadingStop() which will set the loading state False after it actually does the request

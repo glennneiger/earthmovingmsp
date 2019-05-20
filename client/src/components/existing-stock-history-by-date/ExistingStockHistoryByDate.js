@@ -100,7 +100,7 @@ class ExistingStockHistoryByDate extends Component {
         );
       }
 
-      pdf.save("ExistingStockHistoryReciept.pdf");
+      pdf.save("EditedStockHistoryReciept.pdf");
     });
   }
 
@@ -150,7 +150,7 @@ class ExistingStockHistoryByDate extends Component {
     let showexistingstockhistory;
     let showexistingstockhistorydate;
 
-    let newstockhistorydata;
+    let editedstockhistorydata;
 
     if (existingstockhistorybydate === null) {
       showexistingstockhistory = <Spinner />;
@@ -163,7 +163,7 @@ class ExistingStockHistoryByDate extends Component {
         );
       }
       if (Object.keys(existingstockhistorybydate).length > 0) {
-        newstockhistorydata = existingstockhistorybydate.map(
+        editedstockhistorydata = existingstockhistorybydate.map(
           (existingstkhisdata, index) => {
             return (
               <div className="card" key={`${existingstkhisdata._id}`}>
@@ -378,7 +378,7 @@ class ExistingStockHistoryByDate extends Component {
                 <table className="table table-striped table-hover  rtable">
                   <thead>
                     <tr>
-                      <th>Existing Stock History Date</th>
+                      <th>Edited Stock History Date</th>
                       <td>{this.props.match.params.date}</td>
                     </tr>
 
@@ -410,11 +410,11 @@ class ExistingStockHistoryByDate extends Component {
               <div className="col-1">&#8205;</div>
 
               <div className="col-3">
-                <h5>Existing Stock History</h5>
+                <h5>Edited Stock History</h5>
                 <hr />
               </div>
 
-              <div className="col-8">{newstockhistorydata}</div>
+              <div className="col-8">{editedstockhistorydata}</div>
             </div>
           </div>
         );
@@ -433,9 +433,7 @@ class ExistingStockHistoryByDate extends Component {
                   <Link to="/">Dashboard</Link>
                 </li>
                 <li className="breadcrumb-item active">
-                  <Link to="/existing-stock-history">
-                    Existing Stock History
-                  </Link>
+                  <Link to="/existing-stock-history">Edited Stock History</Link>
                 </li>
 
                 {showexistingstockhistorydate ? (
