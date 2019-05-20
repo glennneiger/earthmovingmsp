@@ -37,6 +37,7 @@ import ShowStock from "./components/show-stock/ShowStock";
 import AddonExistingStock from "./components/add-prodstk-on-existing-stock/AddonExistingStock";
 
 import StockTransfer from "./components/stock-transfer/StockTransfer";
+import ShowWarehouseTransfer from "./components/show-warehouse-transfer/ShowWarehouseTransfer";
 
 import NewStockHistory from "./components/new-prodstk-history/NewStockHistory";
 
@@ -175,6 +176,14 @@ class App extends Component {
                   exact
                   path="/stock-transfer"
                   component={StockTransfer}
+                />
+              </Switch>
+              <Switch>
+                {/* this route we used for display the newly stock transfer after response success*/}
+                <PrivateRoute
+                  exact
+                  path="/show-warehouse-transfer/:id"
+                  component={ShowWarehouseTransfer}
                 />
               </Switch>
               <Switch>
