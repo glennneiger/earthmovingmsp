@@ -15,6 +15,7 @@ const stock = require("./routes/api/stock");
 const warehouse = require("./routes/api/warehouse");
 const warehousetransfer = require("./routes/api/warehousetransfer");
 const company = require("./routes/api/company");
+const cart = require("./routes/api/cart");
 
 const app = express();
 
@@ -131,6 +132,8 @@ app.use("/api/stock", stock);
 app.use("/api/warehouse", warehouse);
 app.use("/api/warehousetransfer", warehousetransfer);
 app.use("/api/company", company);
+
+app.use("/api/cart", cart);
 
 const port = process.env.PORT || 5000;
 

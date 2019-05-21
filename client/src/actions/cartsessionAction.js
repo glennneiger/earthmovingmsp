@@ -55,13 +55,16 @@ export const singlecurrentsessionprodbyid = id => dispatch => {
 
 // Create addproduct to session
 export const addproducttosession = (
-  id,
-  orderctnquantity,
+  prodstk_id,
+  prodbillingwarehouse,
+  orderitemquantity,
   history
 ) => dispatch => {
-  //console.log("action values are :" + id + " and " + orderctnquantity);
+  //console.log("action values are :" + id + " and " + orderitemquantity);
   axios
-    .get(`/api/cart/add/${id}&${orderctnquantity}`)
+    .get(
+      `/api/cart/add/${prodstk_id}&${prodbillingwarehouse}&${orderitemquantity}`
+    )
     .then(res =>
       dispatch({
         type: PRODUCT_ADDED_IN_SESSION_CART_BY_ID,
@@ -78,7 +81,7 @@ export const addproducttosession = (
         )
       );
     })
-    .then(res => history.push("/cartproducts"))
+    .then(res => history.push("/create-invoice"))
     .catch(err =>
       // console.log(err.response.data)
       dispatch(
@@ -103,7 +106,7 @@ export const clearCurrentStock = () => {
 
 //  product inc by 1 in session
 export const productincby1insession = (id, actionadd, history) => dispatch => {
-  //console.log("action values are :" + id + " and " + orderctnquantity);
+  //console.log("action values are :" + id + " and " + orderitemquantity);
   axios
     .get(`/api/cart/update/${id}?action=${actionadd}`)
     .then(res =>
@@ -123,7 +126,7 @@ export const productincby1insession = (id, actionadd, history) => dispatch => {
 
 //  product DEC by 1 in session
 export const productdecby1insession = (id, actiondec, history) => dispatch => {
-  //console.log("action values are :" + id + " and " + orderctnquantity);
+  //console.log("action values are :" + id + " and " + orderitemquantity);
   axios
     .get(`/api/cart/update/${id}?action=${actiondec}`)
     .then(res =>
@@ -146,7 +149,7 @@ export const productdeletebyidinsession = (
   actiondelete,
   history
 ) => dispatch => {
-  //console.log("action values are :" + id + " and " + orderctnquantity);
+  //console.log("action values are :" + id + " and " + orderitemquantity);
   axios
     .get(`/api/cart/update/${id}?action=${actiondelete}`)
     .then(res =>
@@ -156,25 +159,6 @@ export const productdeletebyidinsession = (
       })
     )
     .then(res => history.push("/cartproducts"))
-    .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
-    );
-};
-
-// Edit Stock
-export const editStock = (stockData, history) => dispatch => {
-  axios
-    .post("/api/stock/updatesingleprodstock/", stockData)
-    .then(res =>
-      dispatch({
-        type: GET_SESSION_CART_BY_ID
-      })
-    )
-    .then(alert("Product Stock is Update Successfully !!"))
-    .then(res => history.push("/"))
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
@@ -198,7 +182,7 @@ export const clearSessionCart = history => dispatch => {
           payload: res.data
         })
       )
-      .then(res => history.push("/cartproducts"))
+      .then(res => history.push("/create-invoice"))
       .catch(err =>
         dispatch({
           type: GET_ERRORS,

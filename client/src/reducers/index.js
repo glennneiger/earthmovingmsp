@@ -8,6 +8,7 @@ import stockReducer from "./stockReducer";
 import warehousetransferReducer from "./warehousetransferReducer";
 import companyReducer from "./companyReducer";
 
+import cartsessionReducer from "./cartsessionReducer";
 import messageReducer from "./reducer_message";
 
 export default combineReducers({
@@ -18,5 +19,6 @@ export default combineReducers({
   stock: stockReducer,
   warehouse: warehouseReducer,
   warehousetransfer: warehousetransferReducer,
-  company: companyReducer
+  company: companyReducer,
+  sessioncart: cartsessionReducer
 });

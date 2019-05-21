@@ -164,12 +164,9 @@ class StockActions extends Component {
                       </a>
                       <ul className="submenu">
                         <li>
-                          <a
-                            href="javascript:void(0)"
-                            onClick={this.onOpenModal}
-                          >
+                          <Link to="/create-invoice" className="nav-link">
                             <span>Create Invoice</span>
-                          </a>
+                          </Link>
                         </li>
 
                         <li>

@@ -63,6 +63,8 @@ import AddCompany from "./components/add-company/AddCompany";
 
 import EditCompany from "./components/edit-company/EditCompany";
 
+import CreateInvoice from "./components/create-invoice/CreateInvoice";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -280,6 +282,13 @@ class App extends Component {
                   exact
                   path="/edit-company/:id"
                   component={EditCompany}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/create-invoice"
+                  component={CreateInvoice}
                 />
               </Switch>
             </div>
