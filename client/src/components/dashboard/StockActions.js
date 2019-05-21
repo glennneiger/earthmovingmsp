@@ -222,12 +222,9 @@ class StockActions extends Component {
                         </li>
 
                         <li>
-                          <a
-                            href="javascript:void(0)"
-                            onClick={this.onOpenModal}
-                          >
+                          <Link to="/company-setting" className="nav-link">
                             <span>Company Setting</span>
-                          </a>
+                          </Link>
                         </li>
                         <li>
                           <a

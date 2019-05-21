@@ -6,6 +6,7 @@ import warehouseReducer from "./warehouseReducer";
 
 import stockReducer from "./stockReducer";
 import warehousetransferReducer from "./warehousetransferReducer";
+import companyReducer from "./companyReducer";
 
 import messageReducer from "./reducer_message";
 
@@ -16,5 +17,6 @@ export default combineReducers({
   profile: profileReducer,
   stock: stockReducer,
   warehouse: warehouseReducer,
-  warehousetransfer: warehousetransferReducer
+  warehousetransfer: warehousetransferReducer,
+  company: companyReducer
 });

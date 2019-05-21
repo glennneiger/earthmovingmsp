@@ -57,6 +57,12 @@ import WarehouseTransferHistoryByDate from "./components/warehouse-transfer-hist
 
 import AdvancedInventorySearch from "./components/advanced-inventory-search/AdvancedInventorySearch";
 
+import CompanySetting from "./components/CompanySetting/CompanySetting";
+
+import AddCompany from "./components/add-company/AddCompany";
+
+import EditCompany from "./components/edit-company/EditCompany";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -253,6 +259,27 @@ class App extends Component {
                   exact
                   path="/advanced-inventory-search"
                   component={AdvancedInventorySearch}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/company-setting"
+                  component={CompanySetting}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/add-company"
+                  component={AddCompany}
+                />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/edit-company/:id"
+                  component={EditCompany}
                 />
               </Switch>
             </div>
