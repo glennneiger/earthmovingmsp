@@ -97,7 +97,7 @@ export const createStock = (stockData, history) => dispatch => {
     .post("/api/stock/addnewstock", stockData)
     //.then(response => console.log("response from api " + response.data._id))
     //.then(response => history.push("/show-stock/" + response.data._id))
-    .then(res => history.push("/dashboard"))
+    .then(res => history.push("/view-stock"))
     .then(() => {
       dispatch(
         sendFlashMessage(

@@ -343,7 +343,15 @@ class ShowStock extends Component {
                         <th>Item Hsn Code</th>
                         <td>{stockbyid.hsncode}</td>
                         <th>Item Machine Part</th>
-                        <td>{stockbyid.machinepart}</td>
+                        <td>
+                          {stockbyid.machinepart.map(data => {
+                            return (
+                              <h5>
+                                <span class="badge badge-success">{data}</span>
+                              </h5>
+                            );
+                          })}
+                        </td>
                       </tr>
                       <tr>
                         <th>Item Length</th>
@@ -356,12 +364,24 @@ class ShowStock extends Component {
                         <td>{stockbyid.itemheight}</td>
                         <th>Item For company</th>
 
-                        <td>{stockbyid.forcompany}</td>
+                        <td>
+                          {stockbyid.forcompany.map(data => {
+                            return (
+                              <h5>
+                                <span class="badge badge-info">{data}</span>
+                              </h5>
+                            );
+                          })}
+                        </td>
                       </tr>
 
                       <tr>
+                        <th>Item Min Rate</th>
+                        <td>{stockbyid.minrate}</td>
                         <th>Item Rate</th>
                         <td>{stockbyid.rate}</td>
+                      </tr>
+                      <tr>
                         <th>Item Max Rate</th>
                         <td>{stockbyid.maxrate}</td>
                       </tr>

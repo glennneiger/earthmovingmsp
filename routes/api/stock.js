@@ -571,7 +571,8 @@ router.get(
           minrate: stock.minrate,
           rate: stock.rate,
           maxrate: stock.maxrate,
-          itemprimaryimg: stock.itemprimaryimg
+          itemprimaryimg: stock.itemprimaryimg,
+          productImage: stock.productImage
         };
 
         //finalstockbyid.push(singleitemdata);

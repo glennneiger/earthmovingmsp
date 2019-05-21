@@ -529,7 +529,7 @@ class CreateStock extends Component {
                                     ))}
                                     <input
                                       style={styles.machinepartinput}
-                                      value={this.state.mpinput}
+                                      value={this.state.mpinput.toLowerCase()}
                                       onChange={this.handlempInputChange}
                                       onKeyDown={this.handlempInputKeyDown}
                                     />
@@ -560,7 +560,7 @@ class CreateStock extends Component {
                                     ))}
                                     <input
                                       style={styles.forcompanyinput}
-                                      value={this.state.fcinput}
+                                      value={this.state.fcinput.toLowerCase()}
                                       onChange={this.handlefcInputChange}
                                       onKeyDown={this.handlefcInputKeyDown}
                                     />
