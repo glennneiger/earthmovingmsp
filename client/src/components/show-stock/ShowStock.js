@@ -204,7 +204,7 @@ class ShowStock extends Component {
         const showwarehousecontentData = warehousebyid.map(
           (warehouseartbyid, index) => (
             <thead key={warehouseartbyid._id}>
-              {warehouseartbyid ? (
+              {warehouseartbyid && warehouseartbyid.quantity > 0 ? (
                 <tr>
                   <th
                     style={{
@@ -219,7 +219,7 @@ class ShowStock extends Component {
               ) : (
                 ""
               )}
-              {warehouseartbyid ? (
+              {warehouseartbyid && warehouseartbyid.quantity > 0 ? (
                 <tr>
                   <th
                     style={{

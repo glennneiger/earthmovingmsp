@@ -37,7 +37,7 @@ import WarehouseTransferSpinner from "../common/WarehouseTransferSpinner";
 import "./model.css";
 
 import "./jquery.dataTables.css";
-
+import "./SortableTbl.scss";
 const $ = require("jquery");
 $.DataTable = require("datatables.net");
 
@@ -579,7 +579,7 @@ $(document).ready(function() {
                               ]}
                               dKey={col}
                               search={true}
-                              defaultCSS={true}
+                              defaultCSS={false}
                               paging={true}
                             />
                           )}
