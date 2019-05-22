@@ -81,6 +81,7 @@ export const addproducttosession = (
         )
       );
     })
+    .then(dispatch(getCurrentSessionProducts()))
     .then(res => history.push("/create-invoice"))
     .catch(err =>
       // console.log(err.response.data)
@@ -158,6 +159,7 @@ export const productdeletebyidinsession = (
         payload: res.data
       })
     )
+    .then(dispatch(getCurrentSessionProducts()))
     .then(res => history.push("/cartproducts"))
     .catch(err =>
       dispatch({
@@ -182,7 +184,8 @@ export const clearSessionCart = history => dispatch => {
           payload: res.data
         })
       )
-      .then(res => history.push("/create-invoice"))
+      .then(dispatch(getCurrentSessionProducts()))
+      .then(res => history.push("/cartproducts"))
       .catch(err =>
         dispatch({
           type: GET_ERRORS,

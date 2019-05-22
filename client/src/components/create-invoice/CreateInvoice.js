@@ -24,7 +24,10 @@ import {
   getCurrentOriginWareStock
 } from "../../actions/warehouseActions";
 
-import { addproducttosession } from "../../actions/cartsessionAction";
+import {
+  addproducttosession,
+  getCurrentSessionProducts
+} from "../../actions/cartsessionAction";
 
 import isEmpty from "../../validation/is-empty";
 
@@ -235,6 +238,8 @@ class CreateInvoice extends Component {
 $(document).ready(function() {
       $("#example").DataTable();
     });*/
+    this.props.getCurrentSessionProducts();
+
     this.props.getCurrentStock();
     this.props.getCurrentWarehouses();
 
@@ -652,7 +657,8 @@ CreateInvoice.propTypes = {
   warehouse: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
   warehousetransfer: PropTypes.object.isRequired,
-  addproducttosession: PropTypes.object.isRequired
+  addproducttosession: PropTypes.object.isRequired,
+  getCurrentSessionProducts: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -661,12 +667,14 @@ const mapStateToProps = state => ({
   warehouse: state.warehouse,
   warehousetransfer: state.warehousetransfer,
   sessioncart: state.sessioncart,
+  sessioncart: state.sessioncart,
   errors: state.errors //here we listen the errors from the server response in root reducer
 });
 
 export default connect(
   mapStateToProps,
   {
+    getCurrentSessionProducts,
     getCurrentStock,
     getCurrentWarehouses,
     getCurrentOriginWareStock,

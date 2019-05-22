@@ -14,34 +14,22 @@ import { connect } from "react-redux";
 
 import { bindActionCreators } from "redux";
 
-import { logoutUser } from "../../actions/authActions";
-import { clearCurrentProfile } from "../../actions/profileActions";
-
-import { clearCurrentStock } from "../../actions/stockActions";
-
-import { deleteStock } from "../../actions/stockActions";
-import { singleprodstockbyid } from "../../actions/stockActions";
-
-import { getCurrentProfile } from "../../actions/profileActions";
-import { getCurrentStock } from "../../actions/stockActions";
-
-import { getCurrentSessionProducts } from "../../actions/cartsessionAction";
-import { addproducttosession } from "../../actions/cartsessionAction";
-import { productincby1insession } from "../../actions/cartsessionAction";
-import { productdecby1insession } from "../../actions/cartsessionAction";
-
-import { productdeletebyidinsession } from "../../actions/cartsessionAction";
+import {
+  getCurrentSessionProducts,
+  productincby1insession,
+  productdecby1insession,
+  productdeletebyidinsession,
+  clearSessionCart
+} from "../../actions/cartsessionAction";
 
 import StockActions from "../dashboard/StockActions";
 import Spinner from "../common/Spinner";
 
-import { clearSessionCart } from "../../actions/cartsessionAction";
-
 import { sendFlashMessage } from "../../actions/flashMessage";
 
-import SalesOrder from "../../components/sales-order/SalesOrder";
-
 import Moment from "react-moment";
+
+import "./cartproduct.css";
 
 class CartProducts extends Component {
   constructor(props) {
@@ -71,6 +59,12 @@ class CartProducts extends Component {
         console.log(error);
       });
     */
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.sessioncart) {
+      //this.props.getCurrentSessionProducts();
     }
   }
 
@@ -154,13 +148,6 @@ class CartProducts extends Component {
     }
   }
 
-  onLogoutClick(e) {
-    e.preventDefault();
-    this.props.clearCurrentProfile(); //here we call the clearCurrentProfile for clear current user profile state and set to null in profileReducer.js case CLEAR_CURRENT_PROFILE execute
-    this.props.clearCurrentStock();
-    this.props.logoutUser(); //here we call the logoutUser action
-  }
-
   render() {
     const { isAuthenticated, user } = this.props.auth;
     //const cartstockdtall = this.state.cartstockdtall;
@@ -183,7 +170,7 @@ class CartProducts extends Component {
       cartContent = (
         <div>
           <p>Sorry, No Product in your cart</p>
-          <Link to="/new-order" className="btn btn-sm btn-info">
+          <Link to="/create-invoice" className="btn btn-sm btn-info">
             Order New
           </Link>
         </div>
@@ -208,18 +195,19 @@ class CartProducts extends Component {
              */}
             <table class="table table-striped alignmiddle">
               <tr>
-                <th>Available CTN</th>
-                <th>Image</th>
-                <th>Article</th>
-                <th>Color</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th />
+                <th>Product Image</th>
+                <th>Item Code</th>
+                <th>Item length</th>
+                <th>Item Width</th>
+                <th>Item Height</th>
+                <th>Order Quantity</th>
+                <th>Billing Warehouse</th>
                 <th>Subtotal</th>
+                <th />
               </tr>
               {sessioncart.map((cartsnstock, i) => {
                 var subtotal = parseFloat(
-                  cartsnstock.qty * cartsnstock.prodmrp
+                  cartsnstock.orderitemquantity * cartsnstock.rate
                 ).toFixed(2);
 
                 total += +subtotal;
@@ -228,20 +216,34 @@ class CartProducts extends Component {
                 // Return the element. Also pass key
                 return (
                   <tr key={i}>
-                    <td>{cartsnstock.totalctn}</td>
-                    <td>
+                    <td style={{ verticalAlign: "center" }}>
                       <img
                         class="cpi"
-                        width="100px"
-                        src={cartsnstock.productImage}
+                        style={{ width: 100, height: "auto" }}
+                        src={cartsnstock.itemprimaryimg}
                       />
                     </td>
-                    <td>{cartsnstock.articlenum}</td>
-                    <td>{cartsnstock.prodcolor}</td>
-                    <td>{cartsnstock.prodmrp}</td>
-                    <td>{cartsnstock.qty}</td>
-                    <td>
-                      <a
+                    <td style={{ verticalAlign: "middle" }}>
+                      {cartsnstock.itemcode}
+                    </td>
+                    <td style={{ verticalAlign: "middle" }}>
+                      {cartsnstock.itemlength}
+                    </td>
+                    <td style={{ verticalAlign: "middle" }}>
+                      {cartsnstock.itemwidth}
+                    </td>
+                    <td style={{ verticalAlign: "middle" }}>
+                      {cartsnstock.itemheight}
+                    </td>
+                    <td style={{ verticalAlign: "middle" }}>
+                      {cartsnstock.orderitemquantity}
+                    </td>
+                    <td style={{ verticalAlign: "middle" }}>
+                      {cartsnstock.prodbillingwarehouse}
+                    </td>
+                    <td style={{ verticalAlign: "middle" }}>{subtotal}</td>
+                    <td style={{ verticalAlign: "middle" }}>
+                      {/*}   <a
                         href="javascript:void(0)"
                         onClick={e =>
                           this.onCartProIncBy1Click(
@@ -264,7 +266,7 @@ class CartProducts extends Component {
                       >
                         -
                       </a>
-                      &nbsp;
+                      &nbsp;*/}
                       <a
                         href="javascript:void(0)"
                         onClick={e =>
@@ -278,7 +280,6 @@ class CartProducts extends Component {
                       </a>
                       &nbsp;
                     </td>
-                    <td>{subtotal}</td>
                   </tr>
                 );
               })}
@@ -295,7 +296,7 @@ class CartProducts extends Component {
           <li className="breadcrumb-item">
             <Link to="/">Dashboard</Link>
           </li>
-          <li className="breadcrumb-item active">CartProducts</li>
+          <li className="breadcrumb-item active">Cart Products</li>
         </ol>
 
         <div className="col-12 row">
@@ -304,7 +305,7 @@ class CartProducts extends Component {
               <div class="panel panel-default">
                 <div
                   class="panel-heading"
-                  style={{ backgroundColor: "#a60808", maxWidth: "800px" }}
+                  style={{ backgroundColor: "#0085C3", maxWidth: "800px" }}
                 >
                   <div className="row">
                     <div class="col-7">
@@ -316,7 +317,7 @@ class CartProducts extends Component {
                           textAlign: "right"
                         }}
                       >
-                        CartProducts
+                        Cart Products
                       </h5>
                     </div>
                     <div class="col-5">
@@ -373,14 +374,14 @@ class CartProducts extends Component {
                           }}
                         >
                           <Link
-                            to="/new-order"
+                            to="/create-invoice"
                             className="btn btn-sm btn-warning"
                             style={{
                               color: "#fff",
                               backgroundColor: "goldenrod"
                             }}
                           >
-                            Continue Shopping
+                            Continue Billing
                           </Link>
                         </h5>
                       </div>
@@ -427,7 +428,7 @@ class CartProducts extends Component {
                       <div
                         class="panel-footer"
                         style={{
-                          backgroundColor: "#a60808",
+                          backgroundColor: "#0085C3",
                           maxWidth: "800px"
                         }}
                         align="right"
@@ -446,13 +447,7 @@ class CartProducts extends Component {
                   </div>
                   <br />
                   <div>
-                    {!sessioncartContent ? (
-                      <span />
-                    ) : (
-                      <span>
-                        <SalesOrder grandtotal={parseFloat(total).toFixed(2)} />
-                      </span>
-                    )}
+                    <p>sales order fields</p>
                   </div>
                 </div>
               </div>
@@ -465,17 +460,9 @@ class CartProducts extends Component {
 }
 
 CartProducts.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
-  getCurrentProfile: PropTypes.func.isRequired,
-  getCurrentStock: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired,
-  stock: PropTypes.object.isRequired,
-  deleteStock: PropTypes.func.isRequired,
-
   sessioncart: PropTypes.object.isRequired,
   getCurrentSessionProducts: PropTypes.object.isRequired,
-  addproducttosession: PropTypes.object.isRequired,
   productincby1insession: PropTypes.object.isRequired,
   productdecby1insession: PropTypes.object.isRequired,
   productdeletebyidinsession: PropTypes.object.isRequired,
@@ -488,23 +475,13 @@ const mapPropsToDispatch = dispatch => {
 };
 
 const mapStateToProps = state => ({
-  profile: state.profile,
-  stock: state.stock,
   auth: state.auth,
   sessioncart: state.sessioncart
 });
 export default connect(
   mapStateToProps,
   {
-    getCurrentProfile,
-    getCurrentStock,
-    deleteStock,
-    singleprodstockbyid,
-    logoutUser,
-    clearCurrentProfile,
-    clearCurrentStock,
     getCurrentSessionProducts,
-    addproducttosession,
     productincby1insession,
     productdecby1insession,
     productdeletebyidinsession,

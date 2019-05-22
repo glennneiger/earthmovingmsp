@@ -1,38 +1,38 @@
 const Validator = require("validator");
 const isEmpty = require("./is-empty");
 
-module.exports = function validateCartInput(orderctnquantity, totalctn) {
+module.exports = function validateCartInput(orderitemquantity, availquantity) {
   let errors = {};
   const className = "";
   console.log(
-    "from the cart validator totalctn is" +
-      totalctn +
+    "from the cart validator availquantity is" +
+      availquantity +
       "and orderquantity is " +
-      orderctnquantity
+      orderitemquantity
   );
 
-  orderctnquantity = !isEmpty(orderctnquantity) ? orderctnquantity : "";
+  orderitemquantity = !isEmpty(orderitemquantity) ? orderitemquantity : "";
 
-  totalctn = !isEmpty(totalctn) ? totalctn : "";
+  availquantity = !isEmpty(availquantity) ? availquantity : "";
 
-  if (parseInt(orderctnquantity) >= parseInt(totalctn)) {
-    //if (orderctnquantity >= totalctn) { here value is in string that cause comparison problem
+  if (parseInt(orderitemquantity) > parseInt(availquantity)) {
+    //if (orderitemquantity > availquantity) { here value is in string that cause comparison problem
     errors.message =
-      "Your CTN Order (" +
-      orderctnquantity +
-      ") Should Be Less Then Available CTN [" +
-      totalctn +
+      "Your Order Quantity (" +
+      orderitemquantity +
+      ") Should Be Less Then Available Quantity [" +
+      availquantity +
       "] Of Product!!";
     errors.className = "alert-danger";
   }
 
-  if (parseInt(orderctnquantity) == 0 || parseInt(orderctnquantity) < 1) {
+  if (parseInt(orderitemquantity) == 0 || parseInt(orderitemquantity) < 1) {
     errors.message = "Order Quantity Should Be Greater Then 1";
     errors.className = "alert-danger";
   }
 
   {
-    /*if (!Validator.isNumeric(orderctnquantity)) {
+    /*if (!Validator.isNumeric(orderitemquantity)) {
     errors.message = "Your CTN Order Should Be Number eg: 90 or 100";
     errors.className = "alert-danger";
   }

@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import { clearCurrentProfile } from "../../actions/profileActions";
 
+import { getCurrentSessionProducts } from "../../actions/cartsessionAction";
 import Spinner from "../common/Spinner";
 
 class Navbar extends Component {
@@ -18,7 +19,7 @@ class Navbar extends Component {
   }
 
   componentDidMount() {
-    // this.props.getCurrentSessionProducts();
+    this.props.getCurrentSessionProducts();
 
     {
       /*} axios
@@ -47,6 +48,28 @@ class Navbar extends Component {
     const { isAuthenticated, user } = this.props.auth;
     //const cartstockdtall = this.state.cartstockdtall;
 
+    const { sessioncart, loading, testpurpose } = this.props.sessioncart;
+    //console.log(testpurpose);
+    let sessioncartContent;
+
+    var count = 0;
+
+    if (!sessioncart) {
+      sessioncartContent = 0;
+      // console.log("Recent session cart is" + sessioncartContent);
+    } else {
+      // Check if logged in user has stock data
+
+      // console.log("Recent session cart is" + sessioncart);
+
+      if (Object.keys(sessioncart).length > 0) {
+        // console.log(Object.keys(sessioncart).length);
+        //here if there are stock in db
+
+        sessioncartContent = Object.keys(sessioncart).length;
+      }
+    }
+
     const authLinks = (
       <div className="col-md-9 clearfix text-right">
         <div className="d-md-inline-block d-block mr-md-4">
@@ -63,7 +86,7 @@ class Navbar extends Component {
                     className="badge badge-pill badge-primary"
                     style={{ fontSize: "12px", backgroundColor: "#0085C3" }}
                   >
-                    0
+                    {sessioncartContent}
                   </span>
                   <span class="sr-only">unread messages</span>
                 </button>
@@ -142,17 +165,21 @@ class Navbar extends Component {
 
 Navbar.propTypes = {
   logoutUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  sessioncart: PropTypes.object.isRequired,
+  getCurrentSessionProducts: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  sessioncart: state.sessioncart
 });
 
 export default connect(
   mapStateToProps,
   {
     logoutUser,
-    clearCurrentProfile
+    clearCurrentProfile,
+    getCurrentSessionProducts
   }
 )(Navbar);
