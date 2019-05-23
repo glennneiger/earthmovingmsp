@@ -147,12 +147,15 @@ export const productdecby1insession = (id, actiondec, history) => dispatch => {
 //  product delete by id in session
 export const productdeletebyidinsession = (
   id,
+  prodbillingwarehouse,
   actiondelete,
   history
 ) => dispatch => {
   //console.log("action values are :" + id + " and " + orderitemquantity);
   axios
-    .get(`/api/cart/update/${id}?action=${actiondelete}`)
+    .get(
+      `/api/cart/update/${id}&${prodbillingwarehouse}?action=${actiondelete}`
+    )
     .then(res =>
       dispatch({
         type: PRODUCT_IN_SESSION_CART_DELETE_BY_ID,

@@ -113,12 +113,13 @@ class CartProducts extends Component {
     }
   }
 
-  onCartProDeleteClick(id, actiondelete) {
+  onCartProDeleteClick(id, prodbillingwarehouse, actiondelete) {
     //  console.log(id);
     //console.log("cart operation type : " + actiondelete);
 
     var flashresult = this.props.productdeletebyidinsession(
       id,
+      prodbillingwarehouse,
       actiondelete,
       this.props.history
     );
@@ -272,11 +273,15 @@ class CartProducts extends Component {
                         onClick={e =>
                           this.onCartProDeleteClick(
                             cartsnstock._id,
+                            cartsnstock.prodbillingwarehouse,
                             this.state.actiondelete
                           )
                         }
                       >
-                        Delete
+                        <i
+                          class="fa fa-times-circle"
+                          style={{ fontSize: 18 }}
+                        />
                       </a>
                       &nbsp;
                     </td>

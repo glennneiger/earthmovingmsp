@@ -263,6 +263,9 @@ $(document).ready(function() {
         console.log(
           "prodbillingwarehouse is : " + this.state.prodbillingwarehouse
         );
+        console.log(
+          "itemquantityaddtocart is :" + this.state.itemquantityaddtocart.length
+        );
       }
     }
   }
@@ -473,7 +476,7 @@ $(document).ready(function() {
                 <li className="breadcrumb-item">
                   <Link to="/">Dashboard</Link>
                 </li>
-                <li className="breadcrumb-item active">Stock Transfer</li>
+                <li className="breadcrumb-item active">Create Invoice</li>
               </ol>
             </div>
           </div>
