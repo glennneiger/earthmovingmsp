@@ -312,6 +312,7 @@ $(document).ready(function() {
         orderitemquantity,
         this.props.history
       );
+      // this.props.getCurrentSessionProducts();
     }
   }
 

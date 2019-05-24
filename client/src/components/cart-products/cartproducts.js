@@ -63,22 +63,22 @@ class CartProducts extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { cartstockdtall } = this.state.cartstockdtall;
+    const { cartstockdtall } = this.state;
     const { sessioncart } = this.props.sessioncart;
     if (!sessioncart || sessioncart == null) {
       console.log("add few item in your cart");
     } else {
-      if (prevProps.sessioncart !== sessioncart)
+      if (prevProps.sessioncart !== sessioncart) {
         // this.props.getCurrentSessionProducts();
-
-        console.log("added or update the cart item");
+        // console.log("added or update the cart item");
+      }
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.sessioncart) {
-      //this.props.getCurrentSessionProducts();
-    }
+    /*  if (nextProps.sessioncart) {
+      this.setState({ cartstockdtall: nextProps.sessioncart });
+    }*/
   }
 
   onCartProIncBy1Click(id, actionadd) {
@@ -136,7 +136,18 @@ class CartProducts extends Component {
       actiondelete,
       this.props.history
     );
+    axios
+      .get("/api/cart")
+      .then(response => {
+        const cartstockdtall = response.data;
+        console.log(response);
+        this.setState({ cartstockdtall });
 
+        console.log(cartstockdtall.length);
+      })
+      .catch(error => {
+        console.log(error);
+      });
     {
       /*} if (flashresult === undefined) {
       // console.log("Your Cart Product Is Deleted");
@@ -150,6 +161,19 @@ class CartProducts extends Component {
   }
   clearSessionCartClick() {
     var flashresult = this.props.clearSessionCart(this.props.history);
+
+    axios
+      .get("/api/cart")
+      .then(response => {
+        const cartstockdtall = response.data;
+        console.log(response);
+        this.setState({ cartstockdtall });
+
+        console.log(cartstockdtall.length);
+      })
+      .catch(error => {
+        console.log(error);
+      });
     {
       /* if (flashresult === undefined) {
       // console.log("Your Cart Product Is Deleted");
@@ -193,7 +217,20 @@ class CartProducts extends Component {
       console.log("final cartstockdtall is : " + typeof cartstockdtall);
       console.log("sessioncart is : " + typeof sessioncart);
       this.props.updateeditedcart(cartstockdtall, this.props.history);
-      this.props.getCurrentSessionProducts();
+      // this.props.getCurrentSessionProducts();
+
+      axios
+        .get("/api/cart")
+        .then(response => {
+          const cartstockdtall = response.data;
+          console.log(response);
+          this.setState({ cartstockdtall });
+
+          console.log(cartstockdtall.length);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
   render() {

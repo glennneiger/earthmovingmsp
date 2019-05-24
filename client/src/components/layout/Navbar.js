@@ -14,30 +14,35 @@ class Navbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      cartstockdtall: []
+      cartstockdtall: [],
+      cartitemlength: ""
     };
   }
 
   componentDidMount() {
     this.props.getCurrentSessionProducts();
 
-    {
-      /*} axios
+    axios
       .get("/api/cart")
       .then(response => {
-        const cartstockdtall = response.data.sessioncart;
+        const cartitemlength = response.data.length;
         console.log(response);
-        this.setState({ cartstockdtall });
+        this.setState({ cartitemlength });
 
-        console.log(cartstockdtall.length);
+        console.log("cart item length is : " + cartitemlength);
       })
       .catch(error => {
         console.log(error);
       });
-    */
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.sessioncart.sessioncart) {
+      this.setState({
+        cartitemlength: nextProps.sessioncart.sessioncart.length
+      });
+      console.log("cart lenggggggggggth is :" + this.state.cartitemlength);
     }
   }
-
   onLogoutClick(e) {
     e.preventDefault();
     this.props.clearCurrentProfile(); //here we call the clearCurrentProfile for clear current user profile state and set to null in profileReducer.js case CLEAR_CURRENT_PROFILE execute
@@ -45,6 +50,7 @@ class Navbar extends Component {
   }
 
   render() {
+    const { cartitemlength } = this.state;
     const { isAuthenticated, user } = this.props.auth;
     //const cartstockdtall = this.state.cartstockdtall;
 
@@ -86,7 +92,7 @@ class Navbar extends Component {
                     className="badge badge-pill badge-primary"
                     style={{ fontSize: "12px", backgroundColor: "#0085C3" }}
                   >
-                    {sessioncartContent}
+                    {cartitemlength && cartitemlength}
                   </span>
                   <span class="sr-only">unread messages</span>
                 </button>
