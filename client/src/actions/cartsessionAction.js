@@ -197,3 +197,29 @@ export const clearSessionCart = history => dispatch => {
       );
   }
 };
+
+//  edit changes in cart session
+export const updateeditedcart = (cartstockdtall, history) => dispatch => {
+  //console.log("action values are :" + id + " and " + orderitemquantity);
+  axios
+    .post("/api/cart/updatechangesincart", cartstockdtall)
+    .then(res =>
+      dispatch({
+        type: GET_SESSION_CART,
+        payload: res.data
+      })
+    )
+    .then(() => {
+      dispatch(
+        sendFlashMessage("Cart Update Successfully !!", "alert-success")
+      );
+    })
+    .then(dispatch(getCurrentSessionProducts()))
+    .then(res => history.push("/cartproducts"))
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};

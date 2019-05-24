@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import ReactTable from "react-table";
+import Table from "react-table";
 import "react-table/react-table.css";
 import axios from "axios";
 
@@ -19,7 +19,8 @@ import {
   productincby1insession,
   productdecby1insession,
   productdeletebyidinsession,
-  clearSessionCart
+  clearSessionCart,
+  updateeditedcart
 } from "../../actions/cartsessionAction";
 
 import StockActions from "../dashboard/StockActions";
@@ -38,18 +39,19 @@ class CartProducts extends Component {
       cartstockdtall: [],
       actionadd: "add",
       actiondec: "dec",
-      actiondelete: "delete"
+      actiondelete: "delete",
+      editing: null
     };
+    this.renderEditable = this.renderEditable.bind(this);
   }
 
   componentDidMount() {
     this.props.getCurrentSessionProducts();
 
-    {
-      /*} axios
+    axios
       .get("/api/cart")
       .then(response => {
-        const cartstockdtall = response.data.sessioncart;
+        const cartstockdtall = response.data;
         console.log(response);
         this.setState({ cartstockdtall });
 
@@ -58,7 +60,18 @@ class CartProducts extends Component {
       .catch(error => {
         console.log(error);
       });
-    */
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { cartstockdtall } = this.state.cartstockdtall;
+    const { sessioncart } = this.props.sessioncart;
+    if (!sessioncart || sessioncart == null) {
+      console.log("add few item in your cart");
+    } else {
+      if (prevProps.sessioncart !== sessioncart)
+        // this.props.getCurrentSessionProducts();
+
+        console.log("added or update the cart item");
     }
   }
 
@@ -149,6 +162,40 @@ class CartProducts extends Component {
     }
   }
 
+  onEditClick(id) {
+    // this.props.deleteStock(id, this.props.history); //this.props.history => this allows to do redirect functionality in deleteStock -> this action for this we use withRouter when we export class component
+  }
+
+  renderEditable(cellInfo) {
+    return (
+      <div
+        style={{ backgroundColor: "#f7f7f7" }}
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={e => {
+          const cartstockdtall = [...this.state.cartstockdtall];
+          cartstockdtall[cellInfo.index][cellInfo.column.id] =
+            e.target.innerHTML;
+          this.setState({ cartstockdtall });
+        }}
+        dangerouslySetInnerHTML={{
+          __html: this.state.cartstockdtall[cellInfo.index][cellInfo.column.id]
+        }}
+      />
+    );
+  }
+
+  saveFinalCartData() {
+    const { cartstockdtall } = this.state;
+    const { sessioncart } = this.props.sessioncart;
+    if (cartstockdtall) {
+      //console.log("final cartstockdtall data is : " + cartstockdtall[0].itemname);
+      console.log("final cartstockdtall is : " + typeof cartstockdtall);
+      console.log("sessioncart is : " + typeof sessioncart);
+      this.props.updateeditedcart(cartstockdtall, this.props.history);
+      this.props.getCurrentSessionProducts();
+    }
+  }
   render() {
     const { isAuthenticated, user } = this.props.auth;
     //const cartstockdtall = this.state.cartstockdtall;
@@ -293,6 +340,148 @@ class CartProducts extends Component {
         );
       }
     }
+    let stockContent;
+    let cartstockdtalllen;
+    let columns = [];
+    if (sessioncart === null) {
+      stockContent = <Spinner />;
+    } else {
+      columns = [
+        {
+          Header: "Item Image",
+          accessor: "itemprimaryimg",
+          maxWidth: 200,
+          filterable: false,
+          Cell: row => (
+            <span>
+              <center>
+                <img
+                  style={{ maxWidth: "70px" }}
+                  class=""
+                  src={row.value}
+                  alt="item primary img"
+                />
+              </center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Code",
+          accessor: "itemcode",
+          maxWidth: 200,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Name (Edited)",
+          accessor: "itemname",
+          maxWidth: 300,
+          filterable: true,
+          Cell: this.renderEditable
+        },
+        {
+          Header: "Item Length",
+          accessor: "itemlength",
+          maxWidth: 100,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Width",
+          accessor: "itemwidth",
+          maxWidth: 100,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Height",
+          accessor: "itemheight",
+          maxWidth: 100,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Order Quantity",
+          accessor: "orderitemquantity",
+          maxWidth: 120,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Rate (Edited)",
+          accessor: "rate",
+          maxWidth: 290,
+          filterable: true,
+          Cell: this.renderEditable
+        },
+        {
+          Header: "Subtotal",
+          accessor: "subtotal",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Operation",
+          columns: [
+            {
+              Header: "Remove",
+              accessor: "forremove",
+              maxWidth: 100,
+              sortable: false,
+              Cell: row => (
+                <span>
+                  <center>
+                    {row.value.map(item => (
+                      <i
+                        onClick={e =>
+                          this.onCartProDeleteClick(
+                            item._id,
+                            item.prodbillingwarehouse,
+                            this.state.actiondelete
+                          )
+                        }
+                        class="fa fa-times-circle"
+                        // onClick={this.onEditClick.bind(this, row.value)}
+                        style={{
+                          color: "red",
+                          cursor: "pointer",
+                          fontSize: 25
+                        }}
+                      />
+                    ))}
+                  </center>
+                </span>
+              )
+            }
+          ]
+        }
+      ];
+    }
 
     return (
       <div>
@@ -310,7 +499,7 @@ class CartProducts extends Component {
               <div class="panel panel-default">
                 <div
                   class="panel-heading"
-                  style={{ backgroundColor: "#0085C3", maxWidth: "800px" }}
+                  style={{ backgroundColor: "#0085C3" }}
                 >
                   <div className="row">
                     <div class="col-7">
@@ -358,7 +547,7 @@ class CartProducts extends Component {
 
                 <div
                   class="panel-heading"
-                  style={{ backgroundColor: "#e6e6e6", maxWidth: "800px" }}
+                  style={{ backgroundColor: "#e6e6e6" }}
                 >
                   {" "}
                   <div
@@ -419,22 +608,38 @@ class CartProducts extends Component {
                   class="panel-body"
                   style={{
                     backgroundColor: "#fff",
-                    maxWidth: "800px",
                     minHeight: "500px",
                     overflowY: "auto"
                   }}
                 >
                   <div>
                     <div>
-                      <h4>Cart Information</h4>
-                      {cartContent}
+                      {/*cartContent*/}
+                      {!cartstockdtall && <p>Sorry No Item In Your Cart</p>}
+                      {cartstockdtall.length > 0 && (
+                        <div>
+                          <span>
+                            <p>click here to save changes</p>
+                            <button
+                              onClick={e => this.saveFinalCartData()}
+                              class="btn"
+                            >
+                              <i class="fa fa-floppy-o" /> Save Changes
+                            </button>
+                          </span>
+                          <Table
+                            columns={columns}
+                            data={cartstockdtall}
+                            defaultPageSize={5}
+                          />
+                        </div>
+                      )}
                       <br />
 
                       <div
                         class="panel-footer"
                         style={{
-                          backgroundColor: "#0085C3",
-                          maxWidth: "800px"
+                          backgroundColor: "#0085C3"
                         }}
                         align="right"
                       >
@@ -451,9 +656,6 @@ class CartProducts extends Component {
                     </div>
                   </div>
                   <br />
-                  <div>
-                    <p>sales order fields</p>
-                  </div>
                 </div>
               </div>
             </center>
@@ -471,6 +673,7 @@ CartProducts.propTypes = {
   productincby1insession: PropTypes.object.isRequired,
   productdecby1insession: PropTypes.object.isRequired,
   productdeletebyidinsession: PropTypes.object.isRequired,
+  updateeditedcart: PropTypes.object.isRequired,
   clearSessionCart: PropTypes.object.isRequired,
   sendFlashMessage: PropTypes.object.isRequired
 };
@@ -491,6 +694,7 @@ export default connect(
     productdecby1insession,
     productdeletebyidinsession,
     clearSessionCart,
+    updateeditedcart,
     sendFlashMessage,
     mapPropsToDispatch
   }

@@ -106,7 +106,14 @@ router.get(
                 itemprimaryimg: stock.itemprimaryimg,
                 orderitemquantity: orderitemquantity,
                 prodbillingwarehouse: prodbillingwarehouse,
-                rate: parseFloat(stock.rate).toFixed(2)
+                rate: parseFloat(stock.rate).toFixed(2),
+                forremove: [
+                  {
+                    _id: prodstk_id,
+                    prodbillingwarehouse: prodbillingwarehouse
+                  }
+                ],
+                subtotal: parseFloat(stock.rate).toFixed(2) * orderitemquantity
               });
 
               console.log(
@@ -213,7 +220,15 @@ router.get(
                     itemprimaryimg: stock.itemprimaryimg,
                     orderitemquantity: orderitemquantity,
                     prodbillingwarehouse: prodbillingwarehouse,
-                    rate: parseFloat(stock.rate).toFixed(2)
+                    rate: parseFloat(stock.rate).toFixed(2),
+                    forremove: [
+                      {
+                        _id: prodstk_id,
+                        prodbillingwarehouse: prodbillingwarehouse
+                      }
+                    ],
+                    subtotal:
+                      parseFloat(stock.rate).toFixed(2) * orderitemquantity
                   });
                   console.log(
                     "New Product Added to session cart" +
@@ -298,6 +313,53 @@ router.get("/update/:prodstk_id&:prodbillingwarehouse", function(req, res) {
     //console.log(req.session.cart); //here we log the session array
   });
 });
+
+router.post("/updatechangesincart", function(req, res) {
+  var cart = req.session.cart;
+
+  var cartstockdtall = req.body;
+  console.log("//////working in loop for updating subtotal//////");
+
+  let calsubtotal;
+
+  for (var i = 0; i < cartstockdtall.length; i++) {
+    console.log(
+      "orderitemquantity of item " +
+        i +
+        " " +
+        "is :" +
+        cartstockdtall[i].orderitemquantity
+    );
+    console.log("rate of item " + i + " " + "is :" + cartstockdtall[i].rate);
+    console.log(
+      "prev subtotal of item " + i + " " + "is :" + cartstockdtall[i].subtotal
+    );
+
+    calsubtotal = parseFloat(
+      parseInt(cartstockdtall[i].orderitemquantity) *
+        parseFloat(cartstockdtall[i].rate).toFixed(2)
+    ).toFixed(2);
+
+    cartstockdtall[i].subtotal = calsubtotal;
+
+    console.log(
+      "new subtotal of item " + i + " " + "is :" + cartstockdtall[i].subtotal
+    );
+  }
+  console.log("//////update all subtotal//////");
+  //console.log("req.body is : " + req.body);
+
+  // console.log("prev cart is : " + typeof cart);
+
+  //console.log("final edited cart is : " + typeof cartstockdtall);
+
+  req.session.cart = cartstockdtall;
+
+  console.log("final cart is : " + typeof req.session.cart);
+
+  res.json(req.session.cart);
+});
+
 /*
  *GET clear cart
  */
