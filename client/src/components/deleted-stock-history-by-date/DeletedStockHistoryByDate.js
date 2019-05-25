@@ -226,14 +226,34 @@ class DeletedStockHistoryByDate extends Component {
                     {deletedstkhisdata.machinepart && (
                       <p>
                         <small>
-                          Item M/C Parts : {deletedstkhisdata.machinepart}
+                          Item M/C Parts :
+                          {JSON.parse(deletedstkhisdata.machinepart).map(
+                            data => {
+                              return (
+                                <h5>
+                                  <span class="badge badge-success">
+                                    {data}
+                                  </span>
+                                </h5>
+                              );
+                            }
+                          )}
                         </small>
                       </p>
                     )}
                     {deletedstkhisdata.forcompany && (
                       <p>
                         <small>
-                          Item Company : {deletedstkhisdata.forcompany}
+                          Item Company :
+                          {JSON.parse(deletedstkhisdata.forcompany).map(
+                            data => {
+                              return (
+                                <h5>
+                                  <span class="badge badge-info">{data}</span>
+                                </h5>
+                              );
+                            }
+                          )}
                         </small>
                       </p>
                     )}

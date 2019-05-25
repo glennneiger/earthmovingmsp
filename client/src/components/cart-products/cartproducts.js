@@ -721,6 +721,11 @@ class CartProducts extends Component {
             </center>
           </div>
         </div>
+        {cartstockdtall.length > 0 && (
+          <div className="col-12 row">
+            <p>Sales Order Details</p>
+          </div>
+        )}
       </div>
     );
   }

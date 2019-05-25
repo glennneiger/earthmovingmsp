@@ -314,120 +314,118 @@ class ShowStock extends Component {
         //console.log(showstocklen);
 
         showstockcontent = (
-          <div>
-            <div className="col-12 row">
-              <br />
-              <div class="col-3">
-                <div class="card card-bordered">
-                  {stockbyid.productImage && (
-                    <Carousel autoPlay>
-                      {stockbyid.productImage.map((imgurl, key) => (
-                        <div>
-                          <img src={imgurl} />
-                        </div>
-                      ))}
-                    </Carousel>
-                  )}
-                </div>
+          <div className="col-12 row">
+            <br />
+            <div className="col-2" />
+            <div class="col-3">
+              <div class="card card-bordered">
+                {stockbyid.productImage && (
+                  <Carousel autoPlay infiniteLoop>
+                    {stockbyid.productImage.map((imgurl, key) => (
+                      <div>
+                        <img src={imgurl} />
+                      </div>
+                    ))}
+                  </Carousel>
+                )}
               </div>
-
-              <div className="col-9">
-                <table className="table table-striped table-hover rtable table-responsive">
-                  {stockbyid ? (
-                    <thead>
-                      <tr>
-                        <th>Item Code</th>
-                        <td>{stockbyid.itemcode}</td>
-                        <th>Item Name</th>
-                        <td>{stockbyid.itemname}</td>
-                      </tr>
-                      <tr>
-                        <th>Item Hsn Code</th>
-                        <td>{stockbyid.hsncode}</td>
-                        <th>Item Machine Part</th>
-                        <td>
-                          {stockbyid.machinepart.map(data => {
-                            return (
-                              <h5>
-                                <span class="badge badge-success">{data}</span>
-                              </h5>
-                            );
-                          })}
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Item Length</th>
-                        <td>{stockbyid.itemlength}</td>
-                        <th>Item Width</th>
-                        <td>{stockbyid.itemwidth}</td>
-                      </tr>
-                      <tr>
-                        <th>Item Height</th>
-                        <td>{stockbyid.itemheight}</td>
-                        <th>Item For company</th>
-
-                        <td>
-                          {stockbyid.forcompany.map(data => {
-                            return (
-                              <h5>
-                                <span class="badge badge-info">{data}</span>
-                              </h5>
-                            );
-                          })}
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <th>Item Min Rate</th>
-                        <td>{stockbyid.minrate}</td>
-                        <th>Item Rate</th>
-                        <td>{stockbyid.rate}</td>
-                      </tr>
-                      <tr>
-                        <th>Item Max Rate</th>
-                        <td>{stockbyid.maxrate}</td>
-                      </tr>
-                    </thead>
-                  ) : (
-                    <span />
-                  )}
-
+            </div>
+            <div className="col-7">
+              <table className="table table-striped table-hover rtable table-responsive">
+                {stockbyid ? (
                   <thead>
                     <tr>
-                      <th
-                        style={{
-                          backgroundColor: "#0085C3",
-                          textAlign: "center"
-                        }}
-                      >
-                        {" "}
-                        <p style={{ color: "#fff" }}>ARTICLE WAREHOUSE INFO</p>
-                      </th>
-
-                      <td
-                        style={{
-                          backgroundColor: "black",
-                          textAlign: "center"
-                        }}
-                      >
-                        <p>
-                          <b style={{ color: "#fff" }}>Total Item Qty</b>
-                        </p>
+                      <th>Item Code</th>
+                      <td>{stockbyid.itemcode}</td>
+                      <th>Item Name</th>
+                      <td>{stockbyid.itemname}</td>
+                    </tr>
+                    <tr>
+                      <th>Item Hsn Code</th>
+                      <td>{stockbyid.hsncode}</td>
+                      <th>Item Machine Part</th>
+                      <td>
+                        {stockbyid.machinepart.map(data => {
+                          return (
+                            <h5>
+                              <span class="badge badge-success">{data}</span>
+                            </h5>
+                          );
+                        })}
                       </td>
-                      <th
-                        style={{
-                          backgroundColor: "#cec4c4",
-                          textAlign: "center"
-                        }}
-                      >
-                        {" "}
-                        <p>Item Qty Remove</p>
-                      </th>
+                    </tr>
+                    <tr>
+                      <th>Item Length</th>
+                      <td>{stockbyid.itemlength}</td>
+                      <th>Item Width</th>
+                      <td>{stockbyid.itemwidth}</td>
+                    </tr>
+                    <tr>
+                      <th>Item Height</th>
+                      <td>{stockbyid.itemheight}</td>
+                      <th>Item For company</th>
+
+                      <td>
+                        {stockbyid.forcompany.map(data => {
+                          return (
+                            <h5>
+                              <span class="badge badge-info">{data}</span>
+                            </h5>
+                          );
+                        })}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <th>Item Min Rate</th>
+                      <td>&#8377; {stockbyid.minrate}</td>
+                      <th>Item Rate</th>
+                      <td>&#8377; {stockbyid.rate}</td>
+                    </tr>
+                    <tr>
+                      <th>Item Max Rate</th>
+                      <td>&#8377; {stockbyid.maxrate}</td>
                     </tr>
                   </thead>
-                  {warehousebyid ? showwarehousecontent : <span />}
-                </table>
-              </div>
+                ) : (
+                  <span />
+                )}
+
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        backgroundColor: "#0085C3",
+                        textAlign: "center"
+                      }}
+                    >
+                      {" "}
+                      <p style={{ color: "#fff" }}>ARTICLE WAREHOUSE INFO</p>
+                    </th>
+
+                    <td
+                      style={{
+                        backgroundColor: "black",
+                        textAlign: "center"
+                      }}
+                    >
+                      <p>
+                        <b style={{ color: "#fff" }}>Total Item Qty</b>
+                      </p>
+                    </td>
+                    <th
+                      style={{
+                        backgroundColor: "#cec4c4",
+                        textAlign: "center"
+                      }}
+                    >
+                      {" "}
+                      <p>Item Qty Remove</p>
+                    </th>
+                  </tr>
+                </thead>
+                {warehousebyid ? showwarehousecontent : <span />}
+              </table>
             </div>
           </div>
         );

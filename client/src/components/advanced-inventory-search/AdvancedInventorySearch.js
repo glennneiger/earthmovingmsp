@@ -207,7 +207,15 @@ class AdvancedInventorySearch extends Component {
           filterable: true,
           Cell: row => (
             <span>
-              <center>{row.value}</center>
+              <center>
+                {row.value.map(data => {
+                  return (
+                    <h5>
+                      <span class="badge badge-success">{data}</span>
+                    </h5>
+                  );
+                })}
+              </center>
             </span>
           )
         },
@@ -218,7 +226,15 @@ class AdvancedInventorySearch extends Component {
           filterable: true,
           Cell: row => (
             <span>
-              <center>{row.value}</center>
+              <center>
+                {row.value.map(data => {
+                  return (
+                    <h5>
+                      <span class="badge badge-info">{data}</span>
+                    </h5>
+                  );
+                })}
+              </center>
             </span>
           )
         },
@@ -325,7 +341,9 @@ class AdvancedInventorySearch extends Component {
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    {csvContent && csvContent}
+                    {advsearchresult &&
+                      advsearchdtall.finalallstock.length > 0 &&
+                      csvContent}
                   </div>
                 </div>
 

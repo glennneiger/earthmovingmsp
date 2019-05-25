@@ -261,7 +261,17 @@ class ExistingStockHistoryByDate extends Component {
                         <small>
                           Item M/C Parts{" "}
                           <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.emachinepart}
+                          {JSON.parse(existingstkhisdata.emachinepart).map(
+                            data => {
+                              return (
+                                <h5>
+                                  <span class="badge badge-success">
+                                    {data}
+                                  </span>
+                                </h5>
+                              );
+                            }
+                          )}
                         </small>
                       </p>
                     )}
@@ -270,7 +280,15 @@ class ExistingStockHistoryByDate extends Component {
                         <small>
                           Item Company{" "}
                           <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eforcompany}
+                          {JSON.parse(existingstkhisdata.eforcompany).map(
+                            data => {
+                              return (
+                                <h5>
+                                  <span class="badge badge-info">{data}</span>
+                                </h5>
+                              );
+                            }
+                          )}
                         </small>
                       </p>
                     )}

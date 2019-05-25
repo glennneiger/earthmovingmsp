@@ -81,19 +81,21 @@ class Navbar extends Component {
         <div className="d-md-inline-block d-block mr-md-4">
           <ul className="notification-area">
             <li id="full-view">
-              <a href="/cartproducts">
+              <a href="/cartproducts" target="_blank">
                 <button
                   type="button"
                   class="btn mb-2"
                   style={{ backgroundColor: "#2C9CB8", color: "#fff" }}
                 >
-                  My Cart{" "}
-                  <span
+                  <i class="fa fa-shopping-cart" aria-hidden="true" /> Order
+                  Cart{" "}
+                  {/*}  <span
                     className="badge badge-pill badge-primary"
                     style={{ fontSize: "12px", backgroundColor: "#0085C3" }}
                   >
                     {cartitemlength && cartitemlength}
                   </span>
+    */}
                   <span class="sr-only">unread messages</span>
                 </button>
               </a>

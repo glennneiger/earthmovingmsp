@@ -15,8 +15,13 @@ class Dashboard extends Component {
   constructor() {
     super();
     this.state = {
-      open: false
+      open: false,
+      querystr: ""
     };
+
+    this.onChange = this.onChange.bind(this);
+
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -33,8 +38,39 @@ class Dashboard extends Component {
     this.setState({ open: false });
   };
 
+  onChange = e => {
+    switch (e.target.name) {
+      case "productImage":
+        this.setState({ productImage: e.target.files[0] });
+        break;
+      default:
+        this.setState({ [e.target.name]: e.target.value });
+    }
+  };
+  onSubmit = () => {
+    const { querystr } = this.state;
+
+    console.log(querystr);
+    if (querystr) {
+      console.log("query string is : " + querystr);
+      //  this.props.getAdvSearchInvStock(querystr);
+    } else {
+      console.log("search something..");
+    }
+  };
+
+  handleKeyPress = event => {
+    const { querystr } = this.state;
+
+    if (event.key == "Enter" && querystr) {
+      console.log("enter press here! ");
+      console.log("query string is : " + querystr);
+      // this.props.getAdvSearchInvStock(querystr);
+    }
+  };
+
   render() {
-    const { open } = this.state;
+    const { open, querystr } = this.state;
     const { user } = this.props.auth;
 
     return (
@@ -69,12 +105,15 @@ class Dashboard extends Component {
                     <div class="d-flex justify-content-center h-100">
                       <div class="searchbar">
                         <input
+                          onKeyPress={this.handleKeyPress}
                           class="search_input"
                           type="text"
-                          name=""
+                          name="querystr"
+                          value={querystr}
+                          onChange={this.onChange}
                           placeholder="Search by item code, item name and machine part..."
                         />
-                        <a href="#" class="search_icon">
+                        <a href="#" class="search_icon" onClick={this.onSubmit}>
                           <i class="fa fa-search" />
                         </a>
                       </div>

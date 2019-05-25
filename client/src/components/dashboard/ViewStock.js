@@ -145,7 +145,7 @@ class ViewStock extends Component {
           filterable: true,
           Cell: row => (
             <span>
-              <center>{row.value}</center>
+              <center>&#8377; {row.value}</center>
             </span>
           )
         },
