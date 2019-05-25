@@ -465,7 +465,29 @@ class CartProducts extends Component {
           )
         },
         {
-          Header: "Rate (Edited)",
+          Header: "Min Rate",
+          accessor: "minrate",
+          maxWidth: 120,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>&#8377; {row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Max Rate",
+          accessor: "maxrate",
+          maxWidth: 120,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>&#8377; {row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "₹ Rate (Edited)",
           accessor: "rate",
           maxWidth: 290,
           filterable: true,
@@ -478,7 +500,7 @@ class CartProducts extends Component {
           filterable: true,
           Cell: row => (
             <span>
-              <center>{row.value}</center>
+              <center>&#8377; {row.value}</center>
             </span>
           )
         },
@@ -687,7 +709,8 @@ class CartProducts extends Component {
                             fontSize: "14px"
                           }}
                         >
-                          <b>Grand Total:</b> {parseFloat(total).toFixed(2)}
+                          <b>Grand Total:</b> &#8377;
+                          {parseFloat(total).toFixed(2)}
                         </h5>
                       </div>
                     </div>

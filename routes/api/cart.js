@@ -106,7 +106,9 @@ router.get(
                 itemprimaryimg: stock.itemprimaryimg,
                 orderitemquantity: orderitemquantity,
                 prodbillingwarehouse: prodbillingwarehouse,
+                minrate: parseFloat(stock.minrate).toFixed(2),
                 rate: parseFloat(stock.rate).toFixed(2),
+                maxrate: parseFloat(stock.maxrate).toFixed(2),
                 forremove: [
                   {
                     _id: prodstk_id,
@@ -220,7 +222,9 @@ router.get(
                     itemprimaryimg: stock.itemprimaryimg,
                     orderitemquantity: orderitemquantity,
                     prodbillingwarehouse: prodbillingwarehouse,
+                    minrate: parseFloat(stock.minrate).toFixed(2),
                     rate: parseFloat(stock.rate).toFixed(2),
+                    maxrate: parseFloat(stock.maxrate).toFixed(2),
                     forremove: [
                       {
                         _id: prodstk_id,
@@ -317,10 +321,13 @@ router.get("/update/:prodstk_id&:prodbillingwarehouse", function(req, res) {
 router.post("/updatechangesincart", function(req, res) {
   var cart = req.session.cart;
 
+  let errors = {};
   var cartstockdtall = req.body;
   console.log("//////working in loop for updating subtotal//////");
 
   let calsubtotal;
+
+  let ratevalidate = true;
 
   for (var i = 0; i < cartstockdtall.length; i++) {
     console.log(
@@ -334,7 +341,36 @@ router.post("/updatechangesincart", function(req, res) {
     console.log(
       "prev subtotal of item " + i + " " + "is :" + cartstockdtall[i].subtotal
     );
-
+    if (
+      parseFloat(cartstockdtall[i].rate).toFixed(2) <
+        parseFloat(cartstockdtall[i].minrate).toFixed(2) ||
+      parseFloat(cartstockdtall[i].rate).toFixed(2) >
+        parseFloat(cartstockdtall[i].maxrate).toFixed(2)
+    ) {
+      console.log(
+        "The Item " +
+          cartstockdtall[i].itemcode +
+          " Rate Should be in Between min rate (₹" +
+          cartstockdtall[i].minrate +
+          ") and max rate (₹" +
+          cartstockdtall[i].minrate
+      );
+      errors.message =
+        "The Item " +
+        cartstockdtall[i].itemcode +
+        " Rate Should be in Between min rate (₹" +
+        cartstockdtall[i].minrate +
+        ") and max rate (₹" +
+        cartstockdtall[i].maxrate +
+        ")";
+      errors.className = "alert-danger";
+      res.status(404).json(errors);
+      console.log(
+        "exit from if statement after check rate not in b/w minrate and maxrate"
+      );
+      ratevalidate = false;
+      break;
+    }
     calsubtotal = parseFloat(
       parseInt(cartstockdtall[i].orderitemquantity) *
         parseFloat(cartstockdtall[i].rate).toFixed(2)
@@ -346,18 +382,21 @@ router.post("/updatechangesincart", function(req, res) {
       "new subtotal of item " + i + " " + "is :" + cartstockdtall[i].subtotal
     );
   }
-  console.log("//////update all subtotal//////");
-  //console.log("req.body is : " + req.body);
 
-  // console.log("prev cart is : " + typeof cart);
+  if (ratevalidate) {
+    console.log("//////update all subtotal//////");
+    //console.log("req.body is : " + req.body);
 
-  //console.log("final edited cart is : " + typeof cartstockdtall);
+    // console.log("prev cart is : " + typeof cart);
 
-  req.session.cart = cartstockdtall;
+    //console.log("final edited cart is : " + typeof cartstockdtall);
 
-  console.log("final cart is : " + typeof req.session.cart);
+    req.session.cart = cartstockdtall;
 
-  res.json(req.session.cart);
+    console.log("final cart is : " + typeof req.session.cart);
+
+    res.json(req.session.cart);
+  }
 });
 
 /*

@@ -217,9 +217,9 @@ export const updateeditedcart = (cartstockdtall, history) => dispatch => {
     .then(dispatch(getCurrentSessionProducts()))
     .then(res => history.push("/cartproducts"))
     .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
+      // console.log(err.response.data)
+      dispatch(
+        sendFlashMessage(err.response.data.message, err.response.data.className)
+      )
     );
 };
