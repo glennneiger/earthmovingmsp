@@ -65,12 +65,12 @@ export const addproducttosession = (
     .get(
       `/api/cart/add/${prodstk_id}&${prodbillingwarehouse}&${orderitemquantity}`
     )
-    .then(res =>
+    /*.then(res =>
       dispatch({
         type: PRODUCT_ADDED_IN_SESSION_CART_BY_ID,
         payload: res.data
       })
-    )
+    )*/
     .then(() => {
       // console.log(message + className);
 

@@ -18,6 +18,9 @@ import {
 
 import { singleprodwarehouseitemsbyid } from "../../actions/warehouseActions";
 
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+
 import Spinner from "../common/Spinner";
 
 import "./model.css";
@@ -316,15 +319,14 @@ class ShowStock extends Component {
               <br />
               <div class="col-3">
                 <div class="card card-bordered">
-                  {stockbyid.itemprimaryimg ? (
-                    <img
-                      style={{ width: "100%" }}
-                      class="card-img-top img-fluid"
-                      src={stockbyid.itemprimaryimg}
-                      alt="product img"
-                    />
-                  ) : (
-                    <Spinner />
+                  {stockbyid.productImage && (
+                    <Carousel autoPlay>
+                      {stockbyid.productImage.map((imgurl, key) => (
+                        <div>
+                          <img src={imgurl} />
+                        </div>
+                      ))}
+                    </Carousel>
                   )}
                 </div>
               </div>
