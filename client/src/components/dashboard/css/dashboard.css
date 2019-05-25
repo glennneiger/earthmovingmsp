@@ -2,13 +2,13 @@
   margin-bottom: auto;
   margin-top: auto;
   height: 60px;
-  background-color: #809ca9;
+  background-color: #c1dce8;
   border-radius: 30px;
   padding: 10px;
 }
 
 .search_input {
-  color: white;
+  color: #185446;
   border: 0;
   outline: 0;
   background: none;
@@ -18,7 +18,7 @@
   transition: width 0.4s linear;
 }
 
-.searchbar:hover > .search_input {
+.searchbar > .search_input {
   padding: 0 10px;
   width: 450px;
   caret-color: #fff;

@@ -1,5 +1,9 @@
 import React, { Component } from "react";
-import Modal from "react-responsive-modal";
+//import Modal from "react-responsive-modal";
+
+import ReactTable from "react-table";
+
+import { CSVLink } from "react-csv";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
@@ -7,16 +11,46 @@ import { connect } from "react-redux";
 
 import StockActions from "./StockActions";
 
+import { getAdvSearchInvStock } from "../../actions/warehouseActions";
+
 import Spinner from "../common/Spinner";
 
 import "./css/dashboard.css";
+
+import "./css/model.css";
+
+const Modal = ({ handleClose, show, children }) => {
+  const showHideClassName = show ? "modal display-block" : "modal display-none";
+
+  return (
+    <div className={showHideClassName}>
+      <section className="modal-main">
+        {children}
+        <center>
+          <button
+            onClick={handleClose}
+            className="btn btn-default"
+            style={{
+              textDecoration: "none",
+              color: "white",
+              backgroundColor: "#AF0808"
+            }}
+          >
+            Close
+          </button>
+        </center>
+      </section>
+    </div>
+  );
+};
 
 class Dashboard extends Component {
   constructor() {
     super();
     this.state = {
-      open: false,
-      querystr: ""
+      show: false,
+      querystr: "",
+      advsearchdtall: []
     };
 
     this.onChange = this.onChange.bind(this);
@@ -29,14 +63,6 @@ class Dashboard extends Component {
     //this.props.getCurrentSalesOrder();
     // this.props.getCurrentStock();
   }
-
-  onOpenModal = () => {
-    this.setState({ open: true });
-  };
-
-  onCloseModal = () => {
-    this.setState({ open: false });
-  };
 
   onChange = e => {
     switch (e.target.name) {
@@ -63,15 +89,201 @@ class Dashboard extends Component {
     const { querystr } = this.state;
 
     if (event.key == "Enter" && querystr) {
+      this.setState({
+        show: true,
+        querystr: querystr
+      });
       console.log("enter press here! ");
       console.log("query string is : " + querystr);
-      // this.props.getAdvSearchInvStock(querystr);
+      this.props.getAdvSearchInvStock(querystr);
     }
+  };
+
+  showModalClick = querystr => {
+    if (querystr) {
+      this.setState({
+        show: true,
+        querystr: querystr
+      });
+      this.props.getAdvSearchInvStock(querystr);
+    } else {
+      console.log("search something..");
+    }
+  };
+  hideModalClick = () => {
+    this.setState({ show: false, querystr: "" });
+    console.log("querystr set to : '' ");
   };
 
   render() {
     const { open, querystr } = this.state;
     const { user } = this.props.auth;
+
+    const { advsearchresult, loading } = this.props.warehouse;
+
+    let AdvSearchContent;
+    let advsearchdtall;
+    let advsearchdtalllen;
+    let columns = [];
+    let csvContent;
+    if (advsearchresult === null) {
+      AdvSearchContent = <Spinner />;
+    } else {
+      advsearchdtall = advsearchresult;
+      advsearchdtalllen = advsearchresult.length;
+      csvContent = (
+        <CSVLink
+          data={advsearchresult.finalallstock}
+          filename={"Inventory-advsearchresult.csv"}
+          className="btn btn-sm btn-success"
+        >
+          Export CSV
+        </CSVLink>
+      );
+      columns = [
+        {
+          Header: "Item Image",
+          accessor: "itemprimaryimg",
+          maxWidth: 200,
+          filterable: false,
+          Cell: row => (
+            <span>
+              <center>
+                <img
+                  style={{ maxWidth: "70px" }}
+                  class=""
+                  src={row.value}
+                  alt="item primary img"
+                />
+              </center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Code",
+          accessor: "itemcode",
+          maxWidth: 200,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Name",
+          accessor: "itemname",
+          maxWidth: 300,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Length",
+          accessor: "itemlength",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Width",
+          accessor: "itemwidth",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Height",
+          accessor: "itemheight",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Machine Parts",
+          accessor: "machinepart",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>
+                {row.value.map(data => {
+                  return (
+                    <h5>
+                      <span class="badge badge-success">{data}</span>
+                    </h5>
+                  );
+                })}
+              </center>
+            </span>
+          )
+        },
+        {
+          Header: "Company Names",
+          accessor: "forcompany",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>
+                {row.value.map(data => {
+                  return (
+                    <h5>
+                      <span class="badge badge-info">{data}</span>
+                    </h5>
+                  );
+                })}
+              </center>
+            </span>
+          )
+        },
+        {
+          Header: "Operation",
+          columns: [
+            {
+              Header: "Stock View",
+              accessor: "_id",
+              maxWidth: 100,
+              filterable: false,
+              Cell: row => (
+                <span>
+                  <center>
+                    <Link
+                      target="_blank"
+                      to={`/show-stock/${row.value}`}
+                      className=""
+                      style={{
+                        textDecoration: "none",
+                        color: "#0085C3",
+                        cursor: "pointer",
+                        fontSize: 25
+                      }}
+                    >
+                      <i class="fa fa-eye" />
+                    </Link>
+                  </center>
+                </span>
+              )
+            }
+          ]
+        }
+      ];
+    }
 
     return (
       <div>
@@ -83,13 +295,72 @@ class Dashboard extends Component {
         >
           <div className="container">
             <div className="row">
-              <Modal open={open} onClose={this.onCloseModal} center>
-                <div style={{ padding: 15 }}>
-                  <h2>This Feature Is Coming Soon !!</h2>
-                  <p>
-                    Now You Can Easily Manage Your Brand With Earthmovingmsp
-                    software
-                  </p>
+              <Modal
+                show={this.state.show}
+                handleClose={this.hideModalClick}
+                center
+              >
+                <div className="container">
+                  <div className="row">
+                    <div className="col-md-12">
+                      <center>
+                        <div
+                          class="form-group col-md-12"
+                          style={{ padding: 5 }}
+                        >
+                          <p>
+                            Query String : <b>{this.state.querystr}</b>
+                          </p>
+                          <div
+                            class="panel-heading"
+                            style={{
+                              backgroundColor:
+                                "#e6e6e6" /*, maxWidth: "800px" */
+                            }}
+                          >
+                            <div style={{ textAlign: "right" }}>
+                              {advsearchresult &&
+                                advsearchdtall.finalallstock.length > 0 &&
+                                csvContent}
+                            </div>
+                          </div>
+
+                          <div class="panel-body">
+                            <div>
+                              <div>
+                                {advsearchresult && (
+                                  <div>
+                                    {/*{console.log(advsearchdtall)}*/}
+                                    <ReactTable
+                                      data={advsearchdtall.finalallstock}
+                                      columns={columns}
+                                      defaultPageSize={5}
+                                      pageSizeOptions={[
+                                        5,
+                                        10,
+                                        15,
+                                        20,
+                                        25,
+                                        30,
+                                        35,
+                                        40,
+                                        50
+                                      ]}
+                                      style={{
+                                        height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
+                                        /*, maxWidth: "800px" */
+                                      }}
+                                      className="-striped -highlight"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </center>
+                    </div>
+                  </div>
                 </div>
               </Modal>
               <div className="col-md-12" style={{ padding: 20 }}>
@@ -113,7 +384,11 @@ class Dashboard extends Component {
                           onChange={this.onChange}
                           placeholder="Search by item code, item name and machine part..."
                         />
-                        <a href="#" class="search_icon" onClick={this.onSubmit}>
+                        <a
+                          href="#"
+                          class="search_icon"
+                          onClick={e => this.showModalClick(querystr)}
+                        >
                           <i class="fa fa-search" />
                         </a>
                       </div>
@@ -235,14 +510,17 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  warehouse: PropTypes.object.isRequired,
+  getAdvSearchInvStock: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  warehouse: state.warehouse
 });
 
 export default connect(
   mapStateToProps,
-  {}
+  { getAdvSearchInvStock }
 )(withRouter(Dashboard));

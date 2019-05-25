@@ -11,7 +11,7 @@ class Landing extends Component {
   }
   render() {
     return (
-      <div className="landing" style={{ paddingTop: "30%" }}>
+      <div className="landing" style={{ paddingTop: "25%" }}>
         <div className="">
           <div className="container">
             <div className="row">
