@@ -4,6 +4,8 @@ import jwt_decode from "jwt-decode";
 
 import { GET_ERRORS, SET_CURRENT_USER } from "./types";
 
+import { sendFlashMessage } from "./flashMessage";
+
 // Register User
 export const registerUser = (userData, history) => dispatch => {
   axios
@@ -63,4 +65,23 @@ export const logoutUser = () => dispatch => {
   setAuthToken(false);
   // Set current user to {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
+};
+
+export const forgotpassUser = userData => dispatch => {
+  axios
+    .post("/api/users/forgotpassword", userData)
+    .then(() => {
+      dispatch(
+        sendFlashMessage(
+          "Check Your Email To Reset New Password !!",
+          "alert-success"
+        )
+      );
+    })
+    .catch(err =>
+      // console.log(err.response.data)
+      dispatch(
+        sendFlashMessage(err.response.data.message, err.response.data.className)
+      )
+    );
 };

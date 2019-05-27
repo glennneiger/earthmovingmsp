@@ -477,9 +477,14 @@ router.get(
                           quantity: availableqty,
                           itemname: stock.itemname,
                           machinepart: stock.machinepart,
+                          itemid: stock.itemid,
+                          itemidunit: stock.itemidunit,
+                          itemod: stock.itemod,
+                          itemodunit: stock.itemodunit,
                           itemlength: stock.itemlength,
-                          itemwidth: stock.itemwidth,
-                          itemheight: stock.itemheight,
+                          itemlengthunit: stock.itemlengthunit,
+                          itemthickness: stock.itemthickness,
+                          itemthicknessunit: stock.itemthicknessunit,
                           forcompany: stock.forcompany,
                           hsncode: stock.hsncode,
                           minrate: stock.minrate,
@@ -544,9 +549,14 @@ router.get(
                   if (
                     querystr == stocks[i].itemcode ||
                     querystr == stocks[i].itemname ||
+                    querystr == stocks[i].itemid ||
+                    querystr == stocks[i].itemidunit ||
+                    querystr == stocks[i].itemod ||
+                    querystr == stocks[i].itemodunit ||
                     querystr == stocks[i].itemlength ||
-                    querystr == stocks[i].itemheight ||
-                    querystr == stocks[i].itemwidth ||
+                    querystr == stocks[i].itemlengthunit ||
+                    querystr == stocks[i].itemthickness ||
+                    querystr == stocks[i].itemthicknessunit ||
                     querystr == stocks[i].hsncode ||
                     stocks[i].machinepart.includes(querystr) ||
                     stocks[i].forcompany.includes(querystr)
@@ -556,9 +566,16 @@ router.get(
                       itemname: stocks[i].itemname,
                       itemcode: stocks[i].itemcode,
                       machinepart: JSON.parse(stocks[i].machinepart),
-                      itemlength: stocks[i].itemlength,
-                      itemwidth: stocks[i].itemwidth,
-                      itemheight: stocks[i].itemheight,
+                      itemidwithunit: [stocks[i].itemid, stocks[i].itemidunit],
+                      itemodwithunit: [stocks[i].itemod, stocks[i].itemodunit],
+                      itemlengthwithunit: [
+                        stocks[i].itemlength,
+                        stocks[i].itemlengthunit
+                      ],
+                      itemthicknesswithunit: [
+                        stocks[i].itemthickness,
+                        stocks[i].itemthicknessunit
+                      ],
                       forcompany: JSON.parse(stocks[i].forcompany),
                       hsncode: stocks[i].hsncode,
                       //    rack: stocks[i].rack,

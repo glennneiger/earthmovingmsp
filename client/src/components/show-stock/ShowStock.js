@@ -355,14 +355,23 @@ class ShowStock extends Component {
                       </td>
                     </tr>
                     <tr>
-                      <th>Item Length</th>
-                      <td>{stockbyid.itemlength}</td>
-                      <th>Item Width</th>
-                      <td>{stockbyid.itemwidth}</td>
+                      <th>Item ID</th>
+                      <td>
+                        {stockbyid.itemid}
+                        {stockbyid.itemidunit}
+                      </td>
+                      <th>Item OD</th>
+                      <td>
+                        {stockbyid.itemod}
+                        {stockbyid.itemodunit}
+                      </td>
                     </tr>
                     <tr>
-                      <th>Item Height</th>
-                      <td>{stockbyid.itemheight}</td>
+                      <th>Item Length</th>
+                      <td>
+                        {stockbyid.itemlength}
+                        {stockbyid.itemlengthunit}
+                      </td>
                       <th>Item For company</th>
 
                       <td>
@@ -377,12 +386,17 @@ class ShowStock extends Component {
                     </tr>
 
                     <tr>
+                      <th>Item Thickness</th>
+                      <td>
+                        &#8377; {stockbyid.itemthickness}
+                        {stockbyid.itemthicknessunit}
+                      </td>
                       <th>Item Min Rate</th>
                       <td>&#8377; {stockbyid.minrate}</td>
-                      <th>Item Rate</th>
-                      <td>&#8377; {stockbyid.rate}</td>
                     </tr>
                     <tr>
+                      <th>Item Rate</th>
+                      <td>&#8377; {stockbyid.rate}</td>
                       <th>Item Max Rate</th>
                       <td>&#8377; {stockbyid.maxrate}</td>
                     </tr>

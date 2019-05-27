@@ -214,9 +214,14 @@ router.get(
                       itemname: stocks[i].itemname,
                       itemcode: stocks[i].itemcode,
                       machinepart: JSON.parse(stocks[i].machinepart),
+                      itemid: stocks[i].itemid,
+                      itemidunit: stocks[i].itemidunit,
+                      itemod: stocks[i].itemod,
+                      itemodunit: stocks[i].itemodunit,
                       itemlength: stocks[i].itemlength,
-                      itemwidth: stocks[i].itemwidth,
-                      itemheight: stocks[i].itemheight,
+                      itemlengthunit: stocks[i].itemlengthunit,
+                      itemthickness: stocks[i].itemthickness,
+                      itemthicknessunit: stocks[i].itemthicknessunit,
                       forcompany: JSON.parse(stocks[i].forcompany),
                       hsncode: stocks[i].hsncode,
                       //    rack: stocks[i].rack,
@@ -287,8 +292,22 @@ router.post(
     if (req.body.itemcode) stockFields.itemcode = req.body.itemcode;
 
     if (req.body.itemlength) stockFields.itemlength = req.body.itemlength;
-    if (req.body.itemwidth) stockFields.itemwidth = req.body.itemwidth;
-    if (req.body.itemheight) stockFields.itemheight = req.body.itemheight;
+
+    if (req.body.itemid) stockFields.itemid = req.body.itemid;
+    if (req.body.itemidunit) stockFields.itemidunit = req.body.itemidunit;
+
+    if (req.body.itemod) stockFields.itemod = req.body.itemod;
+    if (req.body.itemodunit) stockFields.itemodunit = req.body.itemodunit;
+
+    if (req.body.itemlength) stockFields.itemlength = req.body.itemlength;
+    if (req.body.itemlengthunit)
+      stockFields.itemlengthunit = req.body.itemlengthunit;
+
+    if (req.body.itemthickness)
+      stockFields.itemthickness = req.body.itemthickness;
+    if (req.body.itemthicknessunit)
+      stockFields.itemthicknessunit = req.body.itemthicknessunit;
+
     if (req.body.hsncode) stockFields.hsncode = req.body.hsncode;
     if (req.body.itemwarehouse)
       stockFields.itemwarehouse = req.body.itemwarehouse;
@@ -402,9 +421,14 @@ router.post(
             itemname: stockFields.itemname,
             itemcode: stockFields.itemcode,
             machinepart: JSON.stringify(machinepartobj),
+            itemid: stockFields.itemid,
+            itemidunit: stockFields.itemidunit,
+            itemod: stockFields.itemod,
+            itemodunit: stockFields.itemodunit,
             itemlength: stockFields.itemlength,
-            itemwidth: stockFields.itemwidth,
-            itemheight: stockFields.itemheight,
+            itemlengthunit: stockFields.itemlengthunit,
+            itemthickness: stockFields.itemthickness,
+            itemthicknessunit: stockFields.itemthicknessunit,
             forcompany: JSON.stringify(forcompanyobj),
             hsncode: stockFields.hsncode,
             itemwarehouse: stockFields.itemwarehouse,
@@ -422,9 +446,14 @@ router.post(
               itemname: stockFields.itemname,
               itemcode: stockFields.itemcode,
               machinepart: JSON.stringify(machinepartobj),
+              itemid: stockFields.itemid,
+              itemidunit: stockFields.itemidunit,
+              itemod: stockFields.itemod,
+              itemodunit: stockFields.itemodunit,
               itemlength: stockFields.itemlength,
-              itemwidth: stockFields.itemwidth,
-              itemheight: stockFields.itemheight,
+              itemlengthunit: stockFields.itemlengthunit,
+              itemthickness: stockFields.itemthickness,
+              itemthicknessunit: stockFields.itemthicknessunit,
               forcompany: JSON.stringify(forcompanyobj),
               hsncode: stockFields.hsncode,
               itemwarehouse: stockFields.itemwarehouse,
@@ -563,9 +592,14 @@ router.get(
           itemname: stock.itemname,
           itemcode: stock.itemcode,
           machinepart: Object.values(JSON.parse(stock.machinepart)),
+          itemid: stock.itemid,
+          itemidunit: stock.itemidunit,
+          itemod: stock.itemod,
+          itemodunit: stock.itemodunit,
           itemlength: stock.itemlength,
-          itemwidth: stock.itemwidth,
-          itemheight: stock.itemheight,
+          itemlengthunit: stock.itemlengthunit,
+          itemthickness: stock.itemthickness,
+          itemthicknessunit: stock.itemthicknessunit,
           forcompany: Object.values(JSON.parse(stock.forcompany)),
           hsncode: stock.hsncode,
           minrate: stock.minrate,
@@ -595,9 +629,14 @@ router.put(
     const errors = {};
 
     const eitemname = req.body.itemname;
+    const eitemid = req.body.itemid;
+    const eitemidunit = req.body.itemidunit;
+    const eitemod = req.body.itemod;
+    const eitemodunit = req.body.itemodunit;
     const eitemlength = req.body.itemlength;
-    const eitemwidth = req.body.itemwidth;
-    const eitemheight = req.body.itemheight;
+    const eitemlengthunit = req.body.itemlengthunit;
+    const eitemthickness = req.body.itemthickness;
+    const eitemthicknessunit = req.body.itemthicknessunit;
     const emachinepart = req.body.machinepart;
     const eforcompany = req.body.forcompany;
     const ehsncode = req.body.hsncode;
@@ -607,9 +646,14 @@ router.put(
 
     console.log(
       "edit stock new value received : " + eitemname,
+      eitemid,
+      eitemidunit,
+      eitemod,
+      eitemodunit,
       eitemlength,
-      eitemwidth,
-      eitemheight,
+      eitemlengthunit,
+      eitemthickness,
+      eitemthicknessunit,
       emachinepart,
       eforcompany,
       ehsncode,
@@ -627,9 +671,17 @@ router.put(
       .then(stock => {
         if (stock) {
           var previtemname = stock.itemname;
+
+          var previtemid = stock.itemid;
+          var previtemidunit = stock.itemidunit;
+          var previtemod = stock.itemod;
+          var previtemodunit = stock.itemodunit;
+
           var previtemlength = stock.itemlength;
-          var previtemwidth = stock.itemwidth;
-          var previtemheight = stock.itemheight;
+          var previtemlengthunit = stock.itemlengthunit;
+          var previtemthickness = stock.itemthickness;
+          var previtemthicknessunit = stock.itemthicknessunit;
+
           var prevmachinepart = stock.machinepart;
           var prevforcompany = stock.forcompany;
           var prevhsncode = stock.hsncode;
@@ -639,10 +691,14 @@ router.put(
 
           if (
             previtemname == eitemname &&
+            previtemid == eitemid &&
+            previtemidunit == eitemidunit &&
+            previtemod == eitemod &&
+            previtemodunit == eitemodunit &&
             previtemlength == eitemlength &&
-            previtemwidth == eitemwidth &&
-            previtemheight == eitemheight &&
-            prevmachinepart == emachinepart &&
+            previtemlengthunit == eitemlengthunit &&
+            previtemthickness == eitemthickness &&
+            previtemthicknessunit == eitemthicknessunit &&
             prevforcompany == eforcompany &&
             prevhsncode == ehsncode &&
             prevminrate == eminrate &&
@@ -661,7 +717,7 @@ router.put(
             const CheckifConditions = new Promise((resolve, reject) => {
               if (iseditstockobjfill) {
                 console.log(
-                  "edit stock field are not same as prev in stock collection!!"
+                  "START : edit stock field are not same as prev in stock collection!!"
                 );
                 const existingstkdata = {
                   prodstk_id: stock._id,
@@ -672,37 +728,79 @@ router.put(
 
                 if (previtemname != eitemname) {
                   Object.assign(existingstkdata, { eitemname: eitemname });
+                  console.log("eitemname edited : " + eitemname);
                 }
+                if (previtemid != eitemid) {
+                  Object.assign(existingstkdata, { eitemid: eitemid });
+                  console.log("eitemid edited : " + eitemid);
+                }
+                if (previtemidunit != eitemidunit) {
+                  Object.assign(existingstkdata, { eitemidunit: eitemidunit });
+                  console.log("eitemidunit edited : " + eitemidunit);
+                }
+
+                if (previtemod != eitemod) {
+                  Object.assign(existingstkdata, { eitemod: eitemod });
+                  console.log("eitemod edited : " + eitemod);
+                }
+                if (previtemodunit != eitemodunit) {
+                  Object.assign(existingstkdata, { eitemodunit: eitemodunit });
+                  console.log("eitemodunit edited : " + eitemodunit);
+                }
+
                 if (previtemlength != eitemlength) {
                   Object.assign(existingstkdata, { eitemlength: eitemlength });
+                  console.log("eitemlength edited : " + eitemlength);
                 }
-                if (previtemwidth != eitemwidth) {
-                  Object.assign(existingstkdata, { eitemwidth: eitemwidth });
+                if (previtemlengthunit != eitemlengthunit) {
+                  Object.assign(existingstkdata, {
+                    eitemlengthunit: eitemlengthunit
+                  });
+                  console.log("eitemlengthunit edited : " + eitemlengthunit);
                 }
-                if (previtemheight != eitemheight) {
-                  Object.assign(existingstkdata, { eitemheight: eitemheight });
+
+                if (previtemthickness != eitemthickness) {
+                  Object.assign(existingstkdata, {
+                    eitemthickness: eitemthickness
+                  });
+                  console.log("eitemthickness edited : " + eitemthickness);
                 }
+                if (previtemthicknessunit != eitemthicknessunit) {
+                  Object.assign(existingstkdata, {
+                    eitemthicknessunit: eitemthicknessunit
+                  });
+                  console.log(
+                    "eitemthicknessunit edited : " + eitemthicknessunit
+                  );
+                }
+
                 if (prevmachinepart != emachinepart) {
                   Object.assign(existingstkdata, {
                     emachinepart: emachinepart
                   });
+                  console.log("emachinepart edited : " + emachinepart);
                 }
                 if (prevforcompany != eforcompany) {
                   Object.assign(existingstkdata, { eforcompany: eforcompany });
+                  console.log("eforcompany edited : " + eforcompany);
                 }
                 if (prevhsncode != ehsncode) {
                   Object.assign(existingstkdata, { ehsncode: ehsncode });
+                  console.log("ehsncode edited : " + ehsncode);
                 }
                 if (prevminrate != eminrate) {
                   Object.assign(existingstkdata, { eminrate: eminrate });
+                  console.log("eminrate edited : " + eminrate);
                 }
                 if (prevrate != erate) {
                   Object.assign(existingstkdata, { erate: erate });
+                  console.log("erate edited : " + erate);
                 }
                 if (prevmaxrate != emaxrate) {
                   Object.assign(existingstkdata, { emaxrate: emaxrate });
+                  console.log("emaxrate edited : " + emaxrate);
                 }
-
+                console.log("END : all the above if condition checked");
                 return resolve(existingstkdata);
               } else {
                 var reason = new Error("Your Existingstkdata IS NOT FILL");
@@ -769,9 +867,14 @@ router.delete(
           prodstk_id: stock._id,
           itemcode: stock.itemcode,
           itemname: stock.itemname,
+          itemid: stock.itemid,
+          itemidunit: stock.itemidunit,
+          itemod: stock.itemod,
+          itemodunit: stock.itemodunit,
           itemlength: stock.itemlength,
-          itemwidth: stock.itemwidth,
-          itemheight: stock.itemheight,
+          itemlengthunit: stock.itemlengthunit,
+          itemthickness: stock.itemthickness,
+          itemthicknessunit: stock.itemthicknessunit,
           machinepart: stock.machinepart,
           forcompany: stock.forcompany,
           hsncode: stock.hsncode,

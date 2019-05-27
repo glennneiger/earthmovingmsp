@@ -18,14 +18,29 @@ const StockSchema = new Schema({
   machinepart: {
     type: String
   },
+  itemid: {
+    type: Number
+  },
+  itemidunit: {
+    type: String
+  },
+  itemod: {
+    type: Number
+  },
+  itemodunit: {
+    type: String
+  },
   itemlength: {
     type: Number
   },
-  itemwidth: {
+  itemlengthunit: {
+    type: String
+  },
+  itemthickness: {
     type: Number
   },
-  itemheight: {
-    type: Number
+  itemthicknessunit: {
+    type: String
   },
   forcompany: {
     type: String

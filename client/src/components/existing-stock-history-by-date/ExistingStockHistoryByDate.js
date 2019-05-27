@@ -232,6 +232,44 @@ class ExistingStockHistoryByDate extends Component {
                       </p>
                     )}
 
+                    {existingstkhisdata.eitemid && (
+                      <p>
+                        <small>
+                          Item ID <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
+                          {existingstkhisdata.eitemid}
+                        </small>
+                      </p>
+                    )}
+
+                    {existingstkhisdata.eitemidunit && (
+                      <p>
+                        <small>
+                          Item ID Unit{" "}
+                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
+                          {existingstkhisdata.eitemidunit}
+                        </small>
+                      </p>
+                    )}
+
+                    {existingstkhisdata.eitemod && (
+                      <p>
+                        <small>
+                          Item OD <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
+                          {existingstkhisdata.eitemod}
+                        </small>
+                      </p>
+                    )}
+
+                    {existingstkhisdata.eitemodunit && (
+                      <p>
+                        <small>
+                          Item OD Unit{" "}
+                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
+                          {existingstkhisdata.eitemodunit}
+                        </small>
+                      </p>
+                    )}
+
                     {existingstkhisdata.eitemlength && (
                       <p>
                         <small>
@@ -240,22 +278,37 @@ class ExistingStockHistoryByDate extends Component {
                         </small>
                       </p>
                     )}
-                    {existingstkhisdata.eitemwidth && (
+
+                    {existingstkhisdata.eitemlengthunit && (
                       <p>
                         <small>
-                          Item Width <b style={{ color: "#B3B300" }}>Edited</b>{" "}
-                          : {existingstkhisdata.eitemwidth}
+                          Item Length Unit{" "}
+                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
+                          {existingstkhisdata.eitemlengthunit}
                         </small>
                       </p>
                     )}
-                    {existingstkhisdata.eitemheight && (
+
+                    {existingstkhisdata.eitemthickness && (
                       <p>
                         <small>
-                          Item Height <b style={{ color: "#B3B300" }}>Edited</b>{" "}
-                          : {existingstkhisdata.eitemheight}
+                          Item Thickness{" "}
+                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
+                          {existingstkhisdata.eitemthickness}
                         </small>
                       </p>
                     )}
+
+                    {existingstkhisdata.eitemthicknessunit && (
+                      <p>
+                        <small>
+                          Item Thickness Unit{" "}
+                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
+                          {existingstkhisdata.eitemthicknessunit}
+                        </small>
+                      </p>
+                    )}
+
                     {existingstkhisdata.emachinepart && (
                       <p>
                         <small>

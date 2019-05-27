@@ -195,19 +195,41 @@ class NewStockHistoryByDate extends Component {
                     </p>
                     <p>
                       <small>
-                        Item Length: <b>{newstkhisdata.itemlength}</b>
+                        Item ID:{" "}
+                        <b>
+                          {newstkhisdata.itemid}
+                          {newstkhisdata.itemidunit}
+                        </b>
                       </small>
-                    </p>{" "}
+                    </p>
                     <p>
                       <small>
-                        Item Height: <b>{newstkhisdata.itemheight}</b>
+                        Item OD:{" "}
+                        <b>
+                          {newstkhisdata.itemod}
+                          {newstkhisdata.itemodunit}
+                        </b>
                       </small>
                     </p>
                     <p>
                       <small>
-                        Item Width: <b>{newstkhisdata.itemwidth}</b>
+                        Item Length:{" "}
+                        <b>
+                          {newstkhisdata.itemlength}
+                          {newstkhisdata.itemlengthunit}
+                        </b>
                       </small>
                     </p>
+                    <p>
+                      <small>
+                        Item Thickness:{" "}
+                        <b>
+                          {newstkhisdata.itemthickness}
+                          {newstkhisdata.itemthicknessunit}
+                        </b>
+                      </small>
+                    </p>
+
                     {newstkhisdata.quantity && (
                       <p>
                         <small>

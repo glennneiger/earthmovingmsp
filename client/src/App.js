@@ -67,6 +67,8 @@ import CreateInvoice from "./components/create-invoice/CreateInvoice";
 
 import CartProducts from "./components/cart-products/cartproducts";
 
+import ForgotPassword from "./components/forgot-password/ForgotPassword";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -119,10 +121,11 @@ class App extends Component {
             <Navbar />
             <Route exact path="/" component={Landing} />
             <div className="">
-              {/*} <Route exact path="/register" component={Register} />*/}
+              <Route exact path="/register" component={Register} />
               <Route exact path="/help" component={Help} />
 
               <Route exact path="/login" component={Login} />
+              <Route exact path="/forgot-password" component={ForgotPassword} />
               <Switch>
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
               </Switch>

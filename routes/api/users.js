@@ -7,6 +7,8 @@ const keys = require("../../config/keys");
 
 const passport = require("passport");
 
+const nodemailer = require("nodemailer");
+
 const { ensureAuthenticated, isAdmin } = require("../../config/auth"); //this middleware check only login user can access routes
 
 // Load Input Validation
@@ -142,5 +144,77 @@ router.get(
     });
   }
 );
+
+router.post("/forgotpassword", (req, res) => {
+  const email = req.body.email;
+
+  // Find user by email
+  User.findOne({ email }).then(user => {
+    //using this user we can access all the information like user.id,user.email,user.mobile etc
+
+    let errors = {};
+    let emailexist = true;
+    // Check for user
+    if (!user) {
+      console.log("Your Email is not exist !!");
+      errors.message = "Your Email is not exist !!";
+      errors.className = "alert-danger";
+      emailexist = false;
+      return res.status(404).json(errors);
+    }
+
+    if (emailexist) {
+      let useremail = user.email;
+      let userpassword = user.password;
+      console.log(
+        "user email is exist!! Ready to send password reset link to user email : " +
+          useremail
+      );
+      const output = `
+      <p>You have a new contact request</p>
+      <h3>Contact Details</h3>
+      <ul>  
+        <li>Your Email: ${useremail}</li> 
+      </ul>
+      <h3>Message</h3>
+      <p>click this link to reset your password : http://localhost:3000/forgot-password-reset</p>
+    `;
+
+      // create reusable transporter object using the default SMTP transport
+      let transporter = nodemailer.createTransport({
+        host: "mail.nvoos.com",
+        port: 25,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: "test@nvoos.com", // your nvoos email address like test@nvoos.com
+          pass: "test@123" //password
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+      });
+
+      // setup email data with unicode symbols
+      let mailOptions = {
+        from: "test@nvoos.com", // sender address
+        to: `${useremail}`, // list of receivers
+        subject: "Reset Your Password || Earthmoving Software", // Subject line
+        text: "Reset Your Password", // plain text body
+        html: output // html body
+      };
+
+      // send mail with defined transport object
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log("Message sent: %s", info.messageId);
+        // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+        res.json({ success: "check your mail" });
+      });
+    }
+  });
+});
 
 module.exports = router;

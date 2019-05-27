@@ -67,9 +67,14 @@ class CreateStock extends Component {
       itemname: "",
       itemcode: "",
       machinepart: [],
+      itemid: "",
+      itemidunit: "",
+      itemod: "",
+      itemodunit: "",
       itemlength: "",
-      itemwidth: "",
-      itemheight: "",
+      itemlengthunit: "",
+      itemthickness: "",
+      itemthicknessunit: "",
       forcompany: [],
       hsncode: "",
       itemwarehouse: "",
@@ -124,9 +129,14 @@ class CreateStock extends Component {
       itemname,
       itemcode,
       machinepart,
+      itemid,
+      itemidunit,
+      itemod,
+      itemodunit,
       itemlength,
-      itemwidth,
-      itemheight,
+      itemlengthunit,
+      itemthickness,
+      itemthicknessunit,
       forcompany,
       hsncode,
       itemwarehouse,
@@ -147,9 +157,18 @@ class CreateStock extends Component {
     stockData.append("itemcode", itemcode);
     stockData.append("machinepart", JSON.stringify(machinepart));
 
+    stockData.append("itemid", itemid);
+    stockData.append("itemidunit", itemidunit);
+
+    stockData.append("itemod", itemod);
+    stockData.append("itemodunit", itemodunit);
+
     stockData.append("itemlength", itemlength);
-    stockData.append("itemwidth", itemwidth);
-    stockData.append("itemheight", itemheight);
+    stockData.append("itemlengthunit", itemlengthunit);
+
+    stockData.append("itemthickness", itemthickness);
+    stockData.append("itemthicknessunit", itemthicknessunit);
+
     stockData.append("forcompany", JSON.stringify(forcompany));
     stockData.append("hsncode", hsncode);
     stockData.append("itemwarehouse", itemwarehouse);
@@ -168,10 +187,15 @@ class CreateStock extends Component {
     /*const stockData = {
       itemname: itemname,
       itemcode: itemcode,
-      machinepart: JSON.stringify(machinepart),
+      machinepart: JSON.stringify(machinepart), 
+      itemid: itemid,
+      itemidunit: itemidunit,
+      itemod: itemod,
+      itemodunit: itemodunit,
       itemlength: itemlength,
-      itemwidth: itemwidth,
-      itemheight: itemheight,
+      itemlengthunit: itemlengthunit,
+      itemthickness: itemthickness,
+      itemthicknessunit: itemthicknessunit,
       forcompany: JSON.stringify(forcompany),
       hsncode: hsncode,
       itemwarehouse: itemwarehouse,
@@ -280,9 +304,14 @@ class CreateStock extends Component {
       itemname,
       itemcode,
       machinepart,
+      itemid,
+      itemidunit,
+      itemod,
+      itemodunit,
       itemlength,
-      itemwidth,
-      itemheight,
+      itemlengthunit,
+      itemthickness,
+      itemthicknessunit,
       forcompany,
       hsncode,
       itemwarehouse,
@@ -379,6 +408,37 @@ class CreateStock extends Component {
       }
     }
 
+    // Select options for item id unit
+    const itemidunitoptions = [
+      { label: "Select Item ID Unit", value: 0 },
+      { label: "mm", value: "mm" },
+      { label: "inch", value: "inch" },
+      { label: "cm", value: "cm" }
+    ];
+
+    // Select options for item od unit
+    const itemodunitoptions = [
+      { label: "Select Item OD Unit", value: 0 },
+      { label: "mm", value: "mm" },
+      { label: "inch", value: "inch" },
+      { label: "cm", value: "cm" }
+    ];
+
+    // Select options for item LENGTH unit
+    const itemlengthunitoptions = [
+      { label: "Select Item Length Unit", value: 0 },
+      { label: "mm", value: "mm" },
+      { label: "inch", value: "inch" },
+      { label: "cm", value: "cm" }
+    ];
+
+    // Select options for item Thickness unit
+    const itemthicknessunitoptions = [
+      { label: "Select Item Thickness Unit", value: 0 },
+      { label: "mm", value: "mm" },
+      { label: "inch", value: "inch" },
+      { label: "cm", value: "cm" }
+    ];
     return (
       <div>
         <StockActions />
@@ -474,15 +534,51 @@ class CreateStock extends Component {
                             <div class="form-row">
                               <div class="form-group col-md-4">
                                 <TextFieldGroup
-                                  placeholder="Item Width"
-                                  name="itemwidth"
+                                  placeholder="Item ID"
+                                  name="itemid"
                                   type="number"
-                                  value={itemwidth}
+                                  value={itemid}
                                   onChange={this.onChange}
-                                  error={errors.itemwidth}
-                                  info="Put Item Width"
+                                  error={errors.itemid}
+                                  info="Put Item ID"
                                 />
                               </div>
+                              <div class="form-group col-md-2">
+                                <SelectListGroup
+                                  placeholder="Item ID Unit"
+                                  name="itemidunit"
+                                  value={itemidunit}
+                                  onChange={this.onChange}
+                                  options={itemidunitoptions}
+                                  error={errors.itemidunit}
+                                  info="Put Item ID Unit"
+                                />
+                              </div>
+
+                              <div class="form-group col-md-4">
+                                <TextFieldGroup
+                                  placeholder="Item OD"
+                                  name="itemod"
+                                  type="number"
+                                  value={itemod}
+                                  onChange={this.onChange}
+                                  error={errors.itemod}
+                                  info="Put Item OD"
+                                />
+                              </div>
+
+                              <div class="form-group col-md-2">
+                                <SelectListGroup
+                                  placeholder="Item OD Unit"
+                                  name="itemodunit"
+                                  value={itemodunit}
+                                  onChange={this.onChange}
+                                  options={itemodunitoptions}
+                                  error={errors.itemodunit}
+                                  info="Put Item OD Unit"
+                                />
+                              </div>
+
                               <div class="form-group col-md-4">
                                 <TextFieldGroup
                                   placeholder="Item Length"
@@ -494,15 +590,38 @@ class CreateStock extends Component {
                                   info="Put Item Length"
                                 />
                               </div>
+                              <div class="form-group col-md-2">
+                                <SelectListGroup
+                                  placeholder="Item Length Unit"
+                                  name="itemlengthunit"
+                                  value={itemlengthunit}
+                                  onChange={this.onChange}
+                                  options={itemlengthunitoptions}
+                                  error={errors.itemlengthunit}
+                                  info="Put Item Length Unit"
+                                />
+                              </div>
+
                               <div class="form-group col-md-4">
                                 <TextFieldGroup
-                                  placeholder="Item Height"
-                                  name="itemheight"
+                                  placeholder="Item Thickness"
+                                  name="itemthickness"
                                   type="number"
-                                  value={itemheight}
+                                  value={itemthickness}
                                   onChange={this.onChange}
-                                  error={errors.itemheight}
-                                  info="Put Item Height"
+                                  error={errors.itemthickness}
+                                  info="Put Item Thickness"
+                                />
+                              </div>
+                              <div class="form-group col-md-2">
+                                <SelectListGroup
+                                  placeholder="Item Thickness Unit"
+                                  name="itemthicknessunit"
+                                  value={itemthicknessunit}
+                                  onChange={this.onChange}
+                                  options={itemthicknessunitoptions}
+                                  error={errors.itemthicknessunit}
+                                  info="Put Item Thickness Unit"
                                 />
                               </div>
                             </div>
