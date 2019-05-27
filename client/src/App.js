@@ -69,6 +69,8 @@ import CartProducts from "./components/cart-products/cartproducts";
 
 import ForgotPassword from "./components/forgot-password/ForgotPassword";
 
+import SetNewPassword from "./components/newpassword/SetNewPassword";
+
 import "./App.css";
 
 // Check for token for every single page request
@@ -126,6 +128,12 @@ class App extends Component {
 
               <Route exact path="/login" component={Login} />
               <Route exact path="/forgot-password" component={ForgotPassword} />
+              <Route
+                exact
+                path="/reset-password/:token"
+                component={SetNewPassword}
+              />
+
               <Switch>
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
               </Switch>

@@ -113,7 +113,7 @@ router.post("/login", (req, res) => {
         jwt.sign(
           payload,
           keys.secretOrKey, //here we set the key(secret from the config/keys.js) with payload(login user information)
-          { expiresIn: 3600 }, //3600 hour the key will expire the user should again login
+          { expiresIn: "24h" }, //24 hour the key will expire the user should again login
           (err, token) => {
             //here we set the token and send as response to the authenticated user
             res.json({
@@ -170,49 +170,171 @@ router.post("/forgotpassword", (req, res) => {
         "user email is exist!! Ready to send password reset link to user email : " +
           useremail
       );
-      const output = `
-      <p>You have a new contact request</p>
-      <h3>Contact Details</h3>
-      <ul>  
-        <li>Your Email: ${useremail}</li> 
-      </ul>
-      <h3>Message</h3>
-      <p>click this link to reset your password : http://localhost:3000/forgot-password-reset</p>
-    `;
 
-      // create reusable transporter object using the default SMTP transport
-      let transporter = nodemailer.createTransport({
-        host: "mail.nvoos.com",
-        port: 25,
-        secure: false, // true for 465, false for other ports
-        auth: {
-          user: "test@nvoos.com", // your nvoos email address like test@nvoos.com
-          pass: "test@123" //password
-        },
-        tls: {
-          rejectUnauthorized: false
+      // Sign Token
+      user.resettoken = jwt.sign(
+        { email: user.email },
+        keys.secretOrKey, //here we set the key(secret from the config/keys.js) with payload(login user information)
+        { expiresIn: "1h" } //1 hour the key will expire the user should again login
+      );
+
+      user
+        .save()
+        .then(user => {
+          const output = `
+        <p>Hello ${user.name}</p>
+         
+        <p>You recently request a password reset link. Please click on the link below to reset your password:</p><br /> 
+        <a href="http://localhost:3000/reset-password/${
+          user.resettoken
+        }">http://localhost:3000/reset-password</a>
+      `;
+
+          // create reusable transporter object using the default SMTP transport
+          let transporter = nodemailer.createTransport({
+            host: "mail.nvoos.com",
+            port: 25,
+            secure: false, // true for 465, false for other ports
+            auth: {
+              user: "test@nvoos.com", // your nvoos email address like test@nvoos.com
+              pass: "test@123" //password
+            },
+            tls: {
+              rejectUnauthorized: false
+            }
+          });
+
+          // setup email data with unicode symbols
+          let mailOptions = {
+            from: "test@nvoos.com", // sender address
+            to: `${useremail}`, // list of receivers
+            subject: "Reset Your Password || Earthmoving Software", // Subject line
+            text: "Reset Your Password", // plain text body
+            html: output // html body
+          };
+
+          // send mail with defined transport object
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              return console.log(error);
+            }
+            console.log("Message sent: %s", info.messageId);
+            // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+            res.json({ success: "check your mail" });
+          });
+        })
+        .catch(err => {
+          errors.message = "Something went wrong !!";
+          errors.className = "alert-danger";
+
+          return res.status(404).json(errors);
+        });
+    }
+  });
+});
+
+router.get("/resetpassword/:token", (req, res) => {
+  User.findOne({ resettoken: req.params.token }).then(user => {
+    let errors = {};
+    errors.message = "Something went wrong !!";
+    errors.className = "alert-danger";
+
+    var token = req.params.token;
+    jwt.verify(token, keys.secretOrKey, function(err, decoded) {
+      if (err) {
+        console.log("token is invalid");
+        errors.message = "Reset Password link has expired !!";
+        errors.className = "alert-danger";
+
+        return res.status(404).json(errors); //Token has expired or invalid
+      } else {
+        if (!user) {
+          errors.message = "Reset Password link has expired !!";
+          errors.className = "alert-danger";
+
+          return res.status(404).json(errors);
+        } else {
+          console.log("token is valid");
+          res.json(user);
         }
-      });
+      }
+    });
+  });
+});
 
-      // setup email data with unicode symbols
-      let mailOptions = {
-        from: "test@nvoos.com", // sender address
-        to: `${useremail}`, // list of receivers
-        subject: "Reset Your Password || Earthmoving Software", // Subject line
-        text: "Reset Your Password", // plain text body
-        html: output // html body
-      };
+router.put("/saveresetpassword/", (req, res) => {
+  var useremail = req.body.email;
 
-      // send mail with defined transport object
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          return console.log(error);
-        }
-        console.log("Message sent: %s", info.messageId);
-        // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  console.log("email received:" + useremail);
+  User.findOne({ email: req.body.email }).then(user => {
+    let errors = {};
+    errors.message = "Something went wrong !!";
+    errors.className = "alert-danger";
+    if (user) {
+      if (!req.body.password == "" || !req.body.confirmpassword == "") {
+        user.password = req.body.password;
 
-        res.json({ success: "check your mail" });
-      });
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(user.password, salt, (err, hash) => {
+            if (err) throw err;
+            user.password = hash; //set password to hash password
+            user.resettoken = "";
+
+            user
+              .save()
+              .then(user => {
+                const output = `
+              <p>Hello ${user.name}</p>
+               
+              <p>Your Password Changed Successfully!!</p>
+            `;
+
+                // create reusable transporter object using the default SMTP transport
+                let transporter = nodemailer.createTransport({
+                  host: "mail.nvoos.com",
+                  port: 25,
+                  secure: false, // true for 465, false for other ports
+                  auth: {
+                    user: "test@nvoos.com", // your nvoos email address like test@nvoos.com
+                    pass: "test@123" //password
+                  },
+                  tls: {
+                    rejectUnauthorized: false
+                  }
+                });
+
+                // setup email data with unicode symbols
+                let mailOptions = {
+                  from: "test@nvoos.com", // sender address
+                  to: `${useremail}`, // list of receivers
+                  subject:
+                    "Password Reset Successfully || Earthmoving Software", // Subject line
+                  text: "Password Reset", // plain text body
+                  html: output // html body
+                };
+
+                // send mail with defined transport object
+                transporter.sendMail(mailOptions, (error, info) => {
+                  if (error) {
+                    return console.log(error);
+                  }
+                  console.log("Message sent: %s", info.messageId);
+                  // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+                  res.json({ success: "password reset successfully" });
+                });
+              })
+              .catch(err => console.log(err));
+          });
+        });
+      }
+    } else {
+      console.log("user is not found");
+      errors.message = "Some Went Wrong Try After Some Time !!";
+      errors.className = "alert-danger";
+
+      return res.status(404).json(errors); //Token has expired or invalid
     }
   });
 });
