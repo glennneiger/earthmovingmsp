@@ -202,27 +202,42 @@ class DeletedStockHistoryByDate extends Component {
                       </p>
                     )}
 
+                    {deletedstkhisdata.itemid && (
+                      <p>
+                        <small>
+                          Item ID : {deletedstkhisdata.itemid}
+                          {deletedstkhisdata.itemidunit}
+                        </small>
+                      </p>
+                    )}
+
+                    {deletedstkhisdata.itemod && (
+                      <p>
+                        <small>
+                          Item OD : {deletedstkhisdata.itemod}
+                          {deletedstkhisdata.itemodunit}
+                        </small>
+                      </p>
+                    )}
+
                     {deletedstkhisdata.itemlength && (
                       <p>
                         <small>
                           Item Length : {deletedstkhisdata.itemlength}
+                          {deletedstkhisdata.itemlengthunit}
                         </small>
                       </p>
                     )}
-                    {deletedstkhisdata.itemwidth && (
+
+                    {deletedstkhisdata.itemthickness && (
                       <p>
                         <small>
-                          Item Width : {deletedstkhisdata.itemwidth}
+                          Item Thickness : {deletedstkhisdata.itemthickness}
+                          {deletedstkhisdata.itemthicknessunit}
                         </small>
                       </p>
                     )}
-                    {deletedstkhisdata.itemheight && (
-                      <p>
-                        <small>
-                          Item Height : {deletedstkhisdata.itemheight}
-                        </small>
-                      </p>
-                    )}
+
                     {deletedstkhisdata.machinepart && (
                       <p>
                         <small>

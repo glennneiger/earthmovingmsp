@@ -2,7 +2,13 @@ import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
 
-import { GET_ERRORS, SET_CURRENT_USER } from "./types";
+import {
+  GET_ERRORS,
+  SET_CURRENT_USER,
+  SET_CURRENT_USER_RESET_PASS_DATA
+} from "./types";
+
+import { sendFlashMessage } from "./flashMessage";
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
@@ -63,4 +69,61 @@ export const logoutUser = () => dispatch => {
   setAuthToken(false);
   // Set current user to {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
+};
+
+export const forgotpassUser = userData => dispatch => {
+  axios
+    .post("/api/users/forgotpassword", userData)
+    .then(() => {
+      dispatch(
+        sendFlashMessage(
+          "Check Your Email To Reset New Password !!",
+          "alert-success"
+        )
+      );
+    })
+    .catch(err =>
+      // console.log(err.response.data)
+      dispatch(
+        sendFlashMessage(err.response.data.message, err.response.data.className)
+      )
+    );
+};
+
+export const resetpassword = token => dispatch => {
+  axios
+    .get(`/api/users/resetpassword/${token}`)
+    .then(res =>
+      dispatch({
+        type: SET_CURRENT_USER_RESET_PASS_DATA,
+        payload: res.data
+      })
+    )
+    .catch(err =>
+      // console.log(err.response.data)
+      dispatch(
+        sendFlashMessage(err.response.data.message, err.response.data.className)
+      )
+    );
+};
+
+export const saveResetPassword = (userresetpassData, history) => dispatch => {
+  axios
+    .put("/api/users/saveresetpassword/", userresetpassData)
+    .then(res => history.push("/login"))
+    .then(res =>
+      dispatch({
+        type: SET_CURRENT_USER_RESET_PASS_DATA,
+        payload: {}
+      })
+    )
+    .then(() => {
+      alert("Your Password reset successfully !!");
+    })
+    .catch(err =>
+      // console.log(err.response.data)
+      dispatch(
+        sendFlashMessage(err.response.data.message, err.response.data.className)
+      )
+    );
 };

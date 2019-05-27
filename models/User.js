@@ -29,6 +29,10 @@ const UserSchema = new Schema({
   role: {
     type: String,
     default: "inventoryuser"
+  },
+  resettoken: {
+    type: String,
+    required: false
   }
 });
 

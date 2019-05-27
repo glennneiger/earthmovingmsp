@@ -71,9 +71,14 @@ class EditStock extends Component {
     const {
       itemname,
       itemcode,
+      itemid,
+      itemidunit,
+      itemod,
+      itemodunit,
       itemlength,
-      itemwidth,
-      itemheight,
+      itemlengthunit,
+      itemthickness,
+      itemthicknessunit,
       hsncode,
       minrate,
       rate,
@@ -85,9 +90,14 @@ class EditStock extends Component {
 
     const stockData = {
       itemname,
+      itemid,
+      itemidunit,
+      itemod,
+      itemodunit,
       itemlength,
-      itemwidth,
-      itemheight,
+      itemlengthunit,
+      itemthickness,
+      itemthicknessunit,
       machinepart,
       forcompany,
       hsncode,
@@ -170,6 +180,38 @@ class EditStock extends Component {
   }
 
   render() {
+    // Select options for item id unit
+    const itemidunitoptions = [
+      { label: "Select Item ID Unit", value: 0 },
+      { label: "mm", value: "mm" },
+      { label: "inch", value: "inch" },
+      { label: "cm", value: "cm" }
+    ];
+
+    // Select options for item od unit
+    const itemodunitoptions = [
+      { label: "Select Item OD Unit", value: 0 },
+      { label: "mm", value: "mm" },
+      { label: "inch", value: "inch" },
+      { label: "cm", value: "cm" }
+    ];
+
+    // Select options for item LENGTH unit
+    const itemlengthunitoptions = [
+      { label: "Select Item Length Unit", value: 0 },
+      { label: "mm", value: "mm" },
+      { label: "inch", value: "inch" },
+      { label: "cm", value: "cm" }
+    ];
+
+    // Select options for item Thickness unit
+    const itemthicknessunitoptions = [
+      { label: "Select Item Thickness Unit", value: 0 },
+      { label: "mm", value: "mm" },
+      { label: "inch", value: "inch" },
+      { label: "cm", value: "cm" }
+    ];
+
     const styles = {
       container: {
         border: "1px solid #ddd",
@@ -307,17 +349,52 @@ class EditStock extends Component {
                       <div class="form-row">
                         <div class="form-group col-md-4">
                           <TextFieldGroup
-                            placeholder="Item Width"
-                            name="itemwidth"
+                            placeholder="Item ID"
+                            name="itemid"
                             type="number"
-                            value={this.state.singprodstk.itemwidth}
+                            value={this.state.singprodstk.itemid}
                             onChange={this.onChange}
-                            error={errors.itemwidth}
-                            info="Put Item Width"
+                            error={errors.itemid}
+                            info="Put Item ID"
+                          />
+                        </div>
+                        <div class="form-group col-md-2">
+                          <SelectListGroup
+                            placeholder="Item ID Unit"
+                            name="itemidunit"
+                            value={this.state.singprodstk.itemidunit}
+                            onChange={this.onChange}
+                            options={itemidunitoptions}
+                            error={errors.itemidunit}
+                            info="Put Item ID Unit"
                           />
                         </div>
                         <div class="form-group col-md-4">
                           <TextFieldGroup
+                            placeholder="Item OD"
+                            name="itemod"
+                            type="number"
+                            value={this.state.singprodstk.itemod}
+                            onChange={this.onChange}
+                            error={errors.itemod}
+                            info="Put Item OD"
+                          />
+                        </div>
+
+                        <div class="form-group col-md-2">
+                          <SelectListGroup
+                            placeholder="Item OD Unit"
+                            name="itemodunit"
+                            value={this.state.singprodstk.itemodunit}
+                            onChange={this.onChange}
+                            options={itemodunitoptions}
+                            error={errors.itemodunit}
+                            info="Put Item OD Unit"
+                          />
+                        </div>
+                        <div class="form-group col-md-4">
+                          <TextFieldGroup
+                            placeholder="Item Length"
                             name="itemlength"
                             type="number"
                             value={this.state.singprodstk.itemlength}
@@ -326,15 +403,37 @@ class EditStock extends Component {
                             info="Put Item Length"
                           />
                         </div>
+                        <div class="form-group col-md-2">
+                          <SelectListGroup
+                            placeholder="Item Length Unit"
+                            name="itemlengthunit"
+                            value={this.state.singprodstk.itemlengthunit}
+                            onChange={this.onChange}
+                            options={itemlengthunitoptions}
+                            error={errors.itemlengthunit}
+                            info="Put Item Length Unit"
+                          />
+                        </div>
                         <div class="form-group col-md-4">
                           <TextFieldGroup
-                            placeholder="Item Height"
-                            name="itemheight"
+                            placeholder="Item Thickness"
+                            name="itemthickness"
                             type="number"
-                            value={this.state.singprodstk.itemheight}
+                            value={this.state.singprodstk.itemthickness}
                             onChange={this.onChange}
-                            error={errors.itemheight}
-                            info="Put Item Height"
+                            error={errors.itemthickness}
+                            info="Put Item Thickness"
+                          />
+                        </div>
+                        <div class="form-group col-md-2">
+                          <SelectListGroup
+                            placeholder="Item Thickness Unit"
+                            name="itemthicknessunit"
+                            value={this.state.singprodstk.itemthicknessunit}
+                            onChange={this.onChange}
+                            options={itemthicknessunitoptions}
+                            error={errors.itemthicknessunit}
+                            info="Put Item Thickness Unit"
                           />
                         </div>
                       </div>

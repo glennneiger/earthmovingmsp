@@ -18,13 +18,28 @@ const ExistingStockHistorySchema = new Schema({
   eitemname: {
     type: String
   },
+  eitemid: {
+    type: Number
+  },
+  eitemidunit: {
+    type: String
+  },
+  eitemod: {
+    type: Number
+  },
+  eitemodunit: {
+    type: String
+  },
   eitemlength: {
+    type: Number
+  },
+  eitemlengthunit: {
     type: String
   },
-  eitemwidth: {
-    type: String
+  eitemthickness: {
+    type: Number
   },
-  eitemheight: {
+  eitemthicknessunit: {
     type: String
   },
   emachinepart: {

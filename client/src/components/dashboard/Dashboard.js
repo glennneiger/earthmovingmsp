@@ -182,35 +182,62 @@ class Dashboard extends Component {
           )
         },
         {
+          Header: "ID",
+          accessor: "itemidwithunit",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>
+                {row.value.map(data => {
+                  return data;
+                })}
+              </center>
+            </span>
+          )
+        },
+        {
+          Header: "OD",
+          accessor: "itemodwithunit",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>
+                {row.value.map(data => {
+                  return data;
+                })}
+              </center>
+            </span>
+          )
+        },
+        {
           Header: "Length",
-          accessor: "itemlength",
+          accessor: "itemlengthwithunit",
           maxWidth: 290,
           filterable: true,
           Cell: row => (
             <span>
-              <center>{row.value}</center>
+              <center>
+                {row.value.map(data => {
+                  return data;
+                })}
+              </center>
             </span>
           )
         },
         {
-          Header: "Width",
-          accessor: "itemwidth",
+          Header: "Thickness",
+          accessor: "itemthicknesswithunit",
           maxWidth: 290,
           filterable: true,
           Cell: row => (
             <span>
-              <center>{row.value}</center>
-            </span>
-          )
-        },
-        {
-          Header: "Height",
-          accessor: "itemheight",
-          maxWidth: 290,
-          filterable: true,
-          Cell: row => (
-            <span>
-              <center>{row.value}</center>
+              <center>
+                {row.value.map(data => {
+                  return data;
+                })}
+              </center>
             </span>
           )
         },
