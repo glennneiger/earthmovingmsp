@@ -38,7 +38,7 @@ router.get(
     var prodwarehousetransfer = req.params.prodwarehousetransfer;
     var quantitytrans = req.params.quantitytrans;
 
-    var itemcode;
+    var itempartno;
 
     var availabletotalqty = 0;
 
@@ -59,10 +59,10 @@ router.get(
             if (warehouse.warehouseproducts[i]._id == prodstk_id) {
               var warehousename = warehouse.warehousename;
               var warehouseaddress = warehouse.warehouseaddress;
-              var itemcode = warehouse.warehouseproducts[i].itemcode;
+              var itempartno = warehouse.warehouseproducts[i].itempartno;
               var totalqty = warehouse.warehouseproducts[i].quantity;
 
-              itemcode = itemcode;
+              itempartno = itempartno;
               console.log(
                 "DATA FOUND ACC TO Prodstk_id : " +
                   warehouse.warehouseproducts[i]._id +
@@ -70,7 +70,7 @@ router.get(
                   warehouse.warehouseproducts[i].quantity
               );
               console.log(
-                "Item Code : " + warehouse.warehouseproducts[i].itemcode
+                "Item Code : " + warehouse.warehouseproducts[i].itempartno
               );
               availabletotalqty = totalqty;
 
@@ -86,7 +86,7 @@ router.get(
                     totalqty +
                     " Quantity " +
                     "of" +
-                    itemcode
+                    itempartno
                 );
                 errors.message =
                   "you cannot transfer product stock from " +
@@ -96,13 +96,13 @@ router.get(
                   totalqty +
                   " Quantity " +
                   "of " +
-                  itemcode;
+                  itempartno;
                 errors.className = "alert-danger";
                 res.status(400).json(errors);
               } else {
                 var warehousename = warehouse.warehousename;
                 var warehouseaddress = warehouse.warehouseaddress;
-                var itemcode = warehouse.warehouseproducts[i].itemcode;
+                var itempartno = warehouse.warehouseproducts[i].itempartno;
                 var totalqty = warehouse.warehouseproducts[i].quantity;
 
                 var companynamedata = {};
@@ -113,7 +113,7 @@ router.get(
                 const warehousetransferproducts = {
                   user: req.user.id,
                   prodstk_id: prodstk_id,
-                  itemcode: itemcode,
+                  itempartno: itempartno,
                   prodwarehouseorigin: prodwarehouseorigin,
                   prodwarehousetransfer: prodwarehousetransfer,
                   quantitytrans: quantitytrans,
@@ -128,7 +128,7 @@ router.get(
                     totalqty +
                     " Quantity " +
                     "of" +
-                    itemcode
+                    itempartno
                 );
                 console.log("///////// ORIGIN UPDATE START ///////////////");
 
@@ -164,8 +164,8 @@ router.get(
                           );
                           var warehousename = warehouse.warehousename;
                           var warehouseaddress = warehouse.warehouseaddress;
-                          var itemcode =
-                            warehouse.warehouseproducts[i].itemcode;
+                          var itempartno =
+                            warehouse.warehouseproducts[i].itempartno;
                           var totalqty =
                             warehouse.warehouseproducts[i].quantity;
 
@@ -246,7 +246,7 @@ router.get(
                           const warehouseprodfields = {
                             user: req.user.id,
                             _id: stock._id,
-                            itemcode: stock.itemcode,
+                            itempartno: stock.itempartno,
                             quantity: quantitytrans
                           };
 

@@ -5,6 +5,9 @@ import { withRouter } from "react-router-dom";
 import Dropzone from "react-dropzone";
 import PropTypes from "prop-types";
 import TextFieldGroup from "../common/TextFieldGroup";
+
+import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
+
 import SelectListGroup from "../common/SelectListGroup";
 import StockActions from "../dashboard/StockActions";
 
@@ -64,9 +67,9 @@ class CreateStock extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      itemname: "",
-      itemcode: "",
-      machinepart: [],
+      itemtechname: "",
+      itempartno: "",
+      machinenames: [],
       itemid: "",
       itemidunit: "",
       itemod: "",
@@ -75,18 +78,18 @@ class CreateStock extends Component {
       itemlengthunit: "",
       itemthickness: "",
       itemthicknessunit: "",
-      forcompany: [],
       hsncode: "",
       itemwarehouse: "",
       //  rack: "",
       quantity: "",
+      minqtyreqfornotify: "",
       minrate: "",
       rate: "",
       maxrate: "",
+      itemremark: "",
       productImage: "",
       focused: false,
       mpinput: "",
-      fcinput: "",
       acceptedFiles: "",
       errors: {}
     };
@@ -97,10 +100,6 @@ class CreateStock extends Component {
     this.handlempInputChange = this.handlempInputChange.bind(this);
     this.handlempInputKeyDown = this.handlempInputKeyDown.bind(this);
     this.handlempRemoveItem = this.handlempRemoveItem.bind(this);
-
-    this.handlefcInputChange = this.handlefcInputChange.bind(this);
-    this.handlefcInputKeyDown = this.handlefcInputKeyDown.bind(this);
-    this.handlefcRemoveItem = this.handlefcRemoveItem.bind(this);
   }
 
   componentDidMount() {
@@ -126,9 +125,9 @@ class CreateStock extends Component {
 
   onSubmit = () => {
     const {
-      itemname,
-      itemcode,
-      machinepart,
+      itemtechname,
+      itempartno,
+      machinenames,
       itemid,
       itemidunit,
       itemod,
@@ -137,25 +136,26 @@ class CreateStock extends Component {
       itemlengthunit,
       itemthickness,
       itemthicknessunit,
-      forcompany,
       hsncode,
       itemwarehouse,
       //  rack,
       quantity,
+      minqtyreqfornotify,
       minrate,
       rate,
       maxrate,
+      itemremark,
       acceptedFiles
     } = this.state;
 
-    // if (machinepart.length > 0) {
+    // if (machinenames.length > 0) {
     console.log("acceptedFiles is : " + acceptedFiles);
     //}
 
     let stockData = new FormData();
-    stockData.append("itemname", itemname);
-    stockData.append("itemcode", itemcode);
-    stockData.append("machinepart", JSON.stringify(machinepart));
+    stockData.append("itemtechname", itemtechname);
+    stockData.append("itempartno", itempartno);
+    stockData.append("machinenames", JSON.stringify(machinenames));
 
     stockData.append("itemid", itemid);
     stockData.append("itemidunit", itemidunit);
@@ -169,14 +169,18 @@ class CreateStock extends Component {
     stockData.append("itemthickness", itemthickness);
     stockData.append("itemthicknessunit", itemthicknessunit);
 
-    stockData.append("forcompany", JSON.stringify(forcompany));
     stockData.append("hsncode", hsncode);
     stockData.append("itemwarehouse", itemwarehouse);
     // stockData.append("rack", rack);
     stockData.append("quantity", quantity);
+
+    stockData.append("minqtyreqfornotify", minqtyreqfornotify);
+
     stockData.append("minrate", minrate);
     stockData.append("rate", rate);
     stockData.append("maxrate", maxrate);
+
+    stockData.append("itemremark", itemremark);
 
     for (let i = 0; i < acceptedFiles.length; i += 1) {
       stockData.append("file", acceptedFiles[i]);
@@ -185,9 +189,9 @@ class CreateStock extends Component {
 
     stockData.append("acceptedFiles", acceptedFiles);
     /*const stockData = {
-      itemname: itemname,
-      itemcode: itemcode,
-      machinepart: JSON.stringify(machinepart), 
+      itemtechname: itemtechname,
+      itempartno: itempartno,
+      machinenames: JSON.stringify(machinenames), 
       itemid: itemid,
       itemidunit: itemidunit,
       itemod: itemod,
@@ -196,7 +200,6 @@ class CreateStock extends Component {
       itemlengthunit: itemlengthunit,
       itemthickness: itemthickness,
       itemthicknessunit: itemthicknessunit,
-      forcompany: JSON.stringify(forcompany),
       hsncode: hsncode,
       itemwarehouse: itemwarehouse,
       rack: rack,
@@ -223,23 +226,25 @@ class CreateStock extends Component {
   }
 
   handlempInputKeyDown(evt) {
-    console.log("this.state.machinepart is : " + typeof this.state.machinepart);
+    console.log(
+      "this.state.machinenames is : " + typeof this.state.machinenames
+    );
     if (evt.keyCode === 13) {
       const { value } = evt.target;
 
       this.setState(state => ({
-        machinepart: [...state.machinepart, value],
+        machinenames: [...state.machinenames, value],
         mpinput: ""
       }));
     }
 
     if (
-      this.state.machinepart.length &&
+      this.state.machinenames.length &&
       evt.keyCode === 8 &&
       !this.state.mpinput.length
     ) {
       this.setState(state => ({
-        machinepart: state.machinepart.slice(0, state.machinepart.length - 1)
+        machinenames: state.machinenames.slice(0, state.machinenames.length - 1)
       }));
     }
   }
@@ -247,45 +252,12 @@ class CreateStock extends Component {
   handlempRemoveItem(index) {
     return () => {
       this.setState(state => ({
-        machinepart: state.machinepart.filter((item, i) => i !== index)
+        machinenames: state.machinenames.filter((item, i) => i !== index)
       }));
     };
   }
 
   ///////////////
-
-  handlefcInputChange(evt) {
-    this.setState({ fcinput: evt.target.value });
-  }
-
-  handlefcInputKeyDown(evt) {
-    if (evt.keyCode === 13) {
-      const { value } = evt.target;
-
-      this.setState(state => ({
-        forcompany: [...state.forcompany, value],
-        fcinput: ""
-      }));
-    }
-
-    if (
-      this.state.forcompany.length &&
-      evt.keyCode === 8 &&
-      !this.state.fcinput.length
-    ) {
-      this.setState(state => ({
-        forcompany: state.forcompany.slice(0, state.forcompany.length - 1)
-      }));
-    }
-  }
-
-  handlefcRemoveItem(index) {
-    return () => {
-      this.setState(state => ({
-        forcompany: state.forcompany.filter((item, i) => i !== index)
-      }));
-    };
-  }
 
   handleOnDrop = (files, rejectedFiles) => {
     if (files.length <= 4) {
@@ -301,9 +273,9 @@ class CreateStock extends Component {
 
   render() {
     const {
-      itemname,
-      itemcode,
-      machinepart,
+      itemtechname,
+      itempartno,
+      machinenames,
       itemid,
       itemidunit,
       itemod,
@@ -312,14 +284,15 @@ class CreateStock extends Component {
       itemlengthunit,
       itemthickness,
       itemthicknessunit,
-      forcompany,
       hsncode,
       itemwarehouse,
       // rack,
       quantity,
+      minqtyreqfornotify,
       minrate,
       rate,
       maxrate,
+      itemremark,
       productImage,
       acceptedFiles
     } = this.state;
@@ -340,7 +313,7 @@ class CreateStock extends Component {
         borderRadius: "5px"
       },
 
-      machinepart: {
+      machinenames: {
         display: "inline-block",
         padding: "2px",
         border: "1px solid #0085c3",
@@ -350,24 +323,7 @@ class CreateStock extends Component {
         cursor: "pointer"
       },
 
-      forcompany: {
-        display: "inline-block",
-        padding: "2px",
-        border: "1px solid #0085c3",
-        fontFamily: "Helvetica, sans-serif",
-        borderRadius: "5px",
-        marginRight: "5px",
-        cursor: "pointer"
-      },
-
-      machinepartinput: {
-        outline: "none",
-        border: "none",
-        fontSize: "14px",
-        fontFamily: "Helvetica, sans-serif"
-      },
-
-      forcompanyinput: {
+      machinenamesinput: {
         outline: "none",
         border: "none",
         fontSize: "14px",
@@ -501,23 +457,23 @@ class CreateStock extends Component {
                             <div class="form-row">
                               <div class="form-group col-md-4">
                                 <TextFieldGroup
-                                  placeholder="* Item Name"
-                                  name="itemname"
-                                  value={itemname.toLowerCase()}
+                                  placeholder="* Item Technical name"
+                                  name="itemtechname"
+                                  value={itemtechname.toLowerCase()}
                                   onChange={this.onChange}
-                                  error={errors.itemname}
-                                  info="put Item Name"
+                                  error={errors.itemtechname}
+                                  info="Put Technical name"
                                 />
                               </div>
 
                               <div class="form-group col-md-4">
                                 <TextFieldGroup
-                                  placeholder="* Item Code"
-                                  name="itemcode"
-                                  value={itemcode}
+                                  placeholder="* Item Part No"
+                                  name="itempartno"
+                                  value={itempartno}
                                   onChange={this.onChange}
-                                  error={errors.itemcode}
-                                  info="A unique itemcode"
+                                  error={errors.itempartno}
+                                  info="A unique Item Part No"
                                 />
                               </div>
                               <div class="form-group col-md-4">
@@ -632,10 +588,10 @@ class CreateStock extends Component {
                               >
                                 <label>
                                   <ul style={styles.container}>
-                                    {this.state.machinepart.map((item, i) => (
+                                    {this.state.machinenames.map((item, i) => (
                                       <li
                                         key={i}
-                                        style={styles.machinepart}
+                                        style={styles.machinenames}
                                         onClick={this.handlempRemoveItem(i)}
                                       >
                                         {item}
@@ -647,62 +603,25 @@ class CreateStock extends Component {
                                       </li>
                                     ))}
                                     <input
-                                      style={styles.machinepartinput}
+                                      style={styles.machinenamesinput}
                                       value={this.state.mpinput.toLowerCase()}
                                       onChange={this.handlempInputChange}
                                       onKeyDown={this.handlempInputKeyDown}
                                     />
                                   </ul>
-                                  <span>* Put Machine Part Names</span>
+                                  <span>* Put Machine Names</span>
                                 </label>
                               </div>
 
                               <div
                                 class="form-group col-md-6"
-                                style={{ backgroundColor: "#e4e4e4" }}
+                                style={{
+                                  backgroundColor: "rgb(202, 206, 200)"
+                                }}
                               >
-                                <label>
-                                  <ul style={styles.container}>
-                                    {this.state.forcompany.map((item, i) => (
-                                      <li
-                                        key={i}
-                                        style={styles.forcompany}
-                                        onClick={this.handlefcRemoveItem(i)}
-                                      >
-                                        {item}
-                                        <span
-                                          style={{ color: "red", padding: 5 }}
-                                        >
-                                          (x)
-                                        </span>
-                                      </li>
-                                    ))}
-                                    <input
-                                      style={styles.forcompanyinput}
-                                      value={this.state.fcinput.toLowerCase()}
-                                      onChange={this.handlefcInputChange}
-                                      onKeyDown={this.handlefcInputKeyDown}
-                                    />
-                                  </ul>
-                                  <span>Put For Company Names</span>
-                                </label>
-                              </div>
-                            </div>
-                            <div class="form-row">
-                              <div class="form-group col-md-6">
-                                <TextFieldGroup
-                                  placeholder="Item Quantity"
-                                  name="quantity"
-                                  value={quantity}
-                                  onChange={this.onChange}
-                                  error={errors.quantity}
-                                  info="Item Quantity"
-                                />
-                              </div>
-
-                              <div class="form-group col-md-6">
                                 <TextFieldGroup
                                   placeholder="Item Rate"
+                                  type="number"
                                   name="rate"
                                   value={rate}
                                   onChange={this.onChange}
@@ -715,6 +634,7 @@ class CreateStock extends Component {
                               <div class="form-group col-md-6">
                                 <TextFieldGroup
                                   placeholder="Item Min Rate"
+                                  type="number"
                                   name="minrate"
                                   value={minrate}
                                   onChange={this.onChange}
@@ -726,11 +646,59 @@ class CreateStock extends Component {
                               <div class="form-group col-md-6">
                                 <TextFieldGroup
                                   placeholder="Item Max Rate"
+                                  type="number"
                                   name="maxrate"
                                   value={maxrate}
                                   onChange={this.onChange}
                                   error={errors.maxrate}
                                   info="Item Max Rate"
+                                />
+                              </div>
+                            </div>
+                            <div class="form-row">
+                              <div
+                                class="form-group col-md-6"
+                                style={{
+                                  backgroundColor: "rgb(220, 228, 215)"
+                                }}
+                              >
+                                <TextFieldGroup
+                                  placeholder="* Item Quantity"
+                                  type="number"
+                                  name="quantity"
+                                  value={quantity}
+                                  onChange={this.onChange}
+                                  error={errors.quantity}
+                                  info="Item Quantity"
+                                />
+                              </div>
+
+                              <div
+                                class="form-group col-md-6"
+                                style={{
+                                  backgroundColor: "rgb(224, 202, 202)"
+                                }}
+                              >
+                                <TextFieldGroup
+                                  placeholder="Item Min Quantity Required"
+                                  type="number"
+                                  name="minqtyreqfornotify"
+                                  value={minqtyreqfornotify}
+                                  onChange={this.onChange}
+                                  error={errors.minqtyreqfornotify}
+                                  info="Item Min Quantity Required (for notification purpose if item original quantity is crossed min quantity in future so it'll help for you to get notification)"
+                                />
+                              </div>
+                            </div>
+                            <div class="form-row">
+                              <div class="form-group col-md-12">
+                                <TextAreaFieldGroup
+                                  placeholder="Item Remark"
+                                  name="itemremark"
+                                  value={itemremark}
+                                  onChange={this.onChange}
+                                  error={errors.itemremark}
+                                  info="Item Remark"
                                 />
                               </div>
                             </div>

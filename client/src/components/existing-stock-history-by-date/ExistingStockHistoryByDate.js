@@ -205,6 +205,19 @@ class ExistingStockHistoryByDate extends Component {
                     </p>
                   </div>
                 )}
+                {existingstkhisdata.operation == "updateminnotifyqty" && (
+                  <div
+                    class="card-header text-light"
+                    style={{ backgroundColor: "#E0CACA" }}
+                  >
+                    <p>
+                      <strong style={{ color: "black", fontSize: 12 }}>
+                        Action Performed : Update Min Qty Required (for
+                        notification)
+                      </strong>
+                    </p>
+                  </div>
+                )}
                 <div className="row">
                   <div className="col-4">
                     <img
@@ -216,18 +229,18 @@ class ExistingStockHistoryByDate extends Component {
                   </div>
 
                   <div className="col-8">
-                    {existingstkhisdata.itemcode && (
+                    {existingstkhisdata.itempartno && (
                       <p className="product-name">
                         <strong>
-                          Item Code : {existingstkhisdata.itemcode}
+                          Item Part No : {existingstkhisdata.itempartno}
                         </strong>
                       </p>
                     )}
-                    {existingstkhisdata.eitemname && (
+                    {existingstkhisdata.eitemtechname && (
                       <p className="product-name">
                         <small>
                           Item Name <b>Edited</b> :{" "}
-                          {existingstkhisdata.eitemname}
+                          {existingstkhisdata.eitemtechname}
                         </small>
                       </p>
                     )}
@@ -309,12 +322,12 @@ class ExistingStockHistoryByDate extends Component {
                       </p>
                     )}
 
-                    {existingstkhisdata.emachinepart && (
+                    {existingstkhisdata.emachinenames && (
                       <p>
                         <small>
-                          Item M/C Parts{" "}
+                          Item M/C Names{" "}
                           <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {JSON.parse(existingstkhisdata.emachinepart).map(
+                          {JSON.parse(existingstkhisdata.emachinenames).map(
                             data => {
                               return (
                                 <h5>
@@ -328,23 +341,7 @@ class ExistingStockHistoryByDate extends Component {
                         </small>
                       </p>
                     )}
-                    {existingstkhisdata.eforcompany && (
-                      <p>
-                        <small>
-                          Item Company{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {JSON.parse(existingstkhisdata.eforcompany).map(
-                            data => {
-                              return (
-                                <h5>
-                                  <span class="badge badge-info">{data}</span>
-                                </h5>
-                              );
-                            }
-                          )}
-                        </small>
-                      </p>
-                    )}
+
                     {existingstkhisdata.ehsncode && (
                       <p>
                         <small>

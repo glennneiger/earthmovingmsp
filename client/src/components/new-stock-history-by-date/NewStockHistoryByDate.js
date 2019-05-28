@@ -188,10 +188,12 @@ class NewStockHistoryByDate extends Component {
 
                   <div className="col-8">
                     <p className="product-name">
-                      <strong>Item Code : {newstkhisdata.itemcode}</strong>
+                      <strong>Item Part No : {newstkhisdata.itempartno}</strong>
                     </p>
                     <p>
-                      <small>Item Name: {newstkhisdata.itemname}</small>
+                      <small>
+                        Item Tech Name: {newstkhisdata.itemtechname}
+                      </small>
                     </p>
                     <p>
                       <small>

@@ -360,7 +360,7 @@ $(document).ready(function() {
     var prodconfigsid = id;
     var prodwarehouseorigin = this.state.prodwarehouseorigin;
 
-    this.props.ProductSizeConfigsByid(prodconfigsid, prodwarehouseorigin);
+    // this.props.ProductSizeConfigsByid(prodconfigsid, prodwarehouseorigin);
   };
   hideModalClick = () => {
     this.setState({ show: false, modelconfigid: "" });
@@ -375,15 +375,14 @@ $(document).ready(function() {
     actiondelete
   ) {
     //console.log(prosizeconfig_id, actiondelete);
-
-    this.props.warehoustransdeletebyidinsession(
+    /* this.props.warehoustransdeletebyidinsession(
       prosizeconfig_id,
       prodwarehouseorigin,
       prodwarehousetransfer,
       quantitytrans,
       actiondelete,
       this.props.history
-    );
+    );*/
   }
 
   render() {
@@ -444,22 +443,16 @@ $(document).ready(function() {
 
     let tHead = [
       "Product Image",
-      "Item Code",
-      "Item Name",
-      "Item Length",
-      "Item Width",
-      "Item Height",
+      "Item Part No",
+      "Item Tech Name",
       "Available Qty",
       "Transfer Qty",
       "Transfer"
     ];
     let col = [
       "itemprimaryimg",
-      "itemcode",
-      "itemname",
-      "itemlength",
-      "itemwidth",
-      "itemheight",
+      "itempartno",
+      "itemtechname",
       "quantity",
       "transferqty",
       "transferfinally"

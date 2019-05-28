@@ -6,6 +6,8 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import TextFieldGroup from "../common/TextFieldGroup";
+
+import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import SelectListGroup from "../common/SelectListGroup";
 
 import StockActions from "../dashboard/StockActions";
@@ -25,11 +27,9 @@ class EditStock extends Component {
     this.state = {
       errors: {},
       singprodstk: {},
-      machinepart: [],
-      forcompany: [],
+      machinenames: [],
       focused: false,
-      mpinput: "",
-      fcinput: ""
+      mpinput: ""
     };
 
     this.onChange = this.onChange.bind(this);
@@ -38,10 +38,6 @@ class EditStock extends Component {
     this.handlempInputChange = this.handlempInputChange.bind(this);
     this.handlempInputKeyDown = this.handlempInputKeyDown.bind(this);
     this.handlempRemoveItem = this.handlempRemoveItem.bind(this);
-
-    this.handlefcInputChange = this.handlefcInputChange.bind(this);
-    this.handlefcInputKeyDown = this.handlefcInputKeyDown.bind(this);
-    this.handlefcRemoveItem = this.handlefcRemoveItem.bind(this);
   }
 
   componentDidMount() {
@@ -51,9 +47,9 @@ class EditStock extends Component {
       .get(`/api/stock/singleprodstock/` + this.props.match.params.id)
       .then(res => {
         this.setState({ singprodstk: res.data });
-        this.setState({ machinepart: res.data.machinepart });
-        this.setState({ forcompany: res.data.forcompany });
-        //   console.log("machinepart is : " + this.state.machinepart);
+        this.setState({ machinenames: res.data.machinenames });
+
+        //   console.log("machinenames is : " + this.state.machinenames);
 
         //console.log(this.state.singprodstk);
       });
@@ -69,8 +65,8 @@ class EditStock extends Component {
 
   onSubmit = () => {
     const {
-      itemname,
-      itemcode,
+      itemtechname,
+      itempartno,
       itemid,
       itemidunit,
       itemod,
@@ -82,14 +78,14 @@ class EditStock extends Component {
       hsncode,
       minrate,
       rate,
-      maxrate
+      maxrate,
+      itemremark
     } = this.state.singprodstk; //take prev value that was set in repsonse
 
-    let machinepart = JSON.stringify(this.state.machinepart);
-    let forcompany = JSON.stringify(this.state.forcompany);
+    let machinenames = JSON.stringify(this.state.machinenames);
 
     const stockData = {
-      itemname,
+      itemtechname,
       itemid,
       itemidunit,
       itemod,
@@ -98,12 +94,12 @@ class EditStock extends Component {
       itemlengthunit,
       itemthickness,
       itemthicknessunit,
-      machinepart,
-      forcompany,
+      machinenames,
       hsncode,
       minrate,
       rate,
-      maxrate
+      maxrate,
+      itemremark
     };
 
     const paramid = this.props.match.params.id;
@@ -121,18 +117,18 @@ class EditStock extends Component {
       const { value } = evt.target;
 
       this.setState(state => ({
-        machinepart: [...state.machinepart, value],
+        machinenames: [...state.machinenames, value],
         mpinput: ""
       }));
     }
 
     if (
-      this.state.machinepart.length &&
+      this.state.machinenames.length &&
       evt.keyCode === 8 &&
       !this.state.mpinput.length
     ) {
       this.setState(state => ({
-        machinepart: state.machinepart.slice(0, state.machinepart.length - 1)
+        machinenames: state.machinenames.slice(0, state.machinenames.length - 1)
       }));
     }
   }
@@ -140,44 +136,11 @@ class EditStock extends Component {
   handlempRemoveItem(index) {
     return () => {
       this.setState(state => ({
-        machinepart: state.machinepart.filter((item, i) => i !== index)
+        machinenames: state.machinenames.filter((item, i) => i !== index)
       }));
     };
   }
   ///////////////
-
-  handlefcInputChange(evt) {
-    this.setState({ fcinput: evt.target.value });
-  }
-
-  handlefcInputKeyDown(evt) {
-    if (evt.keyCode === 13) {
-      const { value } = evt.target;
-
-      this.setState(state => ({
-        forcompany: [...state.forcompany, value],
-        fcinput: ""
-      }));
-    }
-
-    if (
-      this.state.forcompany.length &&
-      evt.keyCode === 8 &&
-      !this.state.fcinput.length
-    ) {
-      this.setState(state => ({
-        forcompany: state.forcompany.slice(0, state.forcompany.length - 1)
-      }));
-    }
-  }
-
-  handlefcRemoveItem(index) {
-    return () => {
-      this.setState(state => ({
-        forcompany: state.forcompany.filter((item, i) => i !== index)
-      }));
-    };
-  }
 
   render() {
     // Select options for item id unit
@@ -219,7 +182,7 @@ class EditStock extends Component {
         borderRadius: "5px"
       },
 
-      machinepart: {
+      machinenames: {
         display: "inline-block",
         padding: "2px",
         border: "1px solid #0085c3",
@@ -229,24 +192,7 @@ class EditStock extends Component {
         cursor: "pointer"
       },
 
-      forcompany: {
-        display: "inline-block",
-        padding: "2px",
-        border: "1px solid #0085c3",
-        fontFamily: "Helvetica, sans-serif",
-        borderRadius: "5px",
-        marginRight: "5px",
-        cursor: "pointer"
-      },
-
-      machinepartinput: {
-        outline: "none",
-        border: "none",
-        fontSize: "14px",
-        fontFamily: "Helvetica, sans-serif"
-      },
-
-      forcompanyinput: {
+      machinenamesinput: {
         outline: "none",
         border: "none",
         fontSize: "14px",
@@ -313,23 +259,23 @@ class EditStock extends Component {
                       <div class="form-row">
                         <div class="form-group col-md-4">
                           <TextFieldGroup
-                            placeholder="* Item Name"
-                            name="itemname"
-                            value={this.state.singprodstk.itemname}
+                            placeholder="* Item Technical Name"
+                            name="itemtechname"
+                            value={this.state.singprodstk.itemtechname}
                             onChange={this.onChange}
-                            error={errors.itemname}
-                            info="put Item Name"
+                            error={errors.itemtechname}
+                            info="Put Item Technical Name"
                           />
                         </div>
 
                         <div class="form-group col-md-4">
                           <TextFieldGroup
-                            placeholder="* Item Code"
-                            name="itemcode"
-                            value={this.state.singprodstk.itemcode}
+                            placeholder="* Item Part No"
+                            name="itempartno"
+                            value={this.state.singprodstk.itempartno}
                             onChange={this.onChange}
-                            error={errors.itemcode}
-                            info="A unique itemcode"
+                            error={errors.itempartno}
+                            info="A unique Item Part No"
                             disabled
                           />
                         </div>
@@ -446,14 +392,14 @@ class EditStock extends Component {
                           <label>
                             <ul style={styles.container}>
                               {console.log(
-                                "machinepart type is : " +
-                                  typeof this.state.machinepart
+                                "machinenames type is : " +
+                                  typeof this.state.machinenames
                               )}
-                              {this.state.machinepart &&
-                                this.state.machinepart.map((item, i) => (
+                              {this.state.machinenames &&
+                                this.state.machinenames.map((item, i) => (
                                   <li
                                     key={i}
-                                    style={styles.machinepart}
+                                    style={styles.machinenames}
                                     onClick={this.handlempRemoveItem(i)}
                                   >
                                     {item}
@@ -463,48 +409,19 @@ class EditStock extends Component {
                                   </li>
                                 ))}
                               <input
-                                style={styles.machinepartinput}
+                                style={styles.machinenamesinput}
                                 value={this.state.mpinput}
                                 onChange={this.handlempInputChange}
                                 onKeyDown={this.handlempInputKeyDown}
                               />
                             </ul>
-                            <span>* Put Machine Part Names</span>
+                            <span>* Put Machine Names</span>
                           </label>
                         </div>
                         <div
                           class="form-group col-md-6"
-                          style={{ backgroundColor: "#e4e4e4" }}
+                          style={{ backgroundColor: "rgb(202, 206, 200)" }}
                         >
-                          <label>
-                            <ul style={styles.container}>
-                              {this.state.forcompany &&
-                                this.state.forcompany.map((item, i) => (
-                                  <li
-                                    key={i}
-                                    style={styles.forcompany}
-                                    onClick={this.handlefcRemoveItem(i)}
-                                  >
-                                    {item}
-                                    <span style={{ color: "red", padding: 5 }}>
-                                      (x)
-                                    </span>
-                                  </li>
-                                ))}
-                              <input
-                                style={styles.forcompanyinput}
-                                value={this.state.fcinput}
-                                onChange={this.handlefcInputChange}
-                                onKeyDown={this.handlefcInputKeyDown}
-                              />
-                            </ul>
-                            <span>Put For Company Names</span>
-                          </label>
-                        </div>
-                      </div>
-
-                      <div class="form-row">
-                        <div class="form-group col-md-4">
                           <TextFieldGroup
                             placeholder="Item Rate"
                             name="rate"
@@ -514,8 +431,10 @@ class EditStock extends Component {
                             info="Item Rate"
                           />
                         </div>
+                      </div>
 
-                        <div class="form-group col-md-4">
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
                           <TextFieldGroup
                             placeholder="Item Min Rate"
                             name="minrate"
@@ -525,7 +444,8 @@ class EditStock extends Component {
                             info="Item Min Rate"
                           />
                         </div>
-                        <div class="form-group col-md-4">
+
+                        <div class="form-group col-md-6">
                           <TextFieldGroup
                             placeholder="Item Max Rate"
                             name="maxrate"
@@ -533,6 +453,16 @@ class EditStock extends Component {
                             onChange={this.onChange}
                             error={errors.maxrate}
                             info="Item Max Rate"
+                          />
+                        </div>
+                        <div class="form-group col-md-12">
+                          <TextAreaFieldGroup
+                            placeholder="Item Remark"
+                            name="itemremark"
+                            value={this.state.singprodstk.itemremark}
+                            onChange={this.onChange}
+                            error={errors.itemremark}
+                            info="Item Remark"
                           />
                         </div>
                       </div>

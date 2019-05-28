@@ -307,7 +307,7 @@ router.get(
         //res.json(stock);
         // console.log(stock);
 
-        var itemcodereq = stock.itemcode;
+        var itempartnoreq = stock.itempartno;
 
         Warehouse.find()
           .then(warehouses => {
@@ -376,10 +376,10 @@ router.get(
         //res.json(stock);
         // console.log(stock);
 
-        var itemcodereq = stock.itemcode;
+        var itempartnoreq = stock.itempartno;
 
-        // console.log(itemcodereq);
-        // $and: [{ prodcolor: prodcolor }, { itemcode: itemcode }]
+        // console.log(itempartnoreq);
+        // $and: [{ prodcolor: prodcolor }, { itempartno: itempartno }]
 
         Warehouse.find()
           .then(warehouses => {
@@ -403,7 +403,9 @@ router.get(
                       warehouseaddress: warehouses[i].warehouseaddress,
                       prodstk_id: warehouses[i].warehouseproducts[j]._id,
                       quantity: warehouses[i].warehouseproducts[j].quantity,
-                      itemcode: warehouses[i].warehouseproducts[j].itemcode
+                      minqtyreqfornotify:
+                        warehouses[i].warehouseproducts[j].minqtyreqfornotify,
+                      itempartno: warehouses[i].warehouseproducts[j].itempartno
                     };
 
                     // Add to warehouseproducts array
@@ -473,10 +475,10 @@ router.get(
 
                         const wareproducts = {
                           _id: stock._id,
-                          itemcode: stock.itemcode,
+                          itempartno: stock.itempartno,
                           quantity: availableqty,
-                          itemname: stock.itemname,
-                          machinepart: stock.machinepart,
+                          itemtechname: stock.itemtechname,
+                          machinenames: stock.machinenames,
                           itemid: stock.itemid,
                           itemidunit: stock.itemidunit,
                           itemod: stock.itemod,
@@ -485,7 +487,6 @@ router.get(
                           itemlengthunit: stock.itemlengthunit,
                           itemthickness: stock.itemthickness,
                           itemthicknessunit: stock.itemthicknessunit,
-                          forcompany: stock.forcompany,
                           hsncode: stock.hsncode,
                           minrate: stock.minrate,
                           rate: stock.rate,
@@ -547,25 +548,24 @@ router.get(
 
                 for (var i = 0; i < stockslen; i++) {
                   if (
-                    querystr == stocks[i].itemcode ||
-                    querystr == stocks[i].itemname ||
+                    stocks[i].itempartno.match(querystr) ||
+                    stocks[i].itemtechname.match(querystr) ||
                     querystr == stocks[i].itemid ||
-                    querystr == stocks[i].itemidunit ||
+                    stocks[i].itemidunit.match(querystr) ||
                     querystr == stocks[i].itemod ||
-                    querystr == stocks[i].itemodunit ||
+                    stocks[i].itemodunit.match(querystr) ||
                     querystr == stocks[i].itemlength ||
-                    querystr == stocks[i].itemlengthunit ||
+                    stocks[i].itemlengthunit.match(querystr) ||
                     querystr == stocks[i].itemthickness ||
-                    querystr == stocks[i].itemthicknessunit ||
-                    querystr == stocks[i].hsncode ||
-                    stocks[i].machinepart.includes(querystr) ||
-                    stocks[i].forcompany.includes(querystr)
+                    stocks[i].itemthicknessunit.match(querystr) ||
+                    stocks[i].hsncode.match(querystr) ||
+                    stocks[i].machinenames.includes(querystr)
                   ) {
                     const singleitemdata = {
                       _id: stocks[i]._id,
-                      itemname: stocks[i].itemname,
-                      itemcode: stocks[i].itemcode,
-                      machinepart: JSON.parse(stocks[i].machinepart),
+                      itemtechname: stocks[i].itemtechname,
+                      itempartno: stocks[i].itempartno,
+                      machinenames: JSON.parse(stocks[i].machinenames),
                       itemidwithunit: [stocks[i].itemid, stocks[i].itemidunit],
                       itemodwithunit: [stocks[i].itemod, stocks[i].itemodunit],
                       itemlengthwithunit: [
@@ -576,7 +576,6 @@ router.get(
                         stocks[i].itemthickness,
                         stocks[i].itemthicknessunit
                       ],
-                      forcompany: JSON.parse(stocks[i].forcompany),
                       hsncode: stocks[i].hsncode,
                       //    rack: stocks[i].rack,
                       minrate: stocks[i].minrate,
@@ -590,8 +589,8 @@ router.get(
                     console.log("//////some data////");
                     console.log(finalallstock);
 
-                    // console.log(JSON.parse(stocks[i].machinepart))
-                    //  console.log(stocks[i].machinepart.includes(querystr));
+                    // console.log(JSON.parse(stocks[i].machinenames))
+                    //  console.log(stocks[i].machinenames.includes(querystr));
                   }
                 }
                 res.json({ finalallstock });
@@ -615,6 +614,93 @@ router.get(
         }
       }
     });
+  }
+);
+
+//update min required notification qty
+router.post(
+  "/updateminnotifyQtyStk", //here we can pass multiple middlewares like for upload and authentication
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    const errors = {};
+    errors.message = "There Is No Warehouse Found";
+    errors.className = "alert-danger";
+
+    const warehouseid = req.body.warehouseid;
+    const warehouseaddress = req.body.warehouseaddress;
+    const prodstk_id = req.body.prodstk_id;
+    const itempartno = req.body.itempartno;
+
+    const requpdatenewnotifyqty = req.body.updatenewnotifyqty;
+    const itemprimaryimg = req.body.itemprimaryimg;
+
+    console.log("////work on updateminnotifyQtyStk stock////");
+
+    console.log(
+      "Received data is : " + warehouseid,
+      itempartno,
+      warehouseaddress,
+      prodstk_id,
+      requpdatenewnotifyqty,
+      itemprimaryimg
+    );
+
+    Warehouse.findOne({
+      $and: [{ _id: warehouseid }, { warehouseaddress: warehouseaddress }]
+    })
+      .then(warehouse => {
+        for (var i = 0; i < warehouse.warehouseproducts.length; i++) {
+          if (warehouse.warehouseproducts[i]._id == prodstk_id) {
+            console.log(
+              "Updating Item Warehouse Address: " + warehouse.warehouseaddress
+            );
+            console.log(
+              "item id is:" +
+                warehouse.warehouseproducts[i]._id +
+                " where " +
+                "=> totalqty is : " +
+                warehouse.warehouseproducts[i].quantity
+            );
+
+            var updatedtotalqty = parseInt(requpdatenewnotifyqty);
+
+            warehouse.warehouseproducts[i].minqtyreqfornotify = updatedtotalqty; //HERE WE UPDATE minqtyreqfornotify OF Item IF IT CAME BACK IN ITERATION SO IT HAS UPDATED TOTALQty
+            console.log(
+              "final updated value of minqtyreqfornotify is =>> " +
+                updatedtotalqty
+            );
+
+            const existingstkdata = {
+              prodstk_id: prodstk_id,
+              itempartno: itempartno,
+              prodwarehouse: warehouseaddress,
+              quantity: requpdatenewnotifyqty,
+              operation: "updateminnotifyqty",
+              itemprimaryimg: itemprimaryimg
+            };
+
+            warehouse
+              .save()
+              .then(warehouse => {
+                console.log("The minqtyreqfornotify Successfully Update!!");
+
+                new ExistingStockHistory(existingstkdata)
+                  .save()
+                  .then(existingstockhistory => {
+                    console.log("Update ExistingStockHistory is saved");
+
+                    res.json(existingstockhistory);
+                  });
+              })
+              .catch(err => {
+                console.log("Error is : " + err);
+              });
+
+            break;
+          }
+        }
+      })
+      .catch(err => res.status(404).json({ errors }));
   }
 );
 

@@ -9,6 +9,7 @@ import {
   GET_ORIGIN_WAREHOUSE_PROD_STOCKS_LOADING,
   GET_ADVANCED_INVENTYORY_SEARCH_RESULT,
   GET_ADVANCED_INVENTYORY_SEARCH_RESULT_LOADING,
+  UPDATE_MIN_REQUIRED_NOTIFY_QTY,
   GET_ERRORS
 } from "./types";
 
@@ -219,4 +220,33 @@ export const setadvsearchstockLoading = () => {
   return {
     type: GET_ADVANCED_INVENTYORY_SEARCH_RESULT_LOADING //here we dont send payload only lets the reducer know warehouse is loading
   };
+};
+
+// update min required notification qty
+export const updateMinNotifyQtyStock = (
+  UpdateMinQtyReqData,
+  history
+) => dispatch => {
+  axios
+    .post("/api/warehouse/updateminnotifyQtyStk", UpdateMinQtyReqData)
+    .then(res =>
+      dispatch({
+        type: UPDATE_MIN_REQUIRED_NOTIFY_QTY
+      })
+    )
+    .then(() => {
+      // console.log(message + className);
+
+      dispatch(
+        sendFlashMessage("Update Quantity Successfully!!", "alert-success")
+      );
+    })
+    .then(res => history.push("/view-stock"))
+
+    .catch(err => {
+      // console.log(err.response.data.message);
+      dispatch(
+        sendFlashMessage(err.response.data.message, err.response.data.className)
+      );
+    });
 };

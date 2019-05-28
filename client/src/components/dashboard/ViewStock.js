@@ -106,8 +106,8 @@ class ViewStock extends Component {
           )
         },
         {
-          Header: "Item Code",
-          accessor: "itemcode",
+          Header: "Item Part No",
+          accessor: "itempartno",
           maxWidth: 200,
           filterable: true,
           Cell: row => (
@@ -117,8 +117,8 @@ class ViewStock extends Component {
           )
         },
         {
-          Header: "Item Name",
-          accessor: "itemname",
+          Header: "Item Tech Name",
+          accessor: "itemtechname",
           maxWidth: 300,
           filterable: true,
           Cell: row => (

@@ -20,7 +20,7 @@ const WarehousetransferSchema = new Schema({
         type: String,
         required: true
       },
-      itemcode: {
+      itempartno: {
         type: String,
         required: true
       },

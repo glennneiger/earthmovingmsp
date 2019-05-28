@@ -146,8 +146,8 @@ class AdvancedInventorySearch extends Component {
           )
         },
         {
-          Header: "Item Code",
-          accessor: "itemcode",
+          Header: "Item Part No",
+          accessor: "itempartno",
           maxWidth: 200,
           filterable: true,
           Cell: row => (
@@ -157,8 +157,8 @@ class AdvancedInventorySearch extends Component {
           )
         },
         {
-          Header: "Item Name",
-          accessor: "itemname",
+          Header: "Item Tech Name",
+          accessor: "itemtechname",
           maxWidth: 300,
           filterable: true,
           Cell: row => (
@@ -228,8 +228,8 @@ class AdvancedInventorySearch extends Component {
           )
         },
         {
-          Header: "Machine Parts",
-          accessor: "machinepart",
+          Header: "Machine Names",
+          accessor: "machinenames",
           maxWidth: 290,
           filterable: true,
           Cell: row => (
@@ -239,25 +239,6 @@ class AdvancedInventorySearch extends Component {
                   return (
                     <h5>
                       <span class="badge badge-success">{data}</span>
-                    </h5>
-                  );
-                })}
-              </center>
-            </span>
-          )
-        },
-        {
-          Header: "Company Names",
-          accessor: "forcompany",
-          maxWidth: 290,
-          filterable: true,
-          Cell: row => (
-            <span>
-              <center>
-                {row.value.map(data => {
-                  return (
-                    <h5>
-                      <span class="badge badge-info">{data}</span>
                     </h5>
                   );
                 })}
@@ -369,7 +350,7 @@ class AdvancedInventorySearch extends Component {
                   </div>
                   <div style={{ textAlign: "right" }}>
                     {advsearchresult &&
-                      advsearchdtall.finalallstock.length > 0 &&
+                      advsearchdtall.finalallstock.length == null &&
                       csvContent}
                   </div>
                 </div>

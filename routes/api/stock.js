@@ -172,7 +172,7 @@ router.get(
                     var calquantity = 0;
 
                     /*  console.log(
-                      "////working on ItemCode" + stocks[i].itemcode + "////"
+                      "////working on itempartno" + stocks[i].itempartno + "////"
                     );*/
 
                     for (var j = 0; j < warehouselen; j++) {
@@ -182,8 +182,8 @@ router.get(
                         k++
                       ) {
                         if (
-                          warehouse[j].warehouseproducts[k].itemcode ==
-                          stocks[i].itemcode
+                          warehouse[j].warehouseproducts[k].itempartno ==
+                          stocks[i].itempartno
                         ) {
                           /*  console.log(
                             "The length of current warehouseproducts Is : " +
@@ -196,8 +196,8 @@ router.get(
                               " ////"
                           );
                           console.log(
-                            "Itemcode is " +
-                              warehouse[j].warehouseproducts[k].itemcode +
+                            "itempartno is " +
+                              warehouse[j].warehouseproducts[k].itempartno +
                               "found where quantity is : " +
                               warehouse[j].warehouseproducts[k].quantity
                           );*/
@@ -211,9 +211,9 @@ router.get(
 
                     const singleitemdata = {
                       _id: stocks[i]._id,
-                      itemname: stocks[i].itemname,
-                      itemcode: stocks[i].itemcode,
-                      machinepart: JSON.parse(stocks[i].machinepart),
+                      itemtechname: stocks[i].itemtechname,
+                      itempartno: stocks[i].itempartno,
+                      machinenames: JSON.parse(stocks[i].machinenames),
                       itemid: stocks[i].itemid,
                       itemidunit: stocks[i].itemidunit,
                       itemod: stocks[i].itemod,
@@ -222,12 +222,12 @@ router.get(
                       itemlengthunit: stocks[i].itemlengthunit,
                       itemthickness: stocks[i].itemthickness,
                       itemthicknessunit: stocks[i].itemthicknessunit,
-                      forcompany: JSON.parse(stocks[i].forcompany),
                       hsncode: stocks[i].hsncode,
                       //    rack: stocks[i].rack,
                       minrate: stocks[i].minrate,
                       rate: stocks[i].rate,
                       maxrate: stocks[i].maxrate,
+                      itemremark: stocks[i].itemremark,
                       quantity: calquantity,
                       itemprimaryimg: stocks[i].itemprimaryimg
                     };
@@ -288,8 +288,8 @@ router.post(
     // Get fields
     const stockFields = {};
     stockFields.user = req.user.id;
-    if (req.body.itemname) stockFields.itemname = req.body.itemname;
-    if (req.body.itemcode) stockFields.itemcode = req.body.itemcode;
+    if (req.body.itemtechname) stockFields.itemtechname = req.body.itemtechname;
+    if (req.body.itempartno) stockFields.itempartno = req.body.itempartno;
 
     if (req.body.itemlength) stockFields.itemlength = req.body.itemlength;
 
@@ -317,31 +317,24 @@ router.post(
     if (req.body.rate) stockFields.rate = req.body.rate;
     if (req.body.maxrate) stockFields.maxrate = req.body.maxrate;
 
-    if (req.body.machinepart) stockFields.machinepart = req.body.machinepart;
+    if (req.body.itemremark) stockFields.itemremark = req.body.itemremark;
 
-    if (req.body.forcompany) stockFields.forcompany = req.body.forcompany;
+    if (req.body.machinenames) stockFields.machinenames = req.body.machinenames;
 
+    if (req.body.minqtyreqfornotify)
+      stockFields.minqtyreqfornotify = req.body.minqtyreqfornotify;
     if (req.body.acceptedFiles)
       stockFields.acceptedFiles = req.body.acceptedFiles;
 
-    var machinepartobj = JSON.parse(stockFields.machinepart);
+    var machinenamesobj = JSON.parse(stockFields.machinenames);
 
     console.log(
-      "machinepartobj  value is : " +
-        machinepartobj +
+      "machinenamesobj  value is : " +
+        machinenamesobj +
         " " +
         "and its length is : " +
-        machinepartobj.length
+        machinenamesobj.length
     );
-    var forcompanyobj = JSON.parse(stockFields.forcompany);
-    console.log(
-      "forcompanyobj  value is : " +
-        forcompanyobj +
-        " " +
-        "and its length is : " +
-        forcompanyobj.length
-    );
-
     console.log("quantity is : " + stockFields.quantity);
 
     /*let productImage = [];
@@ -371,7 +364,7 @@ router.post(
     });
     */
 
-    /*  for (let [key, value] of Object.entries(machinepart)) {
+    /*  for (let [key, value] of Object.entries(machinenames)) {
       console.log("Basic item Info is : " + key, value);
     }
     for (let [key, value] of Object.entries(forcompany)) {
@@ -385,7 +378,7 @@ router.post(
 
     Stock.findOne({
       //here we first check article is exist in stock collection if its exist so it will throw error
-      $and: [{ itemcode: stockFields.itemcode }]
+      $and: [{ itempartno: stockFields.itempartno }]
     })
       .then(stock => {
         const errors = {};
@@ -393,16 +386,16 @@ router.post(
         errors.className = "alert-danger";
 
         if (stock) {
-          //if its found user requested itemcode then it will throw error in res
+          //if its found user requested itempartno then it will throw error in res
           errors.message =
-            "Itemcode" +
+            "Item Part No" +
             " " +
-            stockFields.itemcode +
+            stockFields.itempartno +
             "already in the Stock !! You cannot add it again !!";
           errors.className = "alert-danger";
           res.status(400).json(errors);
         } else {
-          //if requested user itemcode not found it means the stock admin wants to add its totally fresh or new
+          //if requested user itempartno not found it means the stock admin wants to add its totally fresh or new
           // Save the New Stock of the product
 
           let productimgurls = [];
@@ -418,9 +411,9 @@ router.post(
 
           const stockcollectionData = {
             user: req.user.id,
-            itemname: stockFields.itemname,
-            itemcode: stockFields.itemcode,
-            machinepart: JSON.stringify(machinepartobj),
+            itemtechname: stockFields.itemtechname,
+            itempartno: stockFields.itempartno,
+            machinenames: JSON.stringify(machinenamesobj),
             itemid: stockFields.itemid,
             itemidunit: stockFields.itemidunit,
             itemod: stockFields.itemod,
@@ -429,12 +422,12 @@ router.post(
             itemlengthunit: stockFields.itemlengthunit,
             itemthickness: stockFields.itemthickness,
             itemthicknessunit: stockFields.itemthicknessunit,
-            forcompany: JSON.stringify(forcompanyobj),
             hsncode: stockFields.hsncode,
             itemwarehouse: stockFields.itemwarehouse,
             minrate: stockFields.minrate,
             rate: stockFields.rate,
             maxrate: stockFields.maxrate,
+            itemremark: stockFields.itemremark,
             itemprimaryimg: itemprimaryimgurl,
             productImage: productimgurls
           };
@@ -443,9 +436,9 @@ router.post(
             console.log("stock is saved in stock collection");
             const newstockhistoryData = {
               user: req.user.id,
-              itemname: stockFields.itemname,
-              itemcode: stockFields.itemcode,
-              machinepart: JSON.stringify(machinepartobj),
+              itemtechname: stockFields.itemtechname,
+              itempartno: stockFields.itempartno,
+              machinenames: JSON.stringify(machinenamesobj),
               itemid: stockFields.itemid,
               itemidunit: stockFields.itemidunit,
               itemod: stockFields.itemod,
@@ -454,12 +447,12 @@ router.post(
               itemlengthunit: stockFields.itemlengthunit,
               itemthickness: stockFields.itemthickness,
               itemthicknessunit: stockFields.itemthicknessunit,
-              forcompany: JSON.stringify(forcompanyobj),
               hsncode: stockFields.hsncode,
               itemwarehouse: stockFields.itemwarehouse,
               minrate: stockFields.minrate,
               rate: stockFields.rate,
               maxrate: stockFields.maxrate,
+              itemremark: stockFields.itemremark,
               itemprimaryimg: itemprimaryimgurl,
               productImage: productimgurls,
               quantity: stockFields.quantity
@@ -472,7 +465,9 @@ router.post(
               });
 
             var prodstk_id = stock._id;
-            console.log("product stock id of added itemcode is :" + prodstk_id);
+            console.log(
+              "product stock id of added itempartno is :" + prodstk_id
+            );
 
             //here we insert all itemncode details to the requested warehouse address
             Warehouse.findOne({
@@ -494,9 +489,9 @@ router.post(
               const warehouseprodfields = {
                 user: req.user.id,
                 _id: prodstk_id,
-                itemcode: stockFields.itemcode,
-                //  rack: stockFields.rack,
-                quantity: stockFields.quantity
+                itempartno: stockFields.itempartno,
+                quantity: stockFields.quantity,
+                minqtyreqfornotify: stockFields.minqtyreqfornotify
               };
 
               // Add to warehouseproducts array
@@ -530,7 +525,7 @@ router.post(
                             const warehouseprodfields = {
                              user: req.user.id,
                 _id: prodstk_id,
-                itemcode: stockFields.itemcode,
+                itempartno: stockFields.itempartno,
                 quantity: stockFields.quantity
                             };
 
@@ -589,9 +584,9 @@ router.get(
         //let finalstockbyid;
         const singleitemdata = {
           _id: stock._id,
-          itemname: stock.itemname,
-          itemcode: stock.itemcode,
-          machinepart: Object.values(JSON.parse(stock.machinepart)),
+          itemtechname: stock.itemtechname,
+          itempartno: stock.itempartno,
+          machinenames: Object.values(JSON.parse(stock.machinenames)),
           itemid: stock.itemid,
           itemidunit: stock.itemidunit,
           itemod: stock.itemod,
@@ -600,11 +595,11 @@ router.get(
           itemlengthunit: stock.itemlengthunit,
           itemthickness: stock.itemthickness,
           itemthicknessunit: stock.itemthicknessunit,
-          forcompany: Object.values(JSON.parse(stock.forcompany)),
           hsncode: stock.hsncode,
           minrate: stock.minrate,
           rate: stock.rate,
           maxrate: stock.maxrate,
+          itemremark: stock.itemremark,
           itemprimaryimg: stock.itemprimaryimg,
           productImage: stock.productImage
         };
@@ -628,7 +623,7 @@ router.put(
     // Get fields
     const errors = {};
 
-    const eitemname = req.body.itemname;
+    const eitemtechname = req.body.itemtechname;
     const eitemid = req.body.itemid;
     const eitemidunit = req.body.itemidunit;
     const eitemod = req.body.itemod;
@@ -637,15 +632,15 @@ router.put(
     const eitemlengthunit = req.body.itemlengthunit;
     const eitemthickness = req.body.itemthickness;
     const eitemthicknessunit = req.body.itemthicknessunit;
-    const emachinepart = req.body.machinepart;
-    const eforcompany = req.body.forcompany;
+    const emachinenames = req.body.machinenames;
     const ehsncode = req.body.hsncode;
     const eminrate = req.body.minrate;
     const erate = req.body.rate;
     const emaxrate = req.body.maxrate;
+    const eitemremark = req.body.itemremark;
 
     console.log(
-      "edit stock new value received : " + eitemname,
+      "edit stock new value received : " + eitemtechname,
       eitemid,
       eitemidunit,
       eitemod,
@@ -654,12 +649,12 @@ router.put(
       eitemlengthunit,
       eitemthickness,
       eitemthicknessunit,
-      emachinepart,
-      eforcompany,
+      emachinenames,
       ehsncode,
       eminrate,
       erate,
-      emaxrate
+      emaxrate,
+      eitemremark
     );
 
     errors.message = "The Product Id is not found";
@@ -670,7 +665,7 @@ router.put(
     Stock.findOne({ _id: req.params.paramid })
       .then(stock => {
         if (stock) {
-          var previtemname = stock.itemname;
+          var previtemtechname = stock.itemtechname;
 
           var previtemid = stock.itemid;
           var previtemidunit = stock.itemidunit;
@@ -682,16 +677,17 @@ router.put(
           var previtemthickness = stock.itemthickness;
           var previtemthicknessunit = stock.itemthicknessunit;
 
-          var prevmachinepart = stock.machinepart;
-          var prevforcompany = stock.forcompany;
+          var prevmachinenames = stock.machinenames;
           var prevhsncode = stock.hsncode;
           var prevminrate = stock.minrate;
           var prevrate = stock.rate;
           var prevmaxrate = stock.maxrate;
 
+          var previtemremark = stock.itemremark;
           if (
-            previtemname == eitemname &&
+            previtemtechname == eitemtechname &&
             previtemid == eitemid &&
+            prevmachinenames == emachinenames &&
             previtemidunit == eitemidunit &&
             previtemod == eitemod &&
             previtemodunit == eitemodunit &&
@@ -699,11 +695,11 @@ router.put(
             previtemlengthunit == eitemlengthunit &&
             previtemthickness == eitemthickness &&
             previtemthicknessunit == eitemthicknessunit &&
-            prevforcompany == eforcompany &&
             prevhsncode == ehsncode &&
             prevminrate == eminrate &&
             prevrate == erate &&
-            prevmaxrate == emaxrate
+            prevmaxrate == emaxrate &&
+            previtemremark == eitemremark
           ) {
             /* Object.assign(existingstkdata, {
               noeditstock: "stock is not edited"
@@ -721,14 +717,16 @@ router.put(
                 );
                 const existingstkdata = {
                   prodstk_id: stock._id,
-                  itemcode: stock.itemcode,
+                  itempartno: stock.itempartno,
                   operation: "editonexistingprodstock",
                   itemprimaryimg: stock.itemprimaryimg
                 };
 
-                if (previtemname != eitemname) {
-                  Object.assign(existingstkdata, { eitemname: eitemname });
-                  console.log("eitemname edited : " + eitemname);
+                if (previtemtechname != eitemtechname) {
+                  Object.assign(existingstkdata, {
+                    eitemtechname: eitemtechname
+                  });
+                  console.log("eitemtechname edited : " + eitemtechname);
                 }
                 if (previtemid != eitemid) {
                   Object.assign(existingstkdata, { eitemid: eitemid });
@@ -774,16 +772,13 @@ router.put(
                   );
                 }
 
-                if (prevmachinepart != emachinepart) {
+                if (prevmachinenames != emachinenames) {
                   Object.assign(existingstkdata, {
-                    emachinepart: emachinepart
+                    emachinenames: emachinenames
                   });
-                  console.log("emachinepart edited : " + emachinepart);
+                  console.log("emachinenames edited : " + emachinenames);
                 }
-                if (prevforcompany != eforcompany) {
-                  Object.assign(existingstkdata, { eforcompany: eforcompany });
-                  console.log("eforcompany edited : " + eforcompany);
-                }
+
                 if (prevhsncode != ehsncode) {
                   Object.assign(existingstkdata, { ehsncode: ehsncode });
                   console.log("ehsncode edited : " + ehsncode);
@@ -799,6 +794,10 @@ router.put(
                 if (prevmaxrate != emaxrate) {
                   Object.assign(existingstkdata, { emaxrate: emaxrate });
                   console.log("emaxrate edited : " + emaxrate);
+                }
+                if (previtemremark != eitemremark) {
+                  Object.assign(existingstkdata, { eitemremark: eitemremark });
+                  console.log("eitemremark edited : " + eitemremark);
                 }
                 console.log("END : all the above if condition checked");
                 return resolve(existingstkdata);
@@ -865,8 +864,8 @@ router.delete(
       .then(stock => {
         const deletedstkdata = {
           prodstk_id: stock._id,
-          itemcode: stock.itemcode,
-          itemname: stock.itemname,
+          itempartno: stock.itempartno,
+          itemtechname: stock.itemtechname,
           itemid: stock.itemid,
           itemidunit: stock.itemidunit,
           itemod: stock.itemod,
@@ -875,7 +874,7 @@ router.delete(
           itemlengthunit: stock.itemlengthunit,
           itemthickness: stock.itemthickness,
           itemthicknessunit: stock.itemthicknessunit,
-          machinepart: stock.machinepart,
+          machinenames: stock.machinenames,
           forcompany: stock.forcompany,
           hsncode: stock.hsncode,
           minrate: stock.minrate,
@@ -921,7 +920,7 @@ router.delete(
 
                 console.log(
                   "Run For id found of : " +
-                    warehouses[i].warehouseproducts[j].itemcode +
+                    warehouses[i].warehouseproducts[j].itempartno +
                     " in warehouse address => " +
                     warehouses[i].warehouseaddress +
                     "AT INDEX OF warehouseproducts ARRAY =>" +
@@ -974,7 +973,7 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   function(req, res) {
     const prodstk_id = req.body.prodstk_id;
-    const itemcode = req.body.itemcode;
+    const itempartno = req.body.itempartno;
     const prodwarehouse = req.body.prodwarehouse;
     const prodorigin = req.body.prodorigin;
     const reqquantity = req.body.quantity;
@@ -983,7 +982,7 @@ router.post(
 
     console.log(
       "Received data is : " + prodstk_id,
-      itemcode,
+      itempartno,
       prodwarehouse,
       prodorigin,
       reqquantity,
@@ -1005,7 +1004,7 @@ router.post(
           ) {
             const existingstkdata = {
               prodstk_id: warehouse[i].warehouseproducts[j]._id,
-              itemcode: warehouse[i].warehouseproducts[j].itemcode,
+              itempartno: warehouse[i].warehouseproducts[j].itempartno,
               prodwarehouse: prodwarehouse,
               prodorigin: prodorigin,
               quantity: reqquantity,
@@ -1092,7 +1091,7 @@ router.post(
 
           const existingstkdata = {
             prodstk_id: prodstk_id,
-            itemcode: itemcode,
+            itempartno: itempartno,
             prodwarehouse: prodwarehouse,
             prodorigin: prodorigin,
             quantity: reqquantity,
@@ -1104,7 +1103,7 @@ router.post(
           const warehouseprodfields = {
             user: req.user.id,
             _id: prodstk_id,
-            itemcode: itemcode,
+            itempartno: itempartno,
             quantity: reqquantity
           };
 
@@ -1145,7 +1144,7 @@ router.post(
     const warehouseid = req.body.warehouseid;
     const warehouseaddress = req.body.warehouseaddress;
     const prodstk_id = req.body.prodstk_id;
-    const itemcode = req.body.itemcode;
+    const itempartno = req.body.itempartno;
     const reqremoveqty = req.body.removeqty;
     const itemprimaryimg = req.body.itemprimaryimg;
 
@@ -1153,7 +1152,7 @@ router.post(
 
     console.log(
       "Received data is : " + warehouseid,
-      itemcode,
+      itempartno,
       warehouseaddress,
       prodstk_id,
       reqremoveqty,
@@ -1182,8 +1181,8 @@ router.post(
               errors.message =
                 "You Cannot Remove : " +
                 parseInt(reqremoveqty) +
-                " Quantity of ItemCode : " +
-                warehouse.warehouseproducts[i].itemcode +
+                " Quantity of Item Part No : " +
+                warehouse.warehouseproducts[i].itempartno +
                 " Becasue There are available Quantity is : " +
                 origintotalqty;
               errors.className = "alert-danger";
@@ -1191,8 +1190,8 @@ router.post(
               console.log(
                 "You Cannot Remove : " +
                   parseInt(reqremoveqty) +
-                  " Quantity of ItemCode : " +
-                  warehouse.warehouseproducts[i].itemcode +
+                  " Quantity of Item Part No : " +
+                  warehouse.warehouseproducts[i].itempartno +
                   " Becasue There are available Quantity is : " +
                   origintotalqty
               );
@@ -1229,7 +1228,7 @@ router.post(
 
               const existingstkdata = {
                 prodstk_id: prodstk_id,
-                itemcode: itemcode,
+                itempartno: itempartno,
                 prodwarehouse: warehouseaddress,
                 quantity: reqremoveqty,
                 operation: "removeonexistingprodstock",

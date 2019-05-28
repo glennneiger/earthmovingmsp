@@ -16,7 +16,10 @@ import {
   removeonexistprodstock
 } from "../../actions/stockActions";
 
-import { singleprodwarehouseitemsbyid } from "../../actions/warehouseActions";
+import {
+  singleprodwarehouseitemsbyid,
+  updateMinNotifyQtyStock
+} from "../../actions/warehouseActions";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
@@ -50,19 +53,46 @@ const Modal = ({ handleClose, show, children }) => {
   );
 };
 
+const Modal2 = ({ handleClose2, show2, children }) => {
+  const showHideClassName2 = show2
+    ? "modal display-block"
+    : "modal display-none";
+
+  return (
+    <div className={showHideClassName2}>
+      <section className="modal-main">
+        {children}
+        <button
+          onClick={handleClose2}
+          className="btn btn-default"
+          style={{
+            textDecoration: "none",
+            color: "white",
+            backgroundColor: "#AF0808"
+          }}
+        >
+          Close
+        </button>
+      </section>
+    </div>
+  );
+};
+
 class ShowStock extends Component {
   constructor(props) {
     super(props);
     this.state = {
       errors: {},
       show: false,
+      show2: false,
       warehouseid: "",
       warehouseaddress: "",
       prodstk_id: "",
-      itemcode: "",
+      itempartno: "",
       availableqty: "",
       removeqty: "",
-      itemprimaryimg: ""
+      itemprimaryimg: "",
+      updatenewnotifyqty: ""
       //singprodstk: {}
     };
 
@@ -105,7 +135,7 @@ class ShowStock extends Component {
     warehouseid,
     warehouseaddress,
     prodstk_id,
-    itemcode,
+    itempartno,
     removeqty
   ) => {
     const { availableqty, itemprimaryimg } = this.state;
@@ -129,7 +159,7 @@ class ShowStock extends Component {
       warehouseid: warehouseid,
       warehouseaddress: warehouseaddress,
       prodstk_id: prodstk_id,
-      itemcode: itemcode,
+      itempartno: itempartno,
       removeqty: removeqty,
       itemprimaryimg: itemprimaryimg
     };
@@ -151,7 +181,7 @@ class ShowStock extends Component {
     warehouseid,
     warehouseaddress,
     prodstk_id,
-    itemcode,
+    itempartno,
     quantity
   ) => {
     this.setState({
@@ -159,7 +189,7 @@ class ShowStock extends Component {
       warehouseid: warehouseid,
       warehouseaddress: warehouseaddress,
       prodstk_id: prodstk_id,
-      itemcode: itemcode,
+      itempartno: itempartno,
       availableqty: quantity
     });
     console.log("warehouseid set to : " + warehouseid);
@@ -168,7 +198,7 @@ class ShowStock extends Component {
     var warehouseid = warehouseid;
     var warehouseaddress = warehouseaddress;
     var prodstk_id = prodstk_id;
-    var itemcode = itemcode;
+    var itempartno = itempartno;
     var availableqty = availableqty;
 
     // this.props.singleprodstockbyid(prodstk_id);
@@ -180,8 +210,79 @@ class ShowStock extends Component {
     console.log("warehouseid set to : '' ");
   };
 
+  showModalClick2 = (
+    warehouseid,
+    warehouseaddress,
+    prodstk_id,
+    itempartno,
+    minqtyreqfornotify
+  ) => {
+    this.setState({
+      show2: true,
+      warehouseid: warehouseid,
+      warehouseaddress: warehouseaddress,
+      prodstk_id: prodstk_id,
+      itempartno: itempartno,
+      availablenotifyqty: minqtyreqfornotify
+    });
+    console.log("warehouseid set to : " + warehouseid);
+    console.log("item warehouse address is : " + warehouseaddress);
+
+    var warehouseid = warehouseid;
+    var warehouseaddress = warehouseaddress;
+    var prodstk_id = prodstk_id;
+    var itempartno = itempartno;
+    var availablenotifyqty = minqtyreqfornotify;
+
+    // this.props.singleprodstockbyid(prodstk_id);
+
+    //this.props.singleprodwarehouseitemsbyid(prodstk_id);
+  };
+  hideModalClick2 = () => {
+    this.setState({ show2: false, warehouseid: "", updatenewnotifyqty: "" });
+    console.log("warehouseid set to : '' ");
+  };
+
+  updateminQtynotify = (
+    warehouseid,
+    warehouseaddress,
+    prodstk_id,
+    itempartno,
+    updatenewnotifyqty
+  ) => {
+    const { itemprimaryimg } = this.state;
+
+    if (updatenewnotifyqty == "" || parseInt(updatenewnotifyqty) <= 0) {
+      alert(
+        "The Item update quantity : " +
+          updatenewnotifyqty +
+          "should be greater then 0"
+      );
+    }
+
+    const UpdateMinQtyReqData = {
+      warehouseid: warehouseid,
+      warehouseaddress: warehouseaddress,
+      prodstk_id: prodstk_id,
+      itempartno: itempartno,
+      updatenewnotifyqty: updatenewnotifyqty,
+      itemprimaryimg: itemprimaryimg
+    };
+
+    if (!(updatenewnotifyqty == "" || parseInt(updatenewnotifyqty) < 0)) {
+      console.log("great validation check success");
+
+      console.log("RemoveStockData is : " + UpdateMinQtyReqData);
+      console.table(UpdateMinQtyReqData);
+      this.props.updateMinNotifyQtyStock(
+        UpdateMinQtyReqData,
+        this.props.history
+      );
+    }
+  };
+
   render() {
-    const { errors, itemcode, removeqty } = this.state;
+    const { errors, itempartno, removeqty, updatenewnotifyqty } = this.state;
 
     const { warehousebyid, loading } = this.props.warehouse;
 
@@ -229,7 +330,59 @@ class ShowStock extends Component {
                       textAlign: "center"
                     }}
                   >
-                    <center>Itemcode: {warehouseartbyid.itemcode}</center>
+                    <center>Item Part No: {warehouseartbyid.itempartno}</center>
+                    {warehouseartbyid.minqtyreqfornotify && (
+                      <p
+                        onClick={e =>
+                          this.showModalClick2(
+                            warehouseartbyid._id,
+                            warehouseartbyid.warehouseaddress,
+                            warehouseartbyid.prodstk_id,
+                            warehouseartbyid.itempartno,
+                            warehouseartbyid.minqtyreqfornotify
+                          )
+                        }
+                        style={{
+                          fontSize: 12,
+                          padding: 10,
+                          backgroundColor: "#ffc3c3",
+                          cursor: "pointer"
+                        }}
+                      >
+                        Min Qty Required:{" "}
+                        <b>{warehouseartbyid.minqtyreqfornotify}</b>{" "}
+                        <i
+                          class="fa fa-edit"
+                          style={{ fontSize: 15, color: "green" }}
+                        />
+                      </p>
+                    )}
+
+                    {!warehouseartbyid.minqtyreqfornotify && (
+                      <p
+                        onClick={e =>
+                          this.showModalClick2(
+                            warehouseartbyid._id,
+                            warehouseartbyid.warehouseaddress,
+                            warehouseartbyid.prodstk_id,
+                            warehouseartbyid.itempartno,
+                            warehouseartbyid.minqtyreqfornotify
+                          )
+                        }
+                        style={{
+                          fontSize: 12,
+                          padding: 10,
+                          backgroundColor: "#ffc3c3",
+                          cursor: "pointer"
+                        }}
+                      >
+                        Set Min Qty Required:{" "}
+                        <i
+                          class="fa fa-plus-circle"
+                          style={{ fontSize: 15, color: "rgb(175, 8, 8)" }}
+                        />
+                      </p>
+                    )}
                   </th>
                   <td
                     style={{
@@ -251,7 +404,7 @@ class ShowStock extends Component {
                           warehouseartbyid._id
                         }&${warehouseartbyid.warehouseaddress}&${
                           warehouseartbyid.prodstk_id
-                        }&${warehouseartbyid.itemcode}`}
+                        }&${warehouseartbyid.itempartno}`}
                         className="btn btn-default"
                         style={{
                           textDecoration: "none",
@@ -267,7 +420,7 @@ class ShowStock extends Component {
                             warehouseartbyid._id,
                             warehouseartbyid.warehouseaddress,
                             warehouseartbyid.prodstk_id,
-                            warehouseartbyid.itemcode,
+                            warehouseartbyid.itempartno,
                             warehouseartbyid.quantity
                           )
                         }
@@ -305,7 +458,7 @@ class ShowStock extends Component {
         //console.log(stockbyid.articlenum);
 
         showstockid = (
-          <li className="breadcrumb-item active">{stockbyid.itemcode}</li>
+          <li className="breadcrumb-item active">{stockbyid.itempartno}</li>
         );
       }
 
@@ -335,17 +488,17 @@ class ShowStock extends Component {
                 {stockbyid ? (
                   <thead>
                     <tr>
-                      <th>Item Code</th>
-                      <td>{stockbyid.itemcode}</td>
-                      <th>Item Name</th>
-                      <td>{stockbyid.itemname}</td>
+                      <th>Item Part No</th>
+                      <td>{stockbyid.itempartno}</td>
+                      <th>Item Tech Name</th>
+                      <td>{stockbyid.itemtechname}</td>
                     </tr>
                     <tr>
                       <th>Item Hsn Code</th>
                       <td>{stockbyid.hsncode}</td>
-                      <th>Item Machine Part</th>
+                      <th>Item Machine Names</th>
                       <td>
-                        {stockbyid.machinepart.map(data => {
+                        {stockbyid.machinenames.map(data => {
                           return (
                             <h5>
                               <span class="badge badge-success">{data}</span>
@@ -372,33 +525,24 @@ class ShowStock extends Component {
                         {stockbyid.itemlength}
                         {stockbyid.itemlengthunit}
                       </td>
-                      <th>Item For company</th>
 
-                      <td>
-                        {stockbyid.forcompany.map(data => {
-                          return (
-                            <h5>
-                              <span class="badge badge-info">{data}</span>
-                            </h5>
-                          );
-                        })}
-                      </td>
-                    </tr>
-
-                    <tr>
                       <th>Item Thickness</th>
                       <td>
-                        &#8377; {stockbyid.itemthickness}
+                        {stockbyid.itemthickness}
                         {stockbyid.itemthicknessunit}
                       </td>
+                    </tr>
+
+                    <tr>
                       <th>Item Min Rate</th>
-                      <td>&#8377; {stockbyid.minrate}</td>
+                      <td>&#8377; {stockbyid.minrate}</td> <th>Item Rate</th>
+                      <td>&#8377; {stockbyid.rate}</td>
                     </tr>
                     <tr>
-                      <th>Item Rate</th>
-                      <td>&#8377; {stockbyid.rate}</td>
                       <th>Item Max Rate</th>
                       <td>&#8377; {stockbyid.maxrate}</td>
+                      <th>Item Remark</th>
+                      <td>{stockbyid.itemremark}</td>
                     </tr>
                   </thead>
                 ) : (
@@ -486,11 +630,11 @@ class ShowStock extends Component {
                             </p>
                             <p>Available Qty : {this.state.availableqty}</p>
                             <TextFieldGroup
-                              placeholder="Itemcode"
-                              name="itemcode"
-                              value={itemcode}
+                              placeholder="itempartno"
+                              name="itempartno"
+                              value={itempartno}
                               onChange={this.onChange}
-                              error={errors.itemcode}
+                              error={errors.itempartno}
                               info="Item Code"
                               disabled
                             />
@@ -512,12 +656,69 @@ class ShowStock extends Component {
                                   this.state.warehouseid,
                                   this.state.warehouseaddress,
                                   this.state.prodstk_id,
-                                  this.state.itemcode,
+                                  this.state.itempartno,
                                   this.state.removeqty
                                 )
                               }
                               type="button"
                               value="Remove"
+                              className="btn btn-info btn-block mt-4"
+                            />
+                          </div>
+                        </center>
+                      </div>
+                    </div>
+                  </div>
+                </Modal>
+
+                <Modal
+                  show={this.state.show2}
+                  handleClose={this.hideModalClick2}
+                >
+                  <div className="container">
+                    <div className="row">
+                      <div className="col-md-12">
+                        <center>
+                          <div
+                            class="form-group col-md-6"
+                            style={{ padding: 25 }}
+                          >
+                            <p>
+                              Warehouse Address : {this.state.warehouseaddress}
+                            </p>
+                            <TextFieldGroup
+                              placeholder="itempartno"
+                              name="itempartno"
+                              value={itempartno}
+                              onChange={this.onChange}
+                              error={errors.itempartno}
+                              info="Item Code"
+                              disabled
+                            />
+                            <br />
+
+                            <TextFieldGroup
+                              placeholder="Update Min Quantity Required"
+                              name="updatenewnotifyqty"
+                              value={updatenewnotifyqty}
+                              onChange={this.onChange}
+                              error={errors.updatenewnotifyqty}
+                              info="Total Update Min Quantity Required"
+                            />
+                            <br />
+
+                            <input
+                              onClick={e =>
+                                this.updateminQtynotify(
+                                  this.state.warehouseid,
+                                  this.state.warehouseaddress,
+                                  this.state.prodstk_id,
+                                  this.state.itempartno,
+                                  this.state.updatenewnotifyqty
+                                )
+                              }
+                              type="button"
+                              value="Set"
                               className="btn btn-info btn-block mt-4"
                             />
                           </div>
@@ -556,6 +757,7 @@ export default connect(
     editStock,
     singleprodstockbyid,
     singleprodwarehouseitemsbyid,
-    removeonexistprodstock
+    removeonexistprodstock,
+    updateMinNotifyQtyStock
   }
 )(withRouter(ShowStock));

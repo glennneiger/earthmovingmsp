@@ -11,11 +11,11 @@ const ExistingStockHistorySchema = new Schema({
     type: String,
     required: true
   },
-  itemcode: {
+  itempartno: {
     type: String,
     required: true
   },
-  eitemname: {
+  eitemtechname: {
     type: String
   },
   eitemid: {
@@ -42,10 +42,7 @@ const ExistingStockHistorySchema = new Schema({
   eitemthicknessunit: {
     type: String
   },
-  emachinepart: {
-    type: String
-  },
-  eforcompany: {
+  emachinenames: {
     type: String
   },
   ehsncode: {
@@ -64,6 +61,9 @@ const ExistingStockHistorySchema = new Schema({
     type: String
   },
   prodorigin: {
+    type: String
+  },
+  itemremark: {
     type: String
   },
   quantity: {

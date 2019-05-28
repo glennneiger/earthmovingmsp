@@ -11,14 +11,14 @@ const DeletedStockHistorySchema = new Schema({
     type: String,
     required: true
   },
-  itemname: {
+  itemtechname: {
     type: String
   },
-  itemcode: {
+  itempartno: {
     type: String,
     required: true
   },
-  machinepart: {
+  machinenames: {
     type: String
   },
   itemid: {
@@ -45,9 +45,6 @@ const DeletedStockHistorySchema = new Schema({
   itemthicknessunit: {
     type: String
   },
-  forcompany: {
-    type: String
-  },
   hsncode: {
     type: String,
     required: true
@@ -60,6 +57,9 @@ const DeletedStockHistorySchema = new Schema({
   },
   maxrate: {
     type: Number
+  },
+  itemremark: {
+    type: String
   },
   itemprimaryimg: {
     type: String

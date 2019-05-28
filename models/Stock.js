@@ -7,15 +7,15 @@ const StockSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "users"
   },
-  itemname: {
+  itemtechname: {
     type: String,
     required: true
   },
-  itemcode: {
+  itempartno: {
     type: String,
     required: true
   },
-  machinepart: {
+  machinenames: {
     type: String
   },
   itemid: {
@@ -42,9 +42,6 @@ const StockSchema = new Schema({
   itemthicknessunit: {
     type: String
   },
-  forcompany: {
-    type: String
-  },
   hsncode: {
     type: String,
     required: true
@@ -57,6 +54,9 @@ const StockSchema = new Schema({
   },
   maxrate: {
     type: Number
+  },
+  itemremark: {
+    type: String
   },
   itemprimaryimg: {
     type: String

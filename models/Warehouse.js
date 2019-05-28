@@ -37,17 +37,16 @@ const WarehouseSchema = new Schema({
         type: String,
         required: true
       },
-      itemcode: {
+      itempartno: {
         type: String,
         required: true
       },
-      /*
-      rack: {
-        type: String
-      },*/
       quantity: {
         type: Number,
         required: true
+      },
+      minqtyreqfornotify: {
+        type: Number
       },
       date: {
         type: Date,

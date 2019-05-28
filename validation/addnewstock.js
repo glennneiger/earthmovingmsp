@@ -4,10 +4,10 @@ const isEmpty = require("./is-empty");
 module.exports = function validateAddnewStockInput(data) {
   let errors = {};
 
-  data.itemname = !isEmpty(data.itemname) ? data.itemname : "";
+  data.itemtechname = !isEmpty(data.itemtechname) ? data.itemtechname : "";
 
-  data.itemcode = !isEmpty(data.itemcode) ? data.itemcode : "";
-  data.machinepart = !isEmpty(data.machinepart) ? data.machinepart : "";
+  data.itempartno = !isEmpty(data.itempartno) ? data.itempartno : "";
+  data.machinenames = !isEmpty(data.machinenames) ? data.machinenames : "";
 
   data.hsncode = !isEmpty(data.hsncode) ? data.hsncode : "";
 
@@ -20,11 +20,11 @@ module.exports = function validateAddnewStockInput(data) {
     errors.itemwarehouse = "Please Select the Warehouse";
   }
 
-  if (Validator.isEmpty(data.itemname)) {
-    errors.itemname = "Item Name field is required";
+  if (Validator.isEmpty(data.itemtechname)) {
+    errors.itemtechname = "Item Tech Name field is required";
   }
-  if (Validator.isEmpty(data.itemcode)) {
-    errors.itemcode = "Item Code field is required";
+  if (Validator.isEmpty(data.itempartno)) {
+    errors.itempartno = "Item Part No field is required";
   }
   if (Validator.isEmpty(data.quantity)) {
     errors.quantity = "Item quantity field is required";
@@ -33,8 +33,8 @@ module.exports = function validateAddnewStockInput(data) {
     errors.hsncode = "HSN Code field is required";
   }
 
-  if (Validator.isEmpty(data.machinepart)) {
-    errors.machinepart = "Machine Part field is required";
+  if (Validator.isEmpty(data.machinenames)) {
+    errors.machinenames = "Machine Names field is required";
   }
   if (!Validator.isNumeric(data.quantity, { no_symbols: true })) {
     errors.quantity =

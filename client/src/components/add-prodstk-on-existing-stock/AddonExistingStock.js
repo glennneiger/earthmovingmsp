@@ -30,7 +30,7 @@ class AddonExistingStock extends Component {
     super(props);
     this.state = {
       prodstk_id: "",
-      itemcode: "",
+      itempartno: "",
       prodwarehouse: "",
       prodorigin: "",
       quantity: "",
@@ -54,11 +54,11 @@ class AddonExistingStock extends Component {
       .get(`/api/stock/singleprodstock/` + this.props.match.params.id)
       .then(res => {
         this.setState({
-          itemcode: res.data.itemcode,
+          itempartno: res.data.itempartno,
           itemprimaryimg: res.data.itemprimaryimg
-        }); //here we call singleprodstock api second time for setstate the itemcode
+        }); //here we call singleprodstock api second time for setstate the itempartno
 
-        console.log(res.data.itemcode);
+        console.log(res.data.itempartno);
       });
   }
 
@@ -89,7 +89,7 @@ class AddonExistingStock extends Component {
       prodwarehouse,
       prodorigin,
       quantity,
-      itemcode,
+      itempartno,
       itemprimaryimg
     } = this.state;
 
@@ -105,7 +105,7 @@ class AddonExistingStock extends Component {
 
     const AddStockData = {
       prodstk_id: this.props.match.params.id,
-      itemcode: itemcode,
+      itempartno: itempartno,
       prodwarehouse: prodwarehouse,
       prodorigin: prodorigin,
       quantity: quantity,
@@ -134,7 +134,7 @@ class AddonExistingStock extends Component {
       prodwarehouse,
       prodorigin,
       quantity,
-      itemcode
+      itempartno
     } = this.state;
 
     let warehouseoptionsloading;
@@ -175,7 +175,7 @@ class AddonExistingStock extends Component {
         //console.log(stockbyid.articlenum);
 
         showstockid = (
-          <li className="breadcrumb-item active">{stockbyid.itemcode}</li>
+          <li className="breadcrumb-item active">{stockbyid.itempartno}</li>
         );
       }
 
@@ -213,12 +213,12 @@ class AddonExistingStock extends Component {
                     <div class="form-row">
                       <div class="form-group col-md-4">
                         <TextFieldGroup
-                          placeholder="Itemcode"
-                          name="itemcode"
-                          value={itemcode}
+                          placeholder="Item Part No"
+                          name="itempartno"
+                          value={itempartno}
                           onChange={this.onChange}
-                          error={errors.itemcode}
-                          info="Item Code"
+                          error={errors.itempartno}
+                          info="Item Part No"
                           disabled
                         />
                       </div>
