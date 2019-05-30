@@ -163,7 +163,7 @@ class WarehouseTransferHistoryByDate extends Component {
         );
       }
       if (Object.keys(warehoustranshistorybydate).length > 0) {
-        newstockhistorydata = warehoustranshistorybydate.map(
+        newstockhistorydata = warehoustranshistorybydate[0].transferitmlist.map(
           (warehousetransstkhisdata, index) => {
             return (
               <div className="card" key={`${warehousetransstkhisdata._id}`}>
@@ -179,15 +179,15 @@ class WarehouseTransferHistoryByDate extends Component {
                         style={{ width: "150px", border: "1px solid black" }}
                         class="img-responsive"
                         src={warehousetransstkhisdata.itemprimaryimg}
-                        alt="ordered product image"
+                        alt="transfer product image"
                       />
                     </div>
                   )}
 
                   <div className="col-8">
-                    <p className="product-name">
+                    <p className="product-partno">
                       <strong>
-                        Item Code : {warehousetransstkhisdata.itemcode}
+                        Item Part No : {warehousetransstkhisdata.itempartno}
                       </strong>
                     </p>
 

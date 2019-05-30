@@ -24,7 +24,12 @@ import {
   getCurrentOriginWareStock
 } from "../../actions/warehouseActions";
 
-import { createWareHouseTransfer } from "../../actions/warehousetransAction";
+import {
+  createWareHouseTransfer,
+  addtransprodtosession,
+  getCurrentSessionWarehoustrans,
+  warehoustransdeletebyidinsession
+} from "../../actions/warehousetransAction";
 
 import isEmpty from "../../validation/is-empty";
 
@@ -67,10 +72,22 @@ const Modal = ({ handleClose, show, children }) => {
 class TranferQtyComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      itemindex: ""
+    };
+  }
+
+  componentDidMount() {
+    this.props.tblData.map((item, index) => {
+      if (item._id == this.props.rowData._id) {
+        //   console.log(item._id + " at index : " + index);
+        this.setState({ itemindex: index });
+      }
+    });
   }
 
   render() {
+    const { itemindex } = this.state;
     return (
       <td>
         {/*console.log(
@@ -82,9 +99,9 @@ class TranferQtyComponent extends Component {
         <TextFieldGroup
           type="text"
           placeholder={`* Transfer Qty`}
-          onChange={this.props.action.bind(this, this.props.rowData._id)}
+          onChange={this.props.action.bind(this, itemindex)}
           //onChange={e => this.props.action(this.props.tdData, e.target.value)}
-          value={this.props.itemquantitytransfer[this.props.rowData._id]}
+          value={this.props.itemquantitytransfer[itemindex]}
         />
       </td>
     );
@@ -94,9 +111,21 @@ class TranferQtyComponent extends Component {
 class TranferfinallyComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      itemindex: ""
+    };
     this.deleteItem = this.deleteItem.bind(this);
   }
+
+  componentDidMount() {
+    this.props.tblData.map((item, index) => {
+      if (item._id == this.props.rowData._id) {
+        //console.log(item._id + " at index : " + index);
+        this.setState({ itemindex: index });
+      }
+    });
+  }
+
   deleteItem() {
     alert("delete " + this.props.rowData._id);
     console.log(this.props.rowData, this.props.tdData);
@@ -105,7 +134,7 @@ class TranferfinallyComponent extends Component {
   transfinclick() {
     this.props.transferclick(
       this.props.rowData._id,
-      this.props.itemquantitytransfer[this.props.rowData._id]
+      this.props.itemquantitytransfer[this.state.itemindex]
     );
   }
 
@@ -132,7 +161,7 @@ class TranferfinallyComponent extends Component {
             backgroundColor: "#0085C3"
           }}
         >
-          Transfer
+          ADD IN LIST
         </button>
       </td>
     );
@@ -219,6 +248,7 @@ class StockTransfer extends Component {
       prodwarehouseorigin: "",
       prodwarehousetransfer: "",
       itemquantitytransfer: [],
+      wtransstockdtall: [],
       actionadd: "add",
       actiondec: "dec",
       actiondelete: "delete",
@@ -237,6 +267,8 @@ class StockTransfer extends Component {
 $(document).ready(function() {
       $("#example").DataTable();
     });*/
+
+    this.props.getCurrentSessionWarehoustrans();
     this.props.getCurrentStock();
     this.props.getCurrentWarehouses();
 
@@ -266,7 +298,19 @@ $(document).ready(function() {
   componentWillUnmount() {
     //this.$el.DataTable.destroy(true);
   }
-  onTransferStockClick(prodstk_id, quantitytrans, e) {
+  onTransferStockClick(e) {
+    if (!this.state.wtransstockdtall) {
+      alert("First Make The Warehouse Transfer List");
+    }
+    if (this.state.wtransstockdtall) {
+      console.log("great validation check success");
+      console.log("ready to transfer all stock");
+
+      this.props.createWareHouseTransfer(this.props.history);
+    }
+  }
+
+  onAddtowtransClick(prodstk_id, quantitytrans, e) {
     const { prodwarehouseorigin, prodwarehousetransfer } = this.state;
 
     console.log("warehouse origin is : " + prodwarehouseorigin);
@@ -274,9 +318,7 @@ $(document).ready(function() {
     console.log("prodstk_id is : " + prodstk_id);
     console.log("quantitytrans is : " + quantitytrans);
 
-    if (quantitytrans == "" || quantitytrans == undefined) {
-      alert("Please Type Quantity Transfer for Single Item at a Time");
-    } else if (prodwarehousetransfer == "" || prodwarehousetransfer == 0) {
+    if (prodwarehousetransfer == "" || prodwarehousetransfer == 0) {
       alert("Please Select Transfer Warehouse from the List!!");
     } else if (prodwarehousetransfer == prodwarehouseorigin) {
       alert("Stock Cannot Be Transfer in Same Warehouse!!");
@@ -304,7 +346,7 @@ $(document).ready(function() {
         prodwarehousetransfer,
         quantitytrans
       );
-      this.props.createWareHouseTransfer(
+      this.props.addtransprodtosession(
         prodstk_id,
         prodwarehouseorigin,
         prodwarehousetransfer,
@@ -328,20 +370,23 @@ $(document).ready(function() {
     this.setState({ prodwarehouseorigin: e.target.value });
   };
 
-  handleInputChange = (_id, event) => {
-    console.log("array _id:" + _id);
+  handleInputChange = (index, event) => {
+    console.log("array index:" + index);
+    console.log("array event:" + event.target.value);
     var itemquantitytransfer = this.state.itemquantitytransfer.slice();
 
     // Make a copy of the itemquantitytransfer first.
     //var itemquantitytransfer = [...itemquantitytransfer];
-    itemquantitytransfer[_id] = event.target.value; // Update it with the modified itemquantitytransfer.
+
+    itemquantitytransfer[index] = event.target.value; // Update it with the modified itemquantitytransfer.
+
     this.setState({ itemquantitytransfer: itemquantitytransfer }); // Update the state.
 
     console.table(itemquantitytransfer);
-    for (let [key, value] of Object.entries(itemquantitytransfer)) {
+    /* for (let [key, value] of Object.entries(itemquantitytransfer)) {
       console.log(key, value);
     }
-
+*/
     console.log(
       "product ctn transfer array len is : " +
         Object.keys(this.state.itemquantitytransfer).length
@@ -353,47 +398,74 @@ $(document).ready(function() {
     // this.props.editStock(stockData, this.props.history);
   }
 
-  showModalClick = id => {
-    this.setState({ show: true, modelconfigid: id });
-    console.log("modelconfigid set to : " + id);
+  showModalClick = () => {
+    this.setState({ show: true });
 
-    var prodconfigsid = id;
-    var prodwarehouseorigin = this.state.prodwarehouseorigin;
+    //this.props.getCurrentSessionWarehoustrans();
 
-    // this.props.ProductSizeConfigsByid(prodconfigsid, prodwarehouseorigin);
+    axios
+      .get("/api/warehousetransfer")
+      .then(response => {
+        const wtransstockdtall = response.data;
+        console.log(response);
+        this.setState({ wtransstockdtall });
+
+        console.log(wtransstockdtall.length);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
   hideModalClick = () => {
-    this.setState({ show: false, modelconfigid: "" });
-    console.log("modelconfigid set to : '' ");
+    this.setState({ show: false });
   };
 
-  deleteItem(
-    prosizeconfig_id,
+  deleteItemfromwtransses = (
+    prodstk_id,
     prodwarehouseorigin,
     prodwarehousetransfer,
     quantitytrans,
     actiondelete
-  ) {
-    //console.log(prosizeconfig_id, actiondelete);
-    /* this.props.warehoustransdeletebyidinsession(
-      prosizeconfig_id,
+  ) => {
+    console.log(
+      "remove from warehousetransfer session data is : " + prodstk_id,
+      prodwarehouseorigin,
+      prodwarehousetransfer,
+      quantitytrans,
+      actiondelete
+    );
+    this.props.warehoustransdeletebyidinsession(
+      prodstk_id,
       prodwarehouseorigin,
       prodwarehousetransfer,
       quantitytrans,
       actiondelete,
       this.props.history
-    );*/
-  }
+    );
+
+    axios
+      .get("/api/warehousetransfer")
+      .then(response => {
+        const wtransstockdtall = response.data;
+        console.log(response);
+        this.setState({ wtransstockdtall });
+
+        console.log(wtransstockdtall.length);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   render() {
     const {
       prodwarehouseorigin,
       prodwarehousetransfer,
       itemquantitytransfer,
-      testinput
+      testinput,
+      wtransstockdtall,
+      errors
     } = this.state;
-
-    const { errors } = this.state;
 
     const { stock } = this.props.stock; //here we pass the stock props in with all the stocks contains and store in stocks const for used in this component
 
@@ -440,6 +512,81 @@ $(document).ready(function() {
         // console.log(warehouseoptions);
       }
     }
+
+    const columns = [
+      {
+        Header: "Product Image",
+        accessor: "itemprimaryimg",
+        maxWidth: 350,
+        Cell: row => (
+          <span>
+            <center>
+              <img
+                style={{ maxWidth: "70px" }}
+                class=""
+                src={row.value}
+                alt="product img"
+              />
+            </center>
+          </span>
+        )
+      },
+      {
+        Header: "Item Part No",
+        accessor: "itempartno",
+        maxWidth: 100,
+        filterable: true
+      },
+      {
+        Header: "Warehouse Origin",
+        accessor: "prodwarehouseorigin",
+        maxWidth: 290,
+        filterable: true
+      },
+      {
+        Header: "Warehouse Transfer",
+        accessor: "prodwarehousetransfer",
+        maxWidth: 290,
+        filterable: true
+      },
+      {
+        Header: "Quantity Transfer",
+        accessor: "quantitytrans",
+        maxWidth: 290,
+        filterable: true
+      },
+      {
+        Header: "Remove",
+        accessor: "forremovepurpose",
+        maxWidth: 350,
+        Cell: row => (
+          <span>
+            <center>
+              <button
+                onClick={e =>
+                  this.deleteItemfromwtransses(
+                    row.value[0]._id,
+                    row.value[0].prodwarehouseorigin,
+                    row.value[0].prodwarehousetransfer,
+                    row.value[0].quantitytrans,
+                    this.state.actiondelete
+                  )
+                }
+                // onClick={this.onAddtocartClick.bind(this, row.value)}
+                className="btn btn-default"
+                style={{
+                  textDecoration: "none",
+                  color: "white",
+                  backgroundColor: "red"
+                }}
+              >
+                <i class="fa fa-times-circle" />
+              </button>
+            </center>
+          </span>
+        )
+      }
+    ];
 
     let tHead = [
       "Product Image",
@@ -492,6 +639,79 @@ $(document).ready(function() {
             <div>
               <div className="col-12">
                 <div className="">
+                  <div className="col-12 row">
+                    <div
+                      className="col-md"
+                      style={{
+                        backgroundColor: "#EBEBEB",
+                        textAlign: "center"
+                      }}
+                    >
+                      <Modal
+                        show={this.state.show}
+                        handleClose={this.hideModalClick}
+                      >
+                        <div className="container">
+                          <div className="row">
+                            <div className="col-md-12">
+                              <center>
+                                <h3>Stock Transfer List</h3>
+                                {wtransstockdtall && (
+                                  <button
+                                    onClick={e => this.onTransferStockClick()}
+                                    // onClick={this.onAddtocartClick.bind(this, row.value)}
+                                    className="btn btn-default"
+                                    style={{
+                                      textDecoration: "none",
+                                      color: "white",
+                                      backgroundColor: "rgb(63, 94, 165)"
+                                    }}
+                                  >
+                                    <i class="fa fa-exchange" /> Transfer
+                                  </button>
+                                )}
+                                {wtransstockdtall && (
+                                  <ReactTable
+                                    data={wtransstockdtall}
+                                    columns={columns}
+                                    defaultPageSize={5}
+                                    pageSizeOptions={[
+                                      5,
+                                      10,
+                                      15,
+                                      20,
+                                      25,
+                                      30,
+                                      35,
+                                      40,
+                                      50
+                                    ]}
+                                    style={{
+                                      height: "600px", // This will force the table body to overflow and scroll, since there is not enough room
+                                      maxWidth: "100%"
+                                    }}
+                                    className="-striped -highlight"
+                                  />
+                                )}
+                              </center>
+                            </div>
+                          </div>
+                        </div>
+                      </Modal>
+                    </div>
+                    <div
+                      className="col-md"
+                      style={{
+                        backgroundColor: "#EBEBEB",
+                        textAlign: "right",
+                        padding: 10
+                      }}
+                    >
+                      <button class="btn" onClick={e => this.showModalClick()}>
+                        <i class="fa fa-list-ol" /> Transfer List
+                      </button>
+                    </div>
+                  </div>
                   <div className="col-12 row">
                     <div
                       className="col-md"
@@ -549,9 +769,7 @@ $(document).ready(function() {
                             <SortableTbl
                               action={this.handleInputChange.bind(this)}
                               itemquantitytransfer={itemquantitytransfer}
-                              transferclick={this.onTransferStockClick.bind(
-                                this
-                              )}
+                              transferclick={this.onAddtowtransClick.bind(this)}
                               tblData={
                                 originwarehousestks.finalwarehouseproducts
                               }
@@ -677,6 +895,9 @@ export default connect(
     getCurrentStock,
     getCurrentWarehouses,
     getCurrentOriginWareStock,
-    createWareHouseTransfer
+    createWareHouseTransfer,
+    addtransprodtosession,
+    getCurrentSessionWarehoustrans,
+    warehoustransdeletebyidinsession
   }
 )(withRouter(StockTransfer));

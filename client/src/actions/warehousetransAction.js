@@ -30,24 +30,24 @@ export const getCurrentSessionWarehoustrans = () => dispatch => {
     )
     .catch(err =>
       dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
+        type: GET_SESSION_WAREHOUSE_TRANSFER,
+        payload: {}
       })
     );
 };
 
 // Create addproduct to session
 export const addtransprodtosession = (
-  productsizeconfigs_id,
+  prodstk_id,
   prodwarehouseorigin,
   prodwarehousetransfer,
-  ctntrans,
+  quantitytrans,
   history
 ) => dispatch => {
   //console.log("action values are :" + id + " and " + prodwarehouseorigin);
   axios
     .get(
-      `/api/warehousetransfer/add/${productsizeconfigs_id}&${prodwarehouseorigin}&${prodwarehousetransfer}&${ctntrans}`
+      `/api/warehousetransfer/addinlist/${prodstk_id}&${prodwarehouseorigin}&${prodwarehousetransfer}&${quantitytrans}`
     )
     .then(res =>
       dispatch({
@@ -84,24 +84,19 @@ export const setSessionWarehoustransLoading = () => {
 
 //  product delete by id in session
 export const warehoustransdeletebyidinsession = (
-  prosizeconfig_id,
+  prodstk_id,
   prodwarehouseorigin,
   prodwarehousetransfer,
-  ctntrans,
+  quantitytrans,
   actiondelete,
   history
 ) => dispatch => {
   //console.log("action values are :" + id + " and " + orderctnquantity);
   axios
     .get(
-      `/api/warehousetransfer/update/${prosizeconfig_id}&${prodwarehouseorigin}&${prodwarehousetransfer}&${ctntrans}?action=${actiondelete}`
+      `/api/warehousetransfer/update/${prodstk_id}&${prodwarehouseorigin}&${prodwarehousetransfer}&${quantitytrans}?action=${actiondelete}`
     )
-    .then(res =>
-      dispatch({
-        type: PRODUCT_DELETE_IN_SESSION_WAREHOUSE_TRANSFER_BY_ID,
-        payload: res.data
-      })
-    )
+    .then(dispatch(getCurrentSessionWarehoustrans()))
     .then(res => history.push("/stock-transfer"))
     .catch(err =>
       dispatch({
@@ -112,18 +107,10 @@ export const warehoustransdeletebyidinsession = (
 };
 
 // Create createWareHouseTransfer
-export const createWareHouseTransfer = (
-  prodstk_id,
-  prodwarehouseorigin,
-  prodwarehousetransfer,
-  quantitytrans,
-  history
-) => dispatch => {
+export const createWareHouseTransfer = history => dispatch => {
   dispatch(setcreateWareHouseTransferLoading()); //here we dispatch function called setcreateWareHouseTransferLoading() which will set the loading state True before it actually does the request
   axios
-    .get(
-      `/api/warehousetransfer/addnewwarehousetransfer/${prodstk_id}&${prodwarehouseorigin}&${prodwarehousetransfer}&${quantitytrans}`
-    )
+    .post("/api/warehousetransfer/addnewwarehousetransfer/")
     .then(response =>
       history.push("/show-warehouse-transfer/" + response.data._id)
     )
@@ -136,6 +123,7 @@ export const createWareHouseTransfer = (
       dispatch(setcreateWareHouseTransferLoadingStop()); //here we dispatch function called setcreateWareHouseTransferLoadingStop() which will set the loading state False after it actually does the request
       //alert("Warehouse Transfer Successfully !!");
     })
+    .then(dispatch(getCurrentSessionWarehoustrans()))
 
     //.then(res => history.push("/"))
 

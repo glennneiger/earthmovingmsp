@@ -160,7 +160,7 @@ class ShowWarehouseTransfer extends Component {
         );
       }
       if (Object.keys(warehoustranshistorybyid).length > 0) {
-        transferproductscontents = warehoustranshistorybyid.warehousetransproducts.map(
+        transferproductscontents = warehoustranshistorybyid.warehousetransproducts[0].transferitmlist.map(
           (transferprod, index) => {
             return (
               <div className="card" key={`${transferprod._id}`}>
@@ -181,9 +181,11 @@ class ShowWarehouseTransfer extends Component {
                   )}
 
                   <div className="col-8">
-                    {transferprod.itemcode && (
+                    {transferprod.itempartno && (
                       <p className="product-name">
-                        <strong>Item Code : {transferprod.itemcode}</strong>
+                        <strong>
+                          Item Part No : {transferprod.itempartno}
+                        </strong>
                       </p>
                     )}
 
