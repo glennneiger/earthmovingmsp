@@ -459,60 +459,52 @@ router.get(
        */
         }
 
-        async function checksome2() {
-          for (var i = 0; i < warehouse.warehouseproducts.length; i++) {
-            if (warehouse.warehouseproducts[i].quantity > 0) {
-              let availableqty = warehouse.warehouseproducts[i].quantity;
+        (async function checksome2() {
+          try {
+            for (var i = 0; i < warehouse.warehouseproducts.length; i++) {
+              console.log("work start at index : " + i);
+              if (warehouse.warehouseproducts[i].quantity > 0) {
+                let availableqty = warehouse.warehouseproducts[i].quantity;
 
-              let promise = new Promise((resolve, reject) => {
-                setTimeout(
-                  () =>
-                    resolve(
-                      Stock.findOne({
-                        _id: warehouse.warehouseproducts[i]._id
-                      }).then(stock => {
-                        console.log("////found stock///");
+                await Stock.findOne({
+                  _id: warehouse.warehouseproducts[i]._id
+                }).then(async stock => {
+                  console.log("////found stock///");
 
-                        const wareproducts = {
-                          _id: stock._id,
-                          itempartno: stock.itempartno,
-                          quantity: availableqty,
-                          itemtechname: stock.itemtechname,
-                          machinenames: stock.machinenames,
-                          itemid: stock.itemid,
-                          itemidunit: stock.itemidunit,
-                          itemod: stock.itemod,
-                          itemodunit: stock.itemodunit,
-                          itemlength: stock.itemlength,
-                          itemlengthunit: stock.itemlengthunit,
-                          itemthickness: stock.itemthickness,
-                          itemthicknessunit: stock.itemthicknessunit,
-                          hsncode: stock.hsncode,
-                          minrate: stock.minrate,
-                          rate: stock.rate,
-                          maxrate: stock.maxrate,
-                          itemprimaryimg: stock.itemprimaryimg
-                        };
-                        // console.log(wareproducts);
-                        finalwarehouseproducts.unshift(wareproducts);
-                      })
-                    ),
-                  100
-                );
-              });
-
-              let result = await promise; // wait till the promise resolves (*)
-
-              if (result) {
-                console.log("after update deduction" + prodwarehousetransfer); // "done!"
+                  const wareproducts = {
+                    _id: stock._id,
+                    itempartno: stock.itempartno,
+                    quantity: availableqty,
+                    itemtechname: stock.itemtechname,
+                    machinenames: stock.machinenames,
+                    itemid: stock.itemid,
+                    itemidunit: stock.itemidunit,
+                    itemod: stock.itemod,
+                    itemodunit: stock.itemodunit,
+                    itemlength: stock.itemlength,
+                    itemlengthunit: stock.itemlengthunit,
+                    itemthickness: stock.itemthickness,
+                    itemthicknessunit: stock.itemthicknessunit,
+                    hsncode: stock.hsncode,
+                    minrate: stock.minrate,
+                    rate: stock.rate,
+                    maxrate: stock.maxrate,
+                    itemprimaryimg: stock.itemprimaryimg
+                  };
+                  // console.log(wareproducts);
+                  await finalwarehouseproducts.unshift(wareproducts);
+                });
+              } else {
+                console.log("Finding ALL STOCK Acc To Condition");
               }
-            } else {
-              console.log("Finding ALL STOCK Acc To Condition");
+              console.log("work end at index : " + i);
             }
+            console.log("loop is complete");
+            res.json({ finalwarehouseproducts }); //respose send when above loop run completely
+          } catch (e) {
+            console.log("Error finding all stock : " + e);
           }
-        }
-
-        checksome2().then(() => res.json({ finalwarehouseproducts }));
+        })();
       })
       .catch(err => res.status(404).json({ err }));
   }
