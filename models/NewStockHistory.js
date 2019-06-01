@@ -61,6 +61,9 @@ const NewStockHistorySchema = new Schema({
   itemprimaryimg: {
     type: String
   },
+  prodwarehouse: {
+    type: String
+  },
   productImage: [],
   quantity: {
     type: String,

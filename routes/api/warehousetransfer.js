@@ -343,297 +343,313 @@ router.post(
     errors.message = "Sorry, Something Went Wrong !!";
     errors.className = "alert-danger";
     let isWarehouseUpdate = true;
+    Warehouse.find().then(warehouse => {
+      (async function wtransferfin() {
+        try {
+          console.log("////ORIGIN UPDATE START/////////");
 
-    (async function wtransferfin() {
-      try {
-        console.log("////ORIGIN UPDATE START/////////");
-
-        for (i = 0; i < warehousetransfer.length; i++) {
-          console.log(
-            "Enter inside warehousetransfer loop FOR Origin where working on index no :" +
-              i
-          );
-          let prodstk_id = warehousetransfer[i]._id;
-          let itempartno = warehousetransfer[i].itempartno;
-          let prodwarehouseorigin = warehousetransfer[i].prodwarehouseorigin;
-          let prodwarehousetransfer =
-            warehousetransfer[i].prodwarehousetransfer;
-          let quantitytrans = warehousetransfer[i].quantitytrans;
-          let itemprimaryimg = warehousetransfer[i].itemprimaryimg;
-          await Warehouse.findOne(
-            {
-              warehouseaddress: prodwarehouseorigin
-            },
-            //  { "warehouseproducts._id": prodstk_id }
-            {
-              warehouseproducts: {
-                $elemMatch: {
-                  _id: prodstk_id
+          for (i = 0; i < warehousetransfer.length; i++) {
+            console.log(
+              "Enter inside warehousetransfer loop FOR Origin where working on index no :" +
+                i
+            );
+            let prodstk_id = warehousetransfer[i]._id;
+            let itempartno = warehousetransfer[i].itempartno;
+            let prodwarehouseorigin = warehousetransfer[i].prodwarehouseorigin;
+            let prodwarehousetransfer =
+              warehousetransfer[i].prodwarehousetransfer;
+            let quantitytrans = warehousetransfer[i].quantitytrans;
+            let itemprimaryimg = warehousetransfer[i].itemprimaryimg;
+            await Warehouse.findOne(
+              {
+                warehouseaddress: prodwarehouseorigin
+              },
+              //  { "warehouseproducts._id": prodstk_id }
+              {
+                warehouseproducts: {
+                  $elemMatch: {
+                    _id: prodstk_id
+                  }
                 }
-              }
-            },
-            { warehouseproducts: true } //projection true or 1 it means result will return only warehouseproducts acc to above all condition well in case if we set it false or 0 so all the info return except above all condition match warehouseproducts
-          )
-            .then(async warehouse => {
-              //ASYNC CALLBACK FUNCTION
+              },
+              { warehouseproducts: true } //projection true or 1 it means result will return only warehouseproducts acc to above all condition well in case if we set it false or 0 so all the info return except above all condition match warehouseproducts
+            )
+              .then(async warehouse => {
+                //ASYNC CALLBACK FUNCTION
 
-              // declare function as async
-              if (warehouse.warehouseproducts.length) {
-                var itempartno = warehouse.warehouseproducts[0].itempartno;
-                var availquantity = parseInt(
-                  warehouse.warehouseproducts[0].quantity
-                );
+                // declare function as async
+                if (warehouse.warehouseproducts.length) {
+                  var itempartno = warehouse.warehouseproducts[0].itempartno;
+                  var availquantity = parseInt(
+                    warehouse.warehouseproducts[0].quantity
+                  );
 
-                console.log("available quantity is : " + availquantity);
-                if (
-                  parseInt(availquantity) <= 0 ||
-                  parseInt(availquantity) < parseInt(quantitytrans)
-                ) {
-                  console.log(
-                    "you cannot transfer product stock from " +
+                  console.log("available quantity is : " + availquantity);
+                  if (
+                    parseInt(availquantity) <= 0 ||
+                    parseInt(availquantity) < parseInt(quantitytrans)
+                  ) {
+                    console.log(
+                      "you cannot transfer product stock from " +
+                        prodwarehouseorigin +
+                        " " +
+                        "Because There are " +
+                        availquantity +
+                        " Quantity " +
+                        "of" +
+                        itempartno
+                    );
+                    errors.message =
+                      "you cannot transfer product stock from " +
                       prodwarehouseorigin +
                       " " +
                       "Because There are " +
                       availquantity +
                       " Quantity " +
-                      "of" +
-                      itempartno
-                  );
-                  errors.message =
-                    "you cannot transfer product stock from " +
-                    prodwarehouseorigin +
-                    " " +
-                    "Because There are " +
-                    availquantity +
-                    " Quantity " +
-                    "of " +
-                    itempartno;
-                  errors.className = "alert-danger";
-                  res.status(400).json(errors);
-                } else {
-                  warehouse.warehouseproducts[0].quantity -= quantitytrans;
+                      "of " +
+                      itempartno;
+                    errors.className = "alert-danger";
+                    res.status(400).json(errors);
+                  } else {
+                    warehouse.warehouseproducts[0].quantity -= quantitytrans;
+                    console.log(
+                      "transfer qty updated(deduction) by" +
+                        quantitytrans +
+                        " of itempartno : " +
+                        itempartno +
+                        " at warehouseorigin is : " +
+                        prodwarehouseorigin
+                    );
+
+                    await warehouse.save().then(res => {
+                      // wait for save() to complete before proceeding
+                      console.log("deduction saved item successfully!!");
+                    });
+                  }
+                }
+              })
+              .catch(err => {
+                console.log("watchOriginUpdate Error is : " + err);
+              });
+          }
+
+          console.log("////ORIGIN UPDATE END/////////");
+
+          console.log("////TRANSFER UPDATE START/////////");
+          for (w = 0; w < warehousetransfer.length; w++) {
+            console.log(
+              "Enter inside warehousetransfer loop FOR Transfer where working on index no :" +
+                w
+            );
+            let prodstk_id = warehousetransfer[w]._id;
+            let itempartno = warehousetransfer[w].itempartno;
+            let prodwarehouseorigin = warehousetransfer[w].prodwarehouseorigin;
+            let prodwarehousetransfer =
+              warehousetransfer[w].prodwarehousetransfer;
+            let quantitytrans = warehousetransfer[w].quantitytrans;
+            let itemprimaryimg = warehousetransfer[w].itemprimaryimg;
+            await Warehouse.findOne(
+              {
+                warehouseaddress: prodwarehousetransfer
+              },
+              //  { "warehouseproducts._id": prodstk_id }
+              {
+                warehouseproducts: {
+                  $elemMatch: {
+                    _id: prodstk_id
+                  }
+                }
+              },
+              { warehouseproducts: true } //projection true or 1 it means result will return only warehouseproducts acc to above all condition well in case if we set it false or 0 so all the info return except above all condition match warehouseproducts
+            )
+              .then(async warehouse => {
+                //ASYNC CALLBACK FUNCTION
+
+                // declare function as async
+                if (warehouse.warehouseproducts.length) {
+                  //if item present at prodwarehousetransfer
                   console.log(
-                    "transfer qty updated(deduction) by" +
+                    "run when already item present case warehouse.warehouseproducts.length is :" +
+                      warehouse.warehouseproducts.length
+                  );
+                  console.log(
+                    "Item Already Exist at Warehouse Transfer " +
+                      warehousetransfer[w].prodwarehousetransfer
+                  );
+                  var itempartno = warehouse.warehouseproducts[0].itempartno;
+                  var availquantity = parseInt(
+                    warehouse.warehouseproducts[0].quantity
+                  );
+
+                  console.log("available quantity is : " + availquantity);
+
+                  warehouse.warehouseproducts[0].quantity += quantitytrans;
+                  console.log(
+                    "transfer qty updated(Addition) by" +
                       quantitytrans +
                       " of itempartno : " +
                       itempartno +
                       " at warehouseorigin is : " +
-                      prodwarehouseorigin
+                      prodwarehousetransfer
                   );
 
                   await warehouse.save().then(res => {
                     // wait for save() to complete before proceeding
-                    console.log("deduction saved item successfully!!");
+                    console.log("Addition saved item successfully!!");
                   });
                 }
-              }
+              })
+              .catch(err => {
+                console.log("watchTransferUpdate Error is : " + err);
+              });
+          }
+          console.log("////TRANSFER UPDATE NEW ENTRY CHECK START/////////");
+
+          for (n = 0; n < warehousetransfer.length; n++) {
+            let prodstk_id = warehousetransfer[n]._id;
+            let itempartno = warehousetransfer[n].itempartno;
+            let prodwarehouseorigin = warehousetransfer[n].prodwarehouseorigin;
+            let prodwarehousetransfer =
+              warehousetransfer[n].prodwarehousetransfer;
+            let quantitytrans = warehousetransfer[n].quantitytrans;
+            let itemprimaryimg = warehousetransfer[n].itemprimaryimg;
+            await Warehouse.findOne(
+              {
+                warehouseaddress: prodwarehousetransfer
+              },
+              //  { "warehouseproducts._id": prodstk_id }
+              {
+                warehouseproducts: {
+                  $elemMatch: {
+                    _id: prodstk_id
+                  }
+                }
+              },
+              { warehouseproducts: true } //projection true or 1 it means result will return only warehouseproducts acc to above all condition well in case if we set it false or 0 so all the info return except above all condition match warehouseproducts
+            )
+              .then(async warehouse => {
+                //ASYNC CALLBACK FUNCTION
+
+                // declare function as async
+                if (!warehouse.warehouseproducts.length) {
+                  //if item not present at prodwarehousetransfer
+                  console.log(
+                    "run when new item entry case warehouse.warehouseproducts.length is :" +
+                      warehouse.warehouseproducts.length
+                  );
+                  await Warehouse.findOne({
+                    warehouseaddress: warehousetransfer[n].prodwarehousetransfer
+                  }).then(async warehouse => {
+                    console.log(
+                      "Ready to Insert New Item Entry with Quantity in warehouse is : " +
+                        warehousetransfer[n].prodwarehousetransfer
+                    );
+
+                    console.log(
+                      "here we unshift the current itempartno info with quantity in requested warehouse"
+                    );
+                    console.log("req.user.id is : " + req.user.id);
+                    const warehouseprodfields = {
+                      user: req.user.id,
+                      _id: warehousetransfer[n]._id,
+                      itempartno: warehousetransfer[n].itempartno,
+                      quantity: warehousetransfer[n].quantitytrans
+                    };
+                    // Add to warehouseproducts array
+                    await warehouse.warehouseproducts.unshift(
+                      warehouseprodfields
+                    );
+
+                    await warehouse
+                      .save()
+                      .then(warehouse => {
+                        console.log("New Entry Of Add New Stock Inserted");
+                      })
+                      .catch(err => {
+                        console.log(
+                          "watchTransferNewEntryUpdate Warehouse Not Saved Error is : " +
+                            err
+                        );
+                      });
+                  });
+                }
+              })
+              .catch(err => {
+                console.log("watchTransferUpdate Error is : " + err);
+              });
+          }
+          console.log("////TRANSFER UPDATE NEW ENTRY CHECK END/////////");
+
+          console.log("FINALLY READY TO SAVE TRANSFER HISTORY");
+          var companynamedata = {};
+          companynamedata.companyname = "ATOZ COMPANY";
+
+          /* await warehouse
+            .save()
+            .then(warehouse => {
+              console.log("SAVED FINAL WAREHOUSE AFTER CALCULATION");
             })
             .catch(err => {
-              console.log("watchOriginUpdate Error is : " + err);
-            });
-        }
+              console.log("Problem to saving the warehouse : " + err);
+            });*/
 
-        console.log("////ORIGIN UPDATE END/////////");
+          await new Warehousetransfer(companynamedata)
+            .save()
+            .then(async warehousetransfer => {
+              console.log("history warehouse transfer save!!");
+              const wtransproddt = {
+                user: req.user.id
+              };
 
-        console.log("////TRANSFER UPDATE START/////////");
-        for (w = 0; w < warehousetransfer.length; w++) {
-          console.log(
-            "Enter inside warehousetransfer loop FOR Transfer where working on index no :" +
-              w
-          );
-          let prodstk_id = warehousetransfer[w]._id;
-          let itempartno = warehousetransfer[w].itempartno;
-          let prodwarehouseorigin = warehousetransfer[w].prodwarehouseorigin;
-          let prodwarehousetransfer =
-            warehousetransfer[w].prodwarehousetransfer;
-          let quantitytrans = warehousetransfer[w].quantitytrans;
-          let itemprimaryimg = warehousetransfer[w].itemprimaryimg;
-          await Warehouse.findOne(
-            {
-              warehouseaddress: prodwarehousetransfer
-            },
-            //  { "warehouseproducts._id": prodstk_id }
-            {
-              warehouseproducts: {
-                $elemMatch: {
-                  _id: prodstk_id
-                }
-              }
-            },
-            { warehouseproducts: true } //projection true or 1 it means result will return only warehouseproducts acc to above all condition well in case if we set it false or 0 so all the info return except above all condition match warehouseproducts
-          )
-            .then(async warehouse => {
-              //ASYNC CALLBACK FUNCTION
+              // Add to warehousetransproducts array
+              await warehousetransfer.warehousetransproducts.unshift(
+                wtransproddt
+              );
 
-              // declare function as async
-              if (warehouse.warehouseproducts.length) {
-                //if item present at prodwarehousetransfer
-                console.log(
-                  "run when already item present case warehouse.warehouseproducts.length is :" +
-                    warehouse.warehouseproducts.length
-                );
-                console.log(
-                  "Item Already Exist at Warehouse Transfer " +
-                    warehousetransfer[w].prodwarehousetransfer
-                );
-                var itempartno = warehouse.warehouseproducts[0].itempartno;
-                var availquantity = parseInt(
-                  warehouse.warehouseproducts[0].quantity
-                );
+              await warehousetransfer.save().then(async warehousetransfer => {
+                var warehousetransferses = req.session.warehousetransfer;
 
-                console.log("available quantity is : " + availquantity);
-
-                warehouse.warehouseproducts[0].quantity += quantitytrans;
-                console.log(
-                  "transfer qty updated(Addition) by" +
-                    quantitytrans +
-                    " of itempartno : " +
-                    itempartno +
-                    " at warehouseorigin is : " +
-                    prodwarehousetransfer
-                );
-
-                await warehouse.save().then(res => {
-                  // wait for save() to complete before proceeding
-                  console.log("Addition saved item successfully!!");
-                });
-              }
-            })
-            .catch(err => {
-              console.log("watchTransferUpdate Error is : " + err);
-            });
-        }
-        console.log("////TRANSFER UPDATE NEW ENTRY CHECK START/////////");
-
-        for (n = 0; n < warehousetransfer.length; n++) {
-          let prodstk_id = warehousetransfer[n]._id;
-          let itempartno = warehousetransfer[n].itempartno;
-          let prodwarehouseorigin = warehousetransfer[n].prodwarehouseorigin;
-          let prodwarehousetransfer =
-            warehousetransfer[n].prodwarehousetransfer;
-          let quantitytrans = warehousetransfer[n].quantitytrans;
-          let itemprimaryimg = warehousetransfer[n].itemprimaryimg;
-          await Warehouse.findOne(
-            {
-              warehouseaddress: prodwarehousetransfer
-            },
-            //  { "warehouseproducts._id": prodstk_id }
-            {
-              warehouseproducts: {
-                $elemMatch: {
-                  _id: prodstk_id
-                }
-              }
-            },
-            { warehouseproducts: true } //projection true or 1 it means result will return only warehouseproducts acc to above all condition well in case if we set it false or 0 so all the info return except above all condition match warehouseproducts
-          )
-            .then(async warehouse => {
-              //ASYNC CALLBACK FUNCTION
-
-              // declare function as async
-              if (!warehouse.warehouseproducts.length) {
-                //if item not present at prodwarehousetransfer
-                console.log(
-                  "run when new item entry case warehouse.warehouseproducts.length is :" +
-                    warehouse.warehouseproducts.length
-                );
-                await Warehouse.findOne({
-                  warehouseaddress: warehousetransfer[n].prodwarehousetransfer
-                }).then(async warehouse => {
-                  console.log(
-                    "Ready to Insert New Item Entry with Quantity in warehouse is : " +
-                      warehousetransfer[n].prodwarehousetransfer
-                  );
-
-                  console.log(
-                    "here we unshift the current itempartno info with quantity in requested warehouse"
-                  );
-                  console.log("req.user.id is : " + req.user.id);
-                  const warehouseprodfields = {
-                    user: req.user.id,
-                    _id: warehousetransfer[n]._id,
-                    itempartno: warehousetransfer[n].itempartno,
-                    quantity: warehousetransfer[n].quantitytrans
+                for (var fwt = 0; fwt < warehousetransferses.length; fwt++) {
+                  const translist = {
+                    _id: warehousetransferses[fwt]._id,
+                    itempartno: warehousetransferses[fwt].itempartno,
+                    prodwarehouseorigin:
+                      warehousetransferses[fwt].prodwarehouseorigin,
+                    prodwarehousetransfer:
+                      warehousetransferses[fwt].prodwarehousetransfer,
+                    quantitytrans: warehousetransferses[fwt].quantitytrans,
+                    itemprimaryimg: warehousetransferses[fwt].itemprimaryimg
                   };
-                  // Add to warehouseproducts array
-                  await warehouse.warehouseproducts.unshift(
-                    warehouseprodfields
+
+                  // Add to transferitmlist array
+                  await warehousetransfer.warehousetransproducts[0].transferitmlist.unshift(
+                    translist
                   );
+                }
 
-                  await warehouse
-                    .save()
-                    .then(warehouse => {
-                      console.log("New Entry Of Add New Stock Inserted");
-                    })
-                    .catch(err => {
-                      console.log(
-                        "watchTransferNewEntryUpdate Warehouse Not Saved Error is : " +
-                          err
-                      );
-                    });
-                });
-              }
-            })
-            .catch(err => {
-              console.log("watchTransferUpdate Error is : " + err);
+                await warehousetransfer
+                  .save()
+                  .then(async warehousetransfer => {
+                    console.log(
+                      "finalllly warehouse history saved successfully"
+                    );
+                    await delete req.session.warehousetransfer;
+                    res.json(warehousetransfer); //finally send the response
+                  })
+                  .catch(err => {
+                    console.log("err is : " + err);
+                  });
+              });
             });
+        } catch (e) {
+          errors.message =
+            "Sorry, Stock is not transfered Something Went Wrong!!";
+          errors.className = "alert-danger";
+          console.log("Warehosue Update error is : " + e);
+          res.status(404).json(errors);
         }
-        console.log("////TRANSFER UPDATE NEW ENTRY CHECK END/////////");
-
-        console.log("FINALLY READY TO SAVE TRANSFER HISTORY");
-        var companynamedata = {};
-        companynamedata.companyname = "ATOZ COMPANY";
-
-        await new Warehousetransfer(companynamedata)
-          .save()
-          .then(async warehousetransfer => {
-            console.log("history warehouse transfer save!!");
-            const wtransproddt = {
-              user: req.user.id
-            };
-
-            // Add to warehousetransproducts array
-            await warehousetransfer.warehousetransproducts.unshift(
-              wtransproddt
-            );
-
-            await warehousetransfer.save().then(async warehousetransfer => {
-              var warehousetransferses = req.session.warehousetransfer;
-
-              for (var fwt = 0; fwt < warehousetransferses.length; fwt++) {
-                const translist = {
-                  _id: warehousetransferses[fwt]._id,
-                  itempartno: warehousetransferses[fwt].itempartno,
-                  prodwarehouseorigin:
-                    warehousetransferses[fwt].prodwarehouseorigin,
-                  prodwarehousetransfer:
-                    warehousetransferses[fwt].prodwarehousetransfer,
-                  quantitytrans: warehousetransferses[fwt].quantitytrans,
-                  itemprimaryimg: warehousetransferses[fwt].itemprimaryimg
-                };
-
-                // Add to transferitmlist array
-                await warehousetransfer.warehousetransproducts[0].transferitmlist.unshift(
-                  translist
-                );
-              }
-
-              await warehousetransfer
-                .save()
-                .then(async warehousetransfer => {
-                  console.log("finalllly warehouse history saved successfully");
-                  await delete req.session.warehousetransfer;
-                  res.json(warehousetransfer); //finally send the response
-                })
-                .catch(err => {
-                  console.log("err is : " + err);
-                });
-            });
-          });
-      } catch (e) {
-        console.log("Warehosue Update error is : " + e);
-      }
-    })();
+      })();
+    });
   }
 );
 

@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+
+import ReactTable from "react-table";
+import "react-table/react-table.css";
+
+import { CSVLink } from "react-csv";
+
 import axios from "axios";
 import $ from "jquery";
 import html2canvas from "html2canvas";
@@ -51,6 +57,10 @@ class ShowWarehouseTransfer extends Component {
     }
   }
 
+  windowPrint(e) {
+    e.preventDefault();
+    window.print();
+  }
   printDocument(e) {
     e.preventDefault();
     // const canvas_div_pdf = document.getElementById("canvas_div_pdf");
@@ -149,9 +159,89 @@ class ShowWarehouseTransfer extends Component {
 
     let transferproductscontents;
 
+    let columns = [];
+    let csvContent;
     if (warehoustranshistorybyid === null) {
       showwarehousetranshistory = <Spinner />;
     } else {
+      columns = [
+        {
+          Header: "Item Image",
+          accessor: "itemprimaryimg",
+          maxWidth: 200,
+          filterable: false,
+          Cell: row => (
+            <span>
+              <center>
+                <img
+                  style={{ maxWidth: "70px" }}
+                  class=""
+                  src={row.value}
+                  alt="item primary img"
+                />
+              </center>
+            </span>
+          )
+        },
+        {
+          Header: "Item Part No",
+          accessor: "itempartno",
+          maxWidth: 200,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Warehouse Origin",
+          accessor: "prodwarehouseorigin",
+          maxWidth: 200,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>{row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Warehouse Transfer",
+          accessor: "prodwarehousetransfer",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center> {row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Quantity Transfer",
+          accessor: "quantitytrans",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center> {row.value}</center>
+            </span>
+          )
+        },
+        {
+          Header: "Transfer Date",
+          accessor: "date",
+          maxWidth: 290,
+          filterable: true,
+          Cell: row => (
+            <span>
+              <center>
+                <Moment format="YYYY/MM/DD hh:mm A">{row.value}</Moment>
+              </center>
+            </span>
+          )
+        }
+      ];
+
       if (Object.keys(warehoustranshistorybyid).length > 0) {
         showwarehoustransferid = (
           <li className="breadcrumb-item active">
@@ -160,151 +250,112 @@ class ShowWarehouseTransfer extends Component {
         );
       }
       if (Object.keys(warehoustranshistorybyid).length > 0) {
-        transferproductscontents = warehoustranshistorybyid.warehousetransproducts[0].transferitmlist.map(
-          (transferprod, index) => {
-            return (
-              <div className="card" key={`${transferprod._id}`}>
-                <div
-                  class="card-header text-light"
-                  style={{ backgroundColor: "#dedede" }}
-                />
-                <div className="row">
-                  {transferprod.itemprimaryimg && (
-                    <div className="col-4">
+        csvContent = (
+          <CSVLink
+            data={
+              warehoustranshistorybyid.warehousetransproducts[0].transferitmlist
+            }
+            filename={"Warehouse-Transfer.csv"}
+            className="btn btn-sm btn-success"
+          >
+            Export CSV
+          </CSVLink>
+        );
+        showwarehousetranshistory = (
+          <div>
+            <div className="container-fluid">
+              <div className="col-12 row">
+                <br />
+                <div className="col-2">&#8205;</div>
+                <div class="col-3">
+                  <div
+                    class="card card-bordered"
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    {warehousetransferimg ? (
                       <img
-                        style={{ width: "150px", border: "1px solid black" }}
-                        class="img-responsive"
-                        src={transferprod.itemprimaryimg}
-                        alt="product image"
+                        style={{ width: 100, height: 100 }}
+                        class="card-img-top img-fluid"
+                        src={warehousetransferimg}
+                        alt="transfer img"
                       />
-                    </div>
-                  )}
-
-                  <div className="col-8">
-                    {transferprod.itempartno && (
-                      <p className="product-name">
-                        <strong>
-                          Item Part No : {transferprod.itempartno}
-                        </strong>
-                      </p>
-                    )}
-
-                    {transferprod.prodwarehouseorigin && (
-                      <p>
-                        <small>
-                          Warehouse Origin:{" "}
-                          <b>{transferprod.prodwarehouseorigin}</b>
-                        </small>
-                      </p>
-                    )}
-
-                    {transferprod.prodwarehousetransfer && (
-                      <p>
-                        <small>
-                          Warehouse Transfer:{" "}
-                          <b>{transferprod.prodwarehousetransfer}</b>
-                        </small>
-                      </p>
-                    )}
-
-                    {transferprod.quantitytrans && (
-                      <p>
-                        <small>
-                          Quantity Transfer: <b>{transferprod.quantitytrans}</b>
-                        </small>
-                      </p>
-                    )}
-                    {transferprod.quantitytrans && (
-                      <p>
-                        <small>
-                          Transfer Date:{" "}
-                          <b>
-                            {" "}
-                            <Moment format="YYYY/MM/DD hh:mm A">
-                              {transferprod.date}
-                            </Moment>
-                          </b>
-                        </small>
-                      </p>
+                    ) : (
+                      <Spinner />
                     )}
                   </div>
                 </div>
-              </div>
-            );
-          }
-        );
+                <div className="col-5">
+                  <table className="table table-striped table-hover  rtable">
+                    <thead>
+                      <tr>
+                        <th>Warehouse Transfer Date</th>
+                        <td>
+                          {" "}
+                          <Moment format="YYYY/MM/DD hh:mm A">
+                            {warehoustranshistorybyid.date}
+                          </Moment>
+                        </td>
+                      </tr>
 
-        showwarehousetranshistory = (
-          <div>
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-              <div class="col-3">
-                <div class="card card-bordered">
-                  {warehousetransferimg ? (
-                    <img
-                      style={{ width: "100%" }}
-                      class="card-img-top img-fluid"
-                      src={warehousetransferimg}
-                      alt="transfer img"
-                    />
-                  ) : (
-                    <Spinner />
-                  )}
+                      <tr>
+                        <th>Save Invoice PDF </th>
+                        <td>
+                          <input
+                            style={{
+                              cursor: "pointer",
+                              backgroundColor: "goldenrod",
+                              color: "#fff",
+                              padding: "5px"
+                            }}
+                            // onClick={this.printDocument.bind(this)}
+                            onClick={this.windowPrint.bind(this)}
+                            type="button"
+                            name="Pdf"
+                            value="Download Invoice"
+                          />
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th>Save Invoice CSV</th>
+                        <td>{csvContent}</td>
+                      </tr>
+                    </thead>
+                  </table>
                 </div>
-              </div>
-              <div className="col-5">
-                <table className="table table-striped table-hover  rtable">
-                  <thead>
-                    <tr>
-                      <th>Warehouse Transfer Id</th>
-
-                      <td style={{ color: "green", fontWeight: "900" }}>
-                        {warehoustranshistorybyid._id}
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <th>Warehouse Transfer Date</th>
-                      <td>
-                        <Moment format="YYYY/MM/DD hh:mm A">
-                          {warehoustranshistorybyid.date}
-                        </Moment>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <th>TRANSFER INVOICE </th>
-                      <td>
-                        <input
-                          style={{
-                            cursor: "pointer",
-                            backgroundColor: "goldenrod",
-                            color: "#fff",
-                            padding: "5px"
-                          }}
-                          onClick={this.printDocument.bind(this)}
-                          type="button"
-                          name="Pdf"
-                          value="Download Invoice"
-                        />
-                      </td>
-                    </tr>
-                  </thead>
-                </table>
               </div>
             </div>
 
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-
-              <div className="col-3">
-                <h5>Transfer Products</h5>
-                <hr />
-              </div>
-
-              <div className="col-8">{transferproductscontents}</div>
+            <div className="container-fluid">
+              <br />{" "}
+              <ReactTable
+                data={
+                  warehoustranshistorybyid.warehousetransproducts[0]
+                    .transferitmlist
+                }
+                columns={columns}
+                defaultPageSize={5}
+                pageSizeOptions={[
+                  10,
+                  30,
+                  60,
+                  90,
+                  120,
+                  150,
+                  180,
+                  210,
+                  240,
+                  270,
+                  300
+                ]}
+                style={
+                  {
+                    //height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
+                    /*, maxWidth: "800px" */
+                  }
+                }
+                className="-striped -highlight"
+              />
             </div>
           </div>
         );
@@ -335,7 +386,7 @@ class ShowWarehouseTransfer extends Component {
                 id="canvas_div_pdf"
                 style={{
                   backgroundColor: "#f5f5f5",
-                  width: "210mm",
+                  maxWidth: "461mm",
                   minHeight: "297mm",
                   padding: "50px",
                   marginLeft: "auto",

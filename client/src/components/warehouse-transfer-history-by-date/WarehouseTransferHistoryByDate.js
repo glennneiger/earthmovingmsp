@@ -1,8 +1,13 @@
 import React, { Component } from "react";
+
+import ReactTable from "react-table";
+import "react-table/react-table.css";
 import axios from "axios";
 import $ from "jquery";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+
+import { CSVLink } from "react-csv";
 
 import "./showwarehousetranshist.css";
 import warehousetransferimg from "./img/warehouse_transfer2.png";
@@ -151,6 +156,8 @@ class WarehouseTransferHistoryByDate extends Component {
     let showwarehousetransstockhistorydate;
 
     let newstockhistorydata;
+    let csvContent;
+    let columns = [];
 
     if (warehoustranshistorybydate === null) {
       showwarehousetransstockhistory = <Spinner />;
@@ -163,132 +170,182 @@ class WarehouseTransferHistoryByDate extends Component {
         );
       }
       if (Object.keys(warehoustranshistorybydate).length > 0) {
-        newstockhistorydata = warehoustranshistorybydate[0].transferitmlist.map(
-          (warehousetransstkhisdata, index) => {
-            return (
-              <div className="card" key={`${warehousetransstkhisdata._id}`}>
-                <div
-                  class="card-header text-light"
-                  style={{ backgroundColor: "#dedede" }}
-                />
-
-                <div className="row">
-                  {warehousetransstkhisdata.itemprimaryimg && (
-                    <div className="col-4">
-                      <img
-                        style={{ width: "150px", border: "1px solid black" }}
-                        class="img-responsive"
-                        src={warehousetransstkhisdata.itemprimaryimg}
-                        alt="transfer product image"
-                      />
-                    </div>
-                  )}
-
-                  <div className="col-8">
-                    <p className="product-partno">
-                      <strong>
-                        Item Part No : {warehousetransstkhisdata.itempartno}
-                      </strong>
-                    </p>
-
-                    <p>
-                      <small>
-                        Warehouse Origin:{" "}
-                        <b>{warehousetransstkhisdata.prodwarehouseorigin}</b>
-                      </small>
-                    </p>
-                    <p>
-                      <small>
-                        Warehouse Transfer:{" "}
-                        <b>{warehousetransstkhisdata.prodwarehousetransfer}</b>
-                      </small>
-                    </p>
-
-                    <p>
-                      <small>
-                        Quantity Transfer:{" "}
-                        <b>{warehousetransstkhisdata.quantitytrans}</b>
-                      </small>
-                    </p>
-
-                    <p>
-                      <small>
-                        Transfer Date:{" "}
-                        <b>
-                          {" "}
-                          <Moment format="YYYY/MM/DD hh:mm A">
-                            {warehousetransstkhisdata.date}
-                          </Moment>
-                        </b>
-                      </small>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          }
+        csvContent = (
+          <CSVLink
+            data={warehoustranshistorybydate[0].transferitmlist}
+            filename={"Warehouse-Transfer.csv"}
+            className="btn btn-sm btn-success"
+          >
+            Export CSV
+          </CSVLink>
         );
+
+        columns = [
+          {
+            Header: "Item Image",
+            accessor: "itemprimaryimg",
+            maxWidth: 200,
+            filterable: false,
+            Cell: row => (
+              <span>
+                <center>
+                  <img
+                    style={{ maxWidth: "70px" }}
+                    class=""
+                    src={row.value}
+                    alt="item primary img"
+                  />
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Part No",
+            accessor: "itempartno",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>{row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Warehouse Origin",
+            accessor: "prodwarehouseorigin",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>{row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Warehouse Transfer",
+            accessor: "prodwarehousetransfer",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center> {row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Quantity Transfer",
+            accessor: "quantitytrans",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center> {row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Transfer Date",
+            accessor: "date",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  <Moment format="YYYY/MM/DD hh:mm A">{row.value}</Moment>
+                </center>
+              </span>
+            )
+          }
+        ];
 
         showwarehousetransstockhistory = (
           <div>
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-              <div class="col-3">
-                <div class="card card-bordered">
-                  {warehousetransferimg ? (
-                    <img
-                      style={{ width: "100%" }}
-                      class="card-img-top img-fluid"
-                      src={warehousetransferimg}
-                      alt="transfer img"
-                    />
-                  ) : (
-                    <Spinner />
-                  )}
+            <div className="container-fluid">
+              <div className="col-12 row">
+                <br />
+                <div className="col-2">&#8205;</div>
+                <div class="col-3">
+                  <div
+                    class="card card-bordered"
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    {warehousetransferimg ? (
+                      <img
+                        style={{ width: 100, height: 100 }}
+                        class="card-img-top img-fluid"
+                        src={warehousetransferimg}
+                        alt="transfer img"
+                      />
+                    ) : (
+                      <Spinner />
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="col-5">
-                <table className="table table-striped table-hover  rtable">
-                  <thead>
-                    <tr>
-                      <th>Warehouse Transfer History Date</th>
-                      <td>{this.props.match.params.date}</td>
-                    </tr>
+                <div className="col-5">
+                  <table className="table table-striped table-hover  rtable">
+                    <thead>
+                      <tr>
+                        <th>Warehouse Transfer History Date</th>
+                        <td>{this.props.match.params.date}</td>
+                      </tr>
 
-                    <tr>
-                      <th>History INVOICE </th>
-                      <td>
-                        <input
-                          style={{
-                            cursor: "pointer",
-                            backgroundColor: "goldenrod",
-                            color: "#fff",
-                            padding: "5px"
-                          }}
-                          // onClick={this.printDocument.bind(this)}
-                          onClick={this.windowPrint.bind(this)}
-                          type="button"
-                          name="Pdf"
-                          value="Download Invoice"
-                        />
-                      </td>
-                    </tr>
-                  </thead>
-                </table>
+                      <tr>
+                        <th>Save Invoice PDF </th>
+                        <td>
+                          <input
+                            style={{
+                              cursor: "pointer",
+                              backgroundColor: "goldenrod",
+                              color: "#fff",
+                              padding: "5px"
+                            }}
+                            // onClick={this.printDocument.bind(this)}
+                            onClick={this.windowPrint.bind(this)}
+                            type="button"
+                            name="Pdf"
+                            value="Download Invoice"
+                          />
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th>Save Invoice CSV</th>
+                        <td>{csvContent}</td>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
               </div>
             </div>
 
-            <div className="col-12 row">
+            <div className="container-fluid">
               <br />
-              <div className="col-1">&#8205;</div>
 
-              <div className="col-3">
-                <h5>Warehouse Transfer History</h5>
-                <hr />
-              </div>
-
-              <div className="col-8">{newstockhistorydata}</div>
+              <ReactTable
+                data={warehoustranshistorybydate[0].transferitmlist}
+                columns={columns}
+                defaultPageSize={5}
+                pageSizeOptions={[
+                  10,
+                  30,
+                  60,
+                  90,
+                  120,
+                  150,
+                  180,
+                  210,
+                  240,
+                  270,
+                  300
+                ]}
+                style={
+                  {
+                    //  height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
+                    /*, maxWidth: "800px" */
+                  }
+                }
+                className="-striped -highlight"
+              />
             </div>
           </div>
         );
@@ -322,7 +379,7 @@ class WarehouseTransferHistoryByDate extends Component {
                 id="canvas_div_pdf"
                 style={{
                   backgroundColor: "#f5f5f5",
-                  width: "210mm",
+                  maxWidth: "461mm",
                   minHeight: "297mm",
                   padding: "50px",
                   marginLeft: "auto",

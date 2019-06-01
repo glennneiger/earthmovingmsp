@@ -1,8 +1,12 @@
 import React, { Component } from "react";
+import ReactTable from "react-table";
+import "react-table/react-table.css";
+
 import axios from "axios";
 import $ from "jquery";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { CSVLink } from "react-csv";
 
 import "./showexistingstockhist.css";
 import warehousetransferimg from "./img/warehouse_transfer2.png";
@@ -14,7 +18,11 @@ import PropTypes from "prop-types";
 
 import StockActions from "../dashboard/StockActions";
 
-import { getExistingStockHistorybyDate } from "../../actions/stockActions";
+import {
+  getAddExisHisbyDate,
+  getRemoveExisHisbyDate,
+  getEditExisHisbyDate
+} from "../../actions/stockActions";
 
 import Spinner from "../common/Spinner";
 
@@ -36,7 +44,11 @@ class ExistingStockHistoryByDate extends Component {
     // this.props.getAllWarehoustransHistory();
     // this.props.singlewarehousetranshis(this.props.match.params.id);
 
-    this.props.getExistingStockHistorybyDate(this.props.match.params.date);
+    this.props.getAddExisHisbyDate(this.props.match.params.date);
+
+    this.props.getRemoveExisHisbyDate(this.props.match.params.date);
+
+    this.props.getEditExisHisbyDate(this.props.match.params.date);
     {
       /*} axios
       .get(`/api/salesorder/singlepsalesorder/` + this.props.match.params.id)
@@ -143,351 +155,517 @@ class ExistingStockHistoryByDate extends Component {
     const { errors } = this.state;
 
     const {
-      existingstockhistorybydate,
-      existingstockhistoryloading
-    } = this.props.stock;
+      stock,
+      existingaddstockhistory,
+      existingaddstockhistoryloading,
+      existingaddstockhistorybydate,
+      existingremovstockhistory,
+      existingremovstockhistoryloading,
+      existingremovstockhistorybydate,
+      existingeditstockhistory,
+      existingeditstockhistoryloading,
+      existingeditstockhistorybydate
+    } = this.props.stock; //here we pass the stock props in with all the stocks contains and store in stocks const for used in this component
 
-    let showexistingstockhistory;
-    let showexistingstockhistorydate;
+    let showexistingaddstockhistory;
+    let showexistingaddstockhistorydate;
+    let addstkhiscsvContent;
+    let addstkhiscolumns = [];
 
-    let editedstockhistorydata;
-
-    if (existingstockhistorybydate === null) {
-      showexistingstockhistory = <Spinner />;
+    if (existingaddstockhistorybydate === null) {
+      showexistingaddstockhistory = <Spinner />;
     } else {
-      if (Object.keys(existingstockhistorybydate).length > 0) {
-        showexistingstockhistorydate = (
+      if (Object.keys(existingaddstockhistorybydate).length > 0) {
+        showexistingaddstockhistorydate = (
           <li className="breadcrumb-item active">
             {this.props.match.params.date}
           </li>
         );
       }
-      if (Object.keys(existingstockhistorybydate).length > 0) {
-        editedstockhistorydata = existingstockhistorybydate.map(
-          (existingstkhisdata, index) => {
-            return (
-              <div className="card" key={`${existingstkhisdata._id}`}>
-                {" "}
-                {existingstkhisdata.operation == "addonexistingprodstock" && (
-                  <div
-                    class="card-header text-light"
-                    style={{ backgroundColor: "green" }}
-                  >
-                    <p>
-                      <strong style={{ color: "#fff" }}>
-                        Action Performed : Stock Added
-                      </strong>
-                    </p>
-                  </div>
-                )}
-                {existingstkhisdata.operation ==
-                  "removeonexistingprodstock" && (
-                  <div
-                    class="card-header text-light"
-                    style={{ backgroundColor: "#c70000" }}
-                  >
-                    <p>
-                      <strong style={{ color: "#fff" }}>
-                        Action Performed : Stock Removed
-                      </strong>
-                    </p>
-                  </div>
-                )}
-                {existingstkhisdata.operation == "editonexistingprodstock" && (
-                  <div
-                    class="card-header text-light"
-                    style={{ backgroundColor: "#b3b300" }}
-                  >
-                    <p>
-                      <strong style={{ color: "#fff" }}>
-                        Action Performed : Stock Edited
-                      </strong>
-                    </p>
-                  </div>
-                )}
-                {existingstkhisdata.operation == "updateminnotifyqty" && (
-                  <div
-                    class="card-header text-light"
-                    style={{ backgroundColor: "#E0CACA" }}
-                  >
-                    <p>
-                      <strong style={{ color: "black", fontSize: 12 }}>
-                        Action Performed : Update Min Qty Required (for
-                        notification)
-                      </strong>
-                    </p>
-                  </div>
-                )}
-                <div className="row">
-                  <div className="col-4">
-                    <img
-                      style={{ width: "150px", border: "1px solid black" }}
-                      class="img-responsive"
-                      src={existingstkhisdata.itemprimaryimg}
-                      alt="product image"
-                    />
-                  </div>
-
-                  <div className="col-8">
-                    {existingstkhisdata.itempartno && (
-                      <p className="product-name">
-                        <strong>
-                          Item Part No : {existingstkhisdata.itempartno}
-                        </strong>
-                      </p>
-                    )}
-                    {existingstkhisdata.eitemtechname && (
-                      <p className="product-name">
-                        <small>
-                          Item Name <b>Edited</b> :{" "}
-                          {existingstkhisdata.eitemtechname}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.eitemid && (
-                      <p>
-                        <small>
-                          Item ID <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eitemid}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.eitemidunit && (
-                      <p>
-                        <small>
-                          Item ID Unit{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eitemidunit}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.eitemod && (
-                      <p>
-                        <small>
-                          Item OD <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eitemod}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.eitemodunit && (
-                      <p>
-                        <small>
-                          Item OD Unit{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eitemodunit}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.eitemlength && (
-                      <p>
-                        <small>
-                          Item Length <b style={{ color: "#B3B300" }}>Edited</b>{" "}
-                          : {existingstkhisdata.eitemlength}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.eitemlengthunit && (
-                      <p>
-                        <small>
-                          Item Length Unit{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eitemlengthunit}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.eitemthickness && (
-                      <p>
-                        <small>
-                          Item Thickness{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eitemthickness}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.eitemthicknessunit && (
-                      <p>
-                        <small>
-                          Item Thickness Unit{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eitemthicknessunit}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.emachinenames && (
-                      <p>
-                        <small>
-                          Item M/C Names{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {JSON.parse(existingstkhisdata.emachinenames).map(
-                            data => {
-                              return (
-                                <h5>
-                                  <span class="badge badge-success">
-                                    {data}
-                                  </span>
-                                </h5>
-                              );
-                            }
-                          )}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.ehsncode && (
-                      <p>
-                        <small>
-                          Item Hsn Code{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.ehsncode}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.eminrate && (
-                      <p>
-                        <small>
-                          Item Min Rate{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.eminrate}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.erate && (
-                      <p>
-                        <small>
-                          Item Rate <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.erate}
-                        </small>
-                      </p>
-                    )}
-                    {existingstkhisdata.emaxrate && (
-                      <p>
-                        <small>
-                          Item Max Rate{" "}
-                          <b style={{ color: "#B3B300" }}>Edited</b> :{" "}
-                          {existingstkhisdata.emaxrate}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.prodwarehouse && (
-                      <p>
-                        <small>
-                          warehouse: {existingstkhisdata.prodwarehouse}
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.prodorigin && (
-                      <p>
-                        <small>
-                          Warehouse Origin:{" "}
-                          <b>{existingstkhisdata.prodorigin}</b>
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.quantity && (
-                      <p>
-                        <small>
-                          Total Quantity: <b>{existingstkhisdata.quantity}</b>
-                        </small>
-                      </p>
-                    )}
-
-                    {existingstkhisdata.date && (
-                      <p>
-                        <small>
-                          Created Date:{" "}
-                          <b>
-                            {" "}
-                            <Moment format="YYYY/MM/DD hh:mm A">
-                              {existingstkhisdata.date}
-                            </Moment>
-                          </b>
-                        </small>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          }
+      if (Object.keys(existingaddstockhistorybydate).length > 0) {
+        addstkhiscsvContent = (
+          <CSVLink
+            data={existingaddstockhistorybydate}
+            filename={"Existing-Add-Stock-History.csv"}
+            className="btn btn-sm btn-success"
+          >
+            Export CSV
+          </CSVLink>
         );
 
-        showexistingstockhistory = (
-          <div>
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-              <div class="col-3">
-                <div class="card card-bordered">
-                  {warehousetransferimg ? (
-                    <img
-                      style={{ width: "100%" }}
-                      class="card-img-top img-fluid"
-                      src={warehousetransferimg}
-                      alt="transfer img"
-                    />
+        addstkhiscolumns = [
+          {
+            Header: "Item Image",
+            accessor: "itemprimaryimg",
+            maxWidth: 200,
+            filterable: false,
+            Cell: row => (
+              <span>
+                <center>
+                  <img
+                    style={{ maxWidth: "70px" }}
+                    class=""
+                    src={row.value}
+                    alt="item primary img"
+                  />
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Part No",
+            accessor: "itempartno",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>{row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Total Quantity",
+            accessor: "quantity",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {" "}
+                  {row.value ? (
+                    row.value
                   ) : (
-                    <Spinner />
+                    <i class="fa fa-times" aria-hidden="true" />
                   )}
-                </div>
-              </div>
-              <div className="col-5">
-                <table className="table table-striped table-hover  rtable">
-                  <thead>
-                    <tr>
-                      <th>Edited Stock History Date</th>
-                      <td>{this.props.match.params.date}</td>
-                    </tr>
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Warehouse",
+            accessor: "prodwarehouse",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {row.value ? (
+                    row.value
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Origin",
+            accessor: "prodorigin",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {row.value ? (
+                    row.value
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Created Date",
+            accessor: "date",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  <Moment format="YYYY/MM/DD hh:mm A">{row.value}</Moment>
+                </center>
+              </span>
+            )
+          }
+        ];
 
-                    <tr>
-                      <th>History INVOICE </th>
-                      <td>
-                        <input
-                          style={{
-                            cursor: "pointer",
-                            backgroundColor: "goldenrod",
-                            color: "#fff",
-                            padding: "5px"
-                          }}
-                          // onClick={this.printDocument.bind(this)}
-                          onClick={this.windowPrint.bind(this)}
-                          type="button"
-                          name="Pdf"
-                          value="Download Invoice"
-                        />
-                      </td>
-                    </tr>
-                  </thead>
-                </table>
-              </div>
-            </div>
-
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-
-              <div className="col-3">
-                <h5>Edited Stock History</h5>
-                <hr />
-              </div>
-
-              <div className="col-8">{editedstockhistorydata}</div>
-            </div>
-          </div>
+        showexistingaddstockhistory = (
+          <ReactTable
+            showPaginationBottom={false}
+            showPaginationTop={true}
+            data={existingaddstockhistorybydate}
+            columns={addstkhiscolumns}
+            defaultPageSize={5}
+            pageSizeOptions={[
+              10,
+              30,
+              60,
+              90,
+              120,
+              150,
+              180,
+              210,
+              240,
+              270,
+              300
+            ]}
+            style={
+              {
+                //height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
+                /*, maxWidth: "800px" */
+              }
+            }
+            className="-striped -highlight"
+          />
         );
       }
     }
+    /////////////////////
+
+    let showexistingremovestockhistory;
+    let showexistingremovestockhistorydate;
+    let removestkhiscsvContent;
+    let removestkhiscolumns = [];
+
+    if (existingremovstockhistorybydate === null) {
+      showexistingremovestockhistory = <Spinner />;
+    } else {
+      if (Object.keys(existingremovstockhistorybydate).length > 0) {
+        showexistingremovestockhistorydate = (
+          <li className="breadcrumb-item active">
+            {this.props.match.params.date}
+          </li>
+        );
+      }
+      if (Object.keys(existingremovstockhistorybydate).length > 0) {
+        removestkhiscsvContent = (
+          <CSVLink
+            data={existingremovstockhistorybydate}
+            filename={"Existing-Remove-Stock-History.csv"}
+            className="btn btn-sm btn-success"
+          >
+            Export CSV
+          </CSVLink>
+        );
+
+        removestkhiscolumns = [
+          {
+            Header: "Item Image",
+            accessor: "itemprimaryimg",
+            maxWidth: 200,
+            filterable: false,
+            Cell: row => (
+              <span>
+                <center>
+                  <img
+                    style={{ maxWidth: "70px" }}
+                    class=""
+                    src={row.value}
+                    alt="item primary img"
+                  />
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Part No",
+            accessor: "itempartno",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>{row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Quantity Removed ",
+            accessor: "quantity",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {" "}
+                  {row.value ? (
+                    row.value
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Warehouse",
+            accessor: "prodwarehouse",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {row.value ? (
+                    row.value
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Created Date",
+            accessor: "date",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  <Moment format="YYYY/MM/DD hh:mm A">{row.value}</Moment>
+                </center>
+              </span>
+            )
+          }
+        ];
+
+        showexistingremovestockhistory = (
+          <ReactTable
+            showPaginationBottom={false}
+            showPaginationTop={true}
+            data={existingremovstockhistorybydate}
+            columns={removestkhiscolumns}
+            defaultPageSize={5}
+            pageSizeOptions={[
+              10,
+              30,
+              60,
+              90,
+              120,
+              150,
+              180,
+              210,
+              240,
+              270,
+              300
+            ]}
+            style={
+              {
+                //height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
+                /*, maxWidth: "800px" */
+              }
+            }
+            className="-striped -highlight"
+          />
+        );
+      }
+    }
+    ///////////////////
+
+    let showexistingeditstockhistory;
+    let showexistingeditstockhistorydate;
+    let editstkhiscsvContent;
+    let editstkhiscolumns = [];
+
+    if (existingeditstockhistorybydate === null) {
+      showexistingeditstockhistory = <Spinner />;
+    } else {
+      if (Object.keys(existingeditstockhistorybydate).length > 0) {
+        showexistingeditstockhistorydate = (
+          <li className="breadcrumb-item active">
+            {this.props.match.params.date}
+          </li>
+        );
+      }
+      if (Object.keys(existingeditstockhistorybydate).length > 0) {
+        editstkhiscsvContent = (
+          <CSVLink
+            data={existingeditstockhistorybydate}
+            filename={"Existing-Edit-Stock-History.csv"}
+            className="btn btn-sm btn-success"
+          >
+            Export CSV
+          </CSVLink>
+        );
+
+        editstkhiscolumns = [
+          {
+            Header: "Item Image",
+            accessor: "itemprimaryimg",
+            maxWidth: 200,
+            filterable: false,
+            Cell: row => (
+              <span>
+                <center>
+                  <img
+                    style={{ maxWidth: "70px" }}
+                    class=""
+                    src={row.value}
+                    alt="item primary img"
+                  />
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Part No",
+            accessor: "itempartno",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {" "}
+                  {row.value ? (
+                    row.value
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item ID (Edited)",
+            accessor: "eitemidwithunit",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {row.value.length ? (
+                    row.value.map(data => {
+                      return data;
+                    })
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item OD (Edited)",
+            accessor: "eitemodwithunit",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {row.value.length ? (
+                    row.value.map(data => {
+                      return data;
+                    })
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Length (Edited)",
+            accessor: "eitemlenwithunit",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {row.value.length ? (
+                    row.value.map(data => {
+                      return data;
+                    })
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Thickness (Edited)",
+            accessor: "eitemthicwithunit",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {row.value.length ? (
+                    row.value.map(data => {
+                      return data;
+                    })
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Rate ",
+            accessor: "erate",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {" "}
+                  {row.value ? (
+                    <span>&#8377;{row.value}</span>
+                  ) : (
+                    <i class="fa fa-times" aria-hidden="true" />
+                  )}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Created Date",
+            accessor: "date",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  <Moment format="YYYY/MM/DD hh:mm A">{row.value}</Moment>
+                </center>
+              </span>
+            )
+          }
+        ];
+
+        showexistingeditstockhistory = (
+          <ReactTable
+            showPaginationBottom={false}
+            showPaginationTop={true}
+            data={existingeditstockhistorybydate}
+            columns={editstkhiscolumns}
+            defaultPageSize={5}
+            pageSizeOptions={[
+              10,
+              30,
+              60,
+              90,
+              120,
+              150,
+              180,
+              210,
+              240,
+              270,
+              300
+            ]}
+            style={
+              {
+                //height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
+                /*, maxWidth: "800px" */
+              }
+            }
+            className="-striped -highlight"
+          />
+        );
+      }
+    }
+    ////////////////////////////
 
     return (
       <div style={{ backgroundColor: "#F3F8FB", paddingBottom: "50px" }}>
@@ -504,8 +682,8 @@ class ExistingStockHistoryByDate extends Component {
                   <Link to="/existing-stock-history">Edited Stock History</Link>
                 </li>
 
-                {showexistingstockhistorydate ? (
-                  showexistingstockhistorydate
+                {showexistingaddstockhistorydate ? (
+                  showexistingaddstockhistorydate
                 ) : (
                   <div />
                 )}
@@ -514,14 +692,298 @@ class ExistingStockHistoryByDate extends Component {
                 id="canvas_div_pdf"
                 style={{
                   backgroundColor: "#f5f5f5",
-                  width: "210mm",
+                  maxWidth: "461mm",
                   minHeight: "297mm",
                   padding: "50px",
                   marginLeft: "auto",
                   marginRight: "auto"
                 }}
               >
-                {showexistingstockhistory ? showexistingstockhistory : <div />}
+                <div>
+                  <div class="container-fluid">
+                    <nav>
+                      <div
+                        class="nav nav-tabs nav-fill"
+                        id="nav-tab"
+                        role="tablist"
+                      >
+                        <a
+                          class="nav-item nav-link active"
+                          id="nav-home-tab"
+                          data-toggle="tab"
+                          href="#nav-home"
+                          role="tab"
+                          aria-controls="nav-home"
+                          aria-selected="true"
+                        >
+                          Added Stock History
+                        </a>
+                        <a
+                          class="nav-item nav-link"
+                          id="nav-profile-tab"
+                          data-toggle="tab"
+                          href="#nav-profile"
+                          role="tab"
+                          aria-controls="nav-profile"
+                          aria-selected="false"
+                        >
+                          Edited Stock History
+                        </a>
+                        <a
+                          class="nav-item nav-link"
+                          id="nav-contact-tab"
+                          data-toggle="tab"
+                          href="#nav-contact"
+                          role="tab"
+                          aria-controls="nav-contact"
+                          aria-selected="false"
+                        >
+                          Removed Stock Qty History
+                        </a>
+                      </div>
+                    </nav>
+                    <div
+                      class="tab-content py-3 px-3 px-sm-0"
+                      id="nav-tabContent"
+                    >
+                      <div
+                        class="tab-pane fade show active"
+                        id="nav-home"
+                        role="tabpanel"
+                        aria-labelledby="nav-home-tab"
+                      >
+                        <br />
+                        <div className="container-fluid">
+                          {showexistingaddstockhistory && (
+                            <div className="container-fluid">
+                              <div className="col-12 row">
+                                <br />
+                                <div className="col-2">&#8205;</div>
+                                <div class="col-3">
+                                  <div
+                                    class="card card-bordered"
+                                    style={{
+                                      justifyContent: "center",
+                                      alignItems: "center"
+                                    }}
+                                  >
+                                    {warehousetransferimg ? (
+                                      <img
+                                        style={{ width: 100, height: 100 }}
+                                        class="card-img-top img-fluid"
+                                        src={warehousetransferimg}
+                                        alt="newstock history img"
+                                      />
+                                    ) : (
+                                      <Spinner />
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="col-5">
+                                  <table className="table table-striped table-hover  rtable">
+                                    <thead>
+                                      <tr>
+                                        <th>Add Stock History Date</th>
+                                        <td>{this.props.match.params.date}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th>Save Invoice PDF </th>
+                                        <td>
+                                          <input
+                                            style={{
+                                              cursor: "pointer",
+                                              backgroundColor: "goldenrod",
+                                              color: "#fff",
+                                              padding: "5px"
+                                            }}
+                                            // onClick={this.printDocument.bind(this)}
+                                            onClick={this.windowPrint.bind(
+                                              this
+                                            )}
+                                            type="button"
+                                            name="Pdf"
+                                            value="Download Invoice"
+                                          />
+                                        </td>
+                                      </tr>
+
+                                      <tr>
+                                        <th>Save Invoice CSV</th>
+                                        <td>{addstkhiscsvContent}</td>
+                                      </tr>
+                                    </thead>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          <br />{" "}
+                          {showexistingaddstockhistory ? (
+                            showexistingaddstockhistory
+                          ) : (
+                            <div>
+                              <p style={{ textAlign: "center" }}>No Data</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div
+                        class="tab-pane fade"
+                        id="nav-profile"
+                        role="tabpanel"
+                        aria-labelledby="nav-profile-tab"
+                      >
+                        {showexistingeditstockhistory && (
+                          <div className="container-fluid">
+                            <div className="col-12 row">
+                              <br />
+                              <div className="col-2">&#8205;</div>
+                              <div class="col-3">
+                                <div
+                                  class="card card-bordered"
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                  }}
+                                >
+                                  {warehousetransferimg ? (
+                                    <img
+                                      style={{ width: 100, height: 100 }}
+                                      class="card-img-top img-fluid"
+                                      src={warehousetransferimg}
+                                      alt="newstock history img"
+                                    />
+                                  ) : (
+                                    <Spinner />
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-5">
+                                <table className="table table-striped table-hover  rtable">
+                                  <thead>
+                                    <tr>
+                                      <th>Edit Stock History Date</th>
+                                      <td>{this.props.match.params.date}</td>
+                                    </tr>
+
+                                    <tr>
+                                      <th>Save Invoice PDF </th>
+                                      <td>
+                                        <input
+                                          style={{
+                                            cursor: "pointer",
+                                            backgroundColor: "goldenrod",
+                                            color: "#fff",
+                                            padding: "5px"
+                                          }}
+                                          // onClick={this.printDocument.bind(this)}
+                                          onClick={this.windowPrint.bind(this)}
+                                          type="button"
+                                          name="Pdf"
+                                          value="Download Invoice"
+                                        />
+                                      </td>
+                                    </tr>
+
+                                    <tr>
+                                      <th>Save Invoice CSV</th>
+                                      <td>{editstkhiscsvContent}</td>
+                                    </tr>
+                                  </thead>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        {showexistingeditstockhistory ? (
+                          showexistingeditstockhistory
+                        ) : (
+                          <div>
+                            <p style={{ textAlign: "center" }}>No Data</p>
+                          </div>
+                        )}
+                      </div>
+                      <div
+                        class="tab-pane fade"
+                        id="nav-contact"
+                        role="tabpanel"
+                        aria-labelledby="nav-contact-tab"
+                      >
+                        {showexistingremovestockhistory && (
+                          <div className="container-fluid">
+                            <div className="col-12 row">
+                              <br />
+                              <div className="col-2">&#8205;</div>
+                              <div class="col-3">
+                                <div
+                                  class="card card-bordered"
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                  }}
+                                >
+                                  {warehousetransferimg ? (
+                                    <img
+                                      style={{ width: 100, height: 100 }}
+                                      class="card-img-top img-fluid"
+                                      src={warehousetransferimg}
+                                      alt="newstock history img"
+                                    />
+                                  ) : (
+                                    <Spinner />
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-5">
+                                <table className="table table-striped table-hover  rtable">
+                                  <thead>
+                                    <tr>
+                                      <th>Remove Qty Stock History Date</th>
+                                      <td>{this.props.match.params.date}</td>
+                                    </tr>
+
+                                    <tr>
+                                      <th>Save Invoice PDF </th>
+                                      <td>
+                                        <input
+                                          style={{
+                                            cursor: "pointer",
+                                            backgroundColor: "goldenrod",
+                                            color: "#fff",
+                                            padding: "5px"
+                                          }}
+                                          // onClick={this.printDocument.bind(this)}
+                                          onClick={this.windowPrint.bind(this)}
+                                          type="button"
+                                          name="Pdf"
+                                          value="Download Invoice"
+                                        />
+                                      </td>
+                                    </tr>
+
+                                    <tr>
+                                      <th>Save Invoice CSV</th>
+                                      <td>{removestkhiscsvContent}</td>
+                                    </tr>
+                                  </thead>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        {showexistingremovestockhistory ? (
+                          showexistingremovestockhistory
+                        ) : (
+                          <div>
+                            <p style={{ textAlign: "center" }}>No Data</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -538,7 +1000,9 @@ class ExistingStockHistoryByDate extends Component {
 
 ExistingStockHistoryByDate.propTypes = {
   errors: PropTypes.object.isRequired,
-  getExistingStockHistorybyDate: PropTypes.func.isRequired
+  getAddExisHisbyDate: PropTypes.func.isRequired,
+  getRemoveExisHisbyDate: PropTypes.func.isRequired,
+  getEditExisHisbyDate: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -549,6 +1013,8 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   {
-    getExistingStockHistorybyDate
+    getAddExisHisbyDate,
+    getRemoveExisHisbyDate,
+    getEditExisHisbyDate
   }
 )(withRouter(ExistingStockHistoryByDate));

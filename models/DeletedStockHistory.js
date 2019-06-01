@@ -64,6 +64,16 @@ const DeletedStockHistorySchema = new Schema({
   itemprimaryimg: {
     type: String
   },
+  warehousewithquantity: [
+    {
+      prodwarehouse: {
+        type: String
+      },
+      quantity: {
+        type: String
+      }
+    }
+  ],
   date: {
     type: Date,
     default: Date.now

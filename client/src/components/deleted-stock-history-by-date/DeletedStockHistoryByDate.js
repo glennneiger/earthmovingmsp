@@ -1,8 +1,11 @@
 import React, { Component } from "react";
+import ReactTable from "react-table";
+import "react-table/react-table.css";
 import axios from "axios";
 import $ from "jquery";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { CSVLink } from "react-csv";
 
 import "./showdeletedstockhist.css";
 import warehousetransferimg from "./img/warehouse_transfer2.png";
@@ -152,6 +155,9 @@ class DeletedStockHistoryByDate extends Component {
 
     let deletedstockhistorydata;
 
+    let csvContent;
+    let columns = [];
+
     if (deletedstockhistorybydate === null) {
       showdeletedstockhistory = <Spinner />;
     } else {
@@ -163,222 +169,188 @@ class DeletedStockHistoryByDate extends Component {
         );
       }
       if (Object.keys(deletedstockhistorybydate).length > 0) {
-        deletedstockhistorydata = deletedstockhistorybydate.map(
-          (deletedstkhisdata, index) => {
-            return (
-              <div className="card" key={`${deletedstkhisdata._id}`}>
-                {" "}
-                <div
-                  class="card-header text-light"
-                  style={{ backgroundColor: "#c70000" }}
-                >
-                  <p>
-                    <strong style={{ color: "#fff" }}>
-                      Action Performed : Stock Deleted
-                    </strong>
-                  </p>
-                </div>
-                <div className="row">
-                  <div className="col-4">
-                    <img
-                      style={{ width: "150px", border: "1px solid black" }}
-                      class="img-responsive"
-                      src={deletedstkhisdata.itemprimaryimg}
-                      alt="product image"
-                    />
-                  </div>
-
-                  <div className="col-8">
-                    {deletedstkhisdata.itemcode && (
-                      <p className="product-name">
-                        <strong>
-                          Item Code : {deletedstkhisdata.itemcode}
-                        </strong>
-                      </p>
-                    )}
-                    {deletedstkhisdata.itemname && (
-                      <p className="product-name">
-                        <small>Item Name : {deletedstkhisdata.itemname}</small>
-                      </p>
-                    )}
-
-                    {deletedstkhisdata.itemid && (
-                      <p>
-                        <small>
-                          Item ID : {deletedstkhisdata.itemid}
-                          {deletedstkhisdata.itemidunit}
-                        </small>
-                      </p>
-                    )}
-
-                    {deletedstkhisdata.itemod && (
-                      <p>
-                        <small>
-                          Item OD : {deletedstkhisdata.itemod}
-                          {deletedstkhisdata.itemodunit}
-                        </small>
-                      </p>
-                    )}
-
-                    {deletedstkhisdata.itemlength && (
-                      <p>
-                        <small>
-                          Item Length : {deletedstkhisdata.itemlength}
-                          {deletedstkhisdata.itemlengthunit}
-                        </small>
-                      </p>
-                    )}
-
-                    {deletedstkhisdata.itemthickness && (
-                      <p>
-                        <small>
-                          Item Thickness : {deletedstkhisdata.itemthickness}
-                          {deletedstkhisdata.itemthicknessunit}
-                        </small>
-                      </p>
-                    )}
-
-                    {deletedstkhisdata.machinepart && (
-                      <p>
-                        <small>
-                          Item M/C Parts :
-                          {JSON.parse(deletedstkhisdata.machinepart).map(
-                            data => {
-                              return (
-                                <h5>
-                                  <span class="badge badge-success">
-                                    {data}
-                                  </span>
-                                </h5>
-                              );
-                            }
-                          )}
-                        </small>
-                      </p>
-                    )}
-                    {deletedstkhisdata.forcompany && (
-                      <p>
-                        <small>
-                          Item Company :
-                          {JSON.parse(deletedstkhisdata.forcompany).map(
-                            data => {
-                              return (
-                                <h5>
-                                  <span class="badge badge-info">{data}</span>
-                                </h5>
-                              );
-                            }
-                          )}
-                        </small>
-                      </p>
-                    )}
-                    {deletedstkhisdata.hsncode && (
-                      <p>
-                        <small>
-                          Item Hsn Code : {deletedstkhisdata.hsncode}
-                        </small>
-                      </p>
-                    )}
-                    {deletedstkhisdata.minrate && (
-                      <p>
-                        <small>
-                          Item Min Rate : {deletedstkhisdata.minrate}
-                        </small>
-                      </p>
-                    )}
-                    {deletedstkhisdata.rate && (
-                      <p>
-                        <small>Item Rate : {deletedstkhisdata.rate}</small>
-                      </p>
-                    )}
-                    {deletedstkhisdata.maxrate && (
-                      <p>
-                        <small>
-                          Item Max Rate : {deletedstkhisdata.maxrate}
-                        </small>
-                      </p>
-                    )}
-
-                    {deletedstkhisdata.date && (
-                      <p>
-                        <small>
-                          Deleted Date:{" "}
-                          <b>
-                            {" "}
-                            <Moment format="YYYY/MM/DD hh:mm A">
-                              {deletedstkhisdata.date}
-                            </Moment>
-                          </b>
-                        </small>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          }
+        csvContent = (
+          <CSVLink
+            data={deletedstockhistorybydate}
+            filename={"DeletedStock-History.csv"}
+            className="btn btn-sm btn-success"
+          >
+            Export CSV
+          </CSVLink>
         );
+        columns = [
+          {
+            Header: "Item Image",
+            accessor: "itemprimaryimg",
+            maxWidth: 100,
+            filterable: false,
+            Cell: row => (
+              <span>
+                <center>
+                  <img
+                    style={{ maxWidth: "70px" }}
+                    class=""
+                    src={row.value}
+                    alt="item primary img"
+                  />
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Part No",
+            accessor: "itempartno",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>{row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Tech Name",
+            accessor: "itemtechname",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>{row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Warehouse (with Quantity)",
+            accessor: "warehousewithquantity",
+            maxWidth: 500,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  {row.value.map(item => {
+                    return (
+                      <div style={{ backgroundColor: "#cecece" }}>
+                        <span style={{ padding: 10 }}>
+                          <span style={{ fontSize: 14 }}>
+                            {item.prodwarehouse}
+                          </span>
+                          <span
+                            class="badge"
+                            style={{
+                              backgroundColor: "red",
+                              color: "white",
+                              marginLeft: 10
+                            }}
+                          >
+                            {item.quantity}
+                          </span>{" "}
+                          Qty
+                        </span>
+                        <br />
+                        <br />{" "}
+                      </div>
+                    );
+                  })}
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Deleted Stock Date",
+            accessor: "date",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  <Moment format="YYYY/MM/DD hh:mm A">{row.value}</Moment>
+                </center>
+              </span>
+            )
+          }
+        ];
 
         showdeletedstockhistory = (
           <div>
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-              <div class="col-3">
-                <div class="card card-bordered">
-                  {warehousetransferimg ? (
-                    <img
-                      style={{ width: "100%" }}
-                      class="card-img-top img-fluid"
-                      src={warehousetransferimg}
-                      alt="transfer img"
-                    />
-                  ) : (
-                    <Spinner />
-                  )}
+            <div className="container-fluid">
+              <div className="col-12 row">
+                <br />
+                <div className="col-2">&#8205;</div>
+                <div class="col-3">
+                  <div
+                    class="card card-bordered"
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    {warehousetransferimg ? (
+                      <img
+                        style={{ width: 100, height: 100 }}
+                        class="card-img-top img-fluid"
+                        src={warehousetransferimg}
+                        alt="newstock history img"
+                      />
+                    ) : (
+                      <Spinner />
+                    )}
+                  </div>
+                </div>
+                <div className="col-5">
+                  <table className="table table-striped table-hover  rtable">
+                    <thead>
+                      <tr>
+                        <th>Deleted Stock History Date</th>
+                        <td>{this.props.match.params.date}</td>
+                      </tr>
+
+                      <tr>
+                        <th>Save Invoice PDF </th>
+                        <td>
+                          <input
+                            style={{
+                              cursor: "pointer",
+                              backgroundColor: "goldenrod",
+                              color: "#fff",
+                              padding: "5px"
+                            }}
+                            // onClick={this.printDocument.bind(this)}
+                            onClick={this.windowPrint.bind(this)}
+                            type="button"
+                            name="Pdf"
+                            value="Download Invoice"
+                          />
+                        </td>
+                      </tr>
+                    </thead>
+                  </table>
                 </div>
               </div>
-              <div className="col-5">
-                <table className="table table-striped table-hover  rtable">
-                  <thead>
-                    <tr>
-                      <th>Deleted Stock History Date</th>
-                      <td>{this.props.match.params.date}</td>
-                    </tr>
-
-                    <tr>
-                      <th>History INVOICE </th>
-                      <td>
-                        <input
-                          style={{
-                            cursor: "pointer",
-                            backgroundColor: "goldenrod",
-                            color: "#fff",
-                            padding: "5px"
-                          }}
-                          // onClick={this.printDocument.bind(this)}
-                          onClick={this.windowPrint.bind(this)}
-                          type="button"
-                          name="Pdf"
-                          value="Download Invoice"
-                        />
-                      </td>
-                    </tr>
-                  </thead>
-                </table>
-              </div>
             </div>
-
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-
-              <div className="col-3">
-                <h5>Deleted Stock History</h5>
-                <hr />
-              </div>
-
-              <div className="col-8">{deletedstockhistorydata}</div>
+            <div className="container-fluid">
+              <br />{" "}
+              <ReactTable
+                data={deletedstockhistorybydate}
+                columns={columns}
+                defaultPageSize={5}
+                pageSizeOptions={[
+                  10,
+                  30,
+                  60,
+                  90,
+                  120,
+                  150,
+                  180,
+                  210,
+                  240,
+                  270,
+                  300
+                ]}
+                style={
+                  {
+                    //height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
+                    /*, maxWidth: "800px" */
+                  }
+                }
+                className="-striped -highlight"
+              />
             </div>
           </div>
         );
@@ -410,7 +382,7 @@ class DeletedStockHistoryByDate extends Component {
                 id="canvas_div_pdf"
                 style={{
                   backgroundColor: "#f5f5f5",
-                  width: "210mm",
+                  maxWidth: "461mm",
                   minHeight: "297mm",
                   padding: "50px",
                   marginLeft: "auto",

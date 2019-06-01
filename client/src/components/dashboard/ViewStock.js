@@ -71,15 +71,40 @@ class ViewStock extends Component {
     let stockdtall;
     let stockdtalllen;
     let columns = [];
+    let headers = [];
     let csvContent;
     if (stock === null) {
       stockContent = <Spinner />;
     } else {
       stockdtall = stock;
       stockdtalllen = stock.length;
+
+      headers = [
+        { label: "Item Unique ID", key: "_id" },
+        { label: "Item Tech Name", key: "itemtechname" },
+        { label: "Item Part No", key: "itempartno" },
+        { label: "Machine Names", key: "machinenames" },
+        { label: "Item ID", key: "itemid" },
+        { label: "Item ID Unit", key: "itemidunit" },
+        { label: "Item OD", key: "itemod" },
+        { label: "Item OD Unit", key: "itemodunit" },
+        { label: "Item Length", key: "itemlength" },
+        { label: "Item Length Unit", key: "itemlengthunit" },
+        { label: "Item Thickness", key: "itemthickness" },
+        { label: "Item Thickness Unit", key: "itemthicknessunit" },
+        { label: "Item Hsn Code", key: "hsncode" },
+        { label: "Item Min Rate", key: "minrate" },
+        { label: "Item Rate", key: "rate" },
+        { label: "Item Max Rate", key: "maxrate" },
+        { label: "Item Quantity", key: "quantity" },
+        { label: "Item Primary Image", key: "itemprimaryimg" },
+        { label: "Item Remark", key: "itemremark" }
+      ];
+
       csvContent = (
         <CSVLink
           data={stock}
+          headers={headers}
           filename={"Inventory-Stock.csv"}
           className="btn btn-sm btn-success"
         >

@@ -16,6 +16,18 @@ import {
   GET_EXISTING_STOCKS_HISTORY_BY_DATE,
   GET_DELETED_STOCK_HISTORY_DATES_LOADING,
   GET_DELETED_STOCKS_HISTORY_BY_DATE,
+  GET_ADDEXISTING_STOCK_HISTORY_DATES,
+  GET_ADDEXISTING_STOCKS_HISTORY_DATES_LOADING,
+  GET_ADDEXISTING_STOCKS_HISTORY_BY_DATE,
+  GET_ADDEXISTING_STOCKS_HISTORY_BY_DATE_LOADING,
+  GET_REMOVEEXISTING_STOCK_HISTORY_DATES,
+  GET_REMOVEEXISTING_STOCKS_HISTORY_DATES_LOADING,
+  GET_REMOVEEXISTING_STOCKS_HISTORY_BY_DATE,
+  GET_REMOVEEXISTING_STOCKS_HISTORY_BY_DATE_LOADING,
+  GET_EDITEXISTING_STOCK_HISTORY_DATES,
+  GET_EDITEXISTING_STOCKS_HISTORY_DATES_LOADING,
+  GET_EDITEXISTING_STOCKS_HISTORY_BY_DATE,
+  GET_EDITEXISTING_STOCKS_HISTORY_BY_DATE_LOADING,
   GET_ERRORS
 } from "./types";
 
@@ -169,19 +181,17 @@ export const deleteStock = (id, history) => dispatch => {
   ) {
     axios
       .delete(`/api/stock/singleprodremove/${id}`)
-      .then(() => {
-        // console.log(message + className);
-
+      .then(
         dispatch(
           sendFlashMessage(
             "Product Stock is Deleted Successfully !!",
             "alert-success"
           )
-        );
-      })
+        )
+      )
       .then(res => history.push("/"))
       .catch(err => {
-        //console.log(err.response.data);
+        console.log("deleted stock error is :" + err.response);
 
         dispatch(
           sendFlashMessage(
@@ -330,6 +340,84 @@ export const setExistingStockHistoryProdStockLoading = () => {
   };
 };
 
+////////////////
+export const getAddExisStockHistoryDates = () => dispatch => {
+  dispatch(setExisAddStockHisLoading()); //here we dispatch function called setStockLoading() which will set the loading state True before it actually does the request
+  axios
+    .get("/api/stock/existaddstockhisalldates")
+    .then(res =>
+      dispatch({
+        type: GET_ADDEXISTING_STOCK_HISTORY_DATES,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_ADDEXISTING_STOCK_HISTORY_DATES,
+        payload: {}
+      })
+    );
+};
+
+// Stock loading
+export const setExisAddStockHisLoading = () => {
+  return {
+    type: GET_ADDEXISTING_STOCKS_HISTORY_DATES_LOADING //here we dont send payload only lets the reducer know stock is loading
+  };
+};
+
+export const getRemoveExisStockHistoryDates = () => dispatch => {
+  dispatch(setExisRemoveStockHisLoading()); //here we dispatch function called setStockLoading() which will set the loading state True before it actually does the request
+  axios
+    .get("/api/stock/existremovestockhisalldates")
+    .then(res =>
+      dispatch({
+        type: GET_REMOVEEXISTING_STOCK_HISTORY_DATES,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_REMOVEEXISTING_STOCK_HISTORY_DATES,
+        payload: {}
+      })
+    );
+};
+
+// Stock loading
+export const setExisRemoveStockHisLoading = () => {
+  return {
+    type: GET_REMOVEEXISTING_STOCKS_HISTORY_DATES_LOADING //here we dont send payload only lets the reducer know stock is loading
+  };
+};
+
+export const getEditExisStockHistoryDates = () => dispatch => {
+  dispatch(setExisEditStockHisLoading()); //here we dispatch function called setStockLoading() which will set the loading state True before it actually does the request
+  axios
+    .get("/api/stock/existeditstockhisalldates")
+    .then(res =>
+      dispatch({
+        type: GET_EDITEXISTING_STOCK_HISTORY_DATES,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_EDITEXISTING_STOCK_HISTORY_DATES,
+        payload: {}
+      })
+    );
+};
+
+// Stock loading
+export const setExisEditStockHisLoading = () => {
+  return {
+    type: GET_EDITEXISTING_STOCKS_HISTORY_DATES_LOADING //here we dont send payload only lets the reducer know stock is loading
+  };
+};
+
+/////////////
+
 // Get current stock by id
 export const getExistingStockHistorybyDate = date => dispatch => {
   axios
@@ -354,6 +442,79 @@ export const getExistingStockHistorybyDate = date => dispatch => {
       }
     });
 };
+
+export const getAddExisHisbyDate = date => dispatch => {
+  axios
+    .get(`/api/stock/exisaddstkbydate/${date}`)
+    .then(res =>
+      dispatch({
+        type: GET_ADDEXISTING_STOCKS_HISTORY_BY_DATE,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err => {
+      console.log(err);
+
+      {
+        /* dispatch(
+        sendFlashMessage(
+          err.response.data.errors.message,
+          err.response.data.errors.className
+        )
+      );
+        */
+      }
+    });
+};
+
+export const getRemoveExisHisbyDate = date => dispatch => {
+  axios
+    .get(`/api/stock/exisremovestkbydate/${date}`)
+    .then(res =>
+      dispatch({
+        type: GET_REMOVEEXISTING_STOCKS_HISTORY_BY_DATE,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err => {
+      console.log(err);
+
+      {
+        /* dispatch(
+        sendFlashMessage(
+          err.response.data.errors.message,
+          err.response.data.errors.className
+        )
+      );
+        */
+      }
+    });
+};
+
+export const getEditExisHisbyDate = date => dispatch => {
+  axios
+    .get(`/api/stock/exiseditstkbydate/${date}`)
+    .then(res =>
+      dispatch({
+        type: GET_EDITEXISTING_STOCKS_HISTORY_BY_DATE,
+        payload: res.data //so here is the actual stock
+      })
+    )
+    .catch(err => {
+      console.log(err);
+
+      {
+        /* dispatch(
+        sendFlashMessage(
+          err.response.data.errors.message,
+          err.response.data.errors.className
+        )
+      );
+        */
+      }
+    });
+};
+
 ///////////////////
 
 // Get unique product stock dates acc to collection data of deletedstockhistories

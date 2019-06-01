@@ -1,9 +1,14 @@
 import React, { Component } from "react";
+
+import ReactTable from "react-table";
+import "react-table/react-table.css";
+
 import axios from "axios";
 import $ from "jquery";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
+import { CSVLink } from "react-csv";
 import "./shownewstockhist.css";
 import warehousetransferimg from "./img/warehouse_transfer2.png";
 
@@ -157,6 +162,9 @@ class NewStockHistoryByDate extends Component {
 
     let newstockhistorydata;
 
+    let csvContent;
+    let columns = [];
+
     if (newstockhistorybydate === null) {
       shownewstockhistory = <Spinner />;
     } else {
@@ -168,155 +176,183 @@ class NewStockHistoryByDate extends Component {
         );
       }
       if (Object.keys(newstockhistorybydate).length > 0) {
-        newstockhistorydata = newstockhistorybydate.map(
-          (newstkhisdata, index) => {
-            return (
-              <div className="card" key={`${newstkhisdata._id}`}>
-                <div
-                  class="card-header text-light"
-                  style={{ backgroundColor: "#dedede" }}
-                />
-                <div className="row">
-                  <div className="col-4">
-                    <img
-                      style={{ width: "150px", border: "1px solid black" }}
-                      class="img-responsive"
-                      src={newstkhisdata.itemprimaryimg}
-                      alt="ordered product image"
-                    />
-                  </div>
-
-                  <div className="col-8">
-                    <p className="product-name">
-                      <strong>Item Part No : {newstkhisdata.itempartno}</strong>
-                    </p>
-                    <p>
-                      <small>
-                        Item Tech Name: {newstkhisdata.itemtechname}
-                      </small>
-                    </p>
-                    <p>
-                      <small>
-                        Item ID:{" "}
-                        <b>
-                          {newstkhisdata.itemid}
-                          {newstkhisdata.itemidunit}
-                        </b>
-                      </small>
-                    </p>
-                    <p>
-                      <small>
-                        Item OD:{" "}
-                        <b>
-                          {newstkhisdata.itemod}
-                          {newstkhisdata.itemodunit}
-                        </b>
-                      </small>
-                    </p>
-                    <p>
-                      <small>
-                        Item Length:{" "}
-                        <b>
-                          {newstkhisdata.itemlength}
-                          {newstkhisdata.itemlengthunit}
-                        </b>
-                      </small>
-                    </p>
-                    <p>
-                      <small>
-                        Item Thickness:{" "}
-                        <b>
-                          {newstkhisdata.itemthickness}
-                          {newstkhisdata.itemthicknessunit}
-                        </b>
-                      </small>
-                    </p>
-
-                    {newstkhisdata.quantity && (
-                      <p>
-                        <small>
-                          Quantity: <b>{newstkhisdata.quantity}</b>
-                        </small>
-                      </p>
-                    )}
-                    <p>
-                      <small>
-                        Created Date:{" "}
-                        <b>
-                          {" "}
-                          <Moment format="YYYY/MM/DD hh:mm A">
-                            {newstkhisdata.date}
-                          </Moment>
-                        </b>
-                      </small>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          }
+        csvContent = (
+          <CSVLink
+            data={newstockhistorybydate}
+            filename={"NewStock-History.csv"}
+            className="btn btn-sm btn-success"
+          >
+            Export CSV
+          </CSVLink>
         );
+
+        columns = [
+          {
+            Header: "Item Image",
+            accessor: "itemprimaryimg",
+            maxWidth: 200,
+            filterable: false,
+            Cell: row => (
+              <span>
+                <center>
+                  <img
+                    style={{ maxWidth: "70px" }}
+                    class=""
+                    src={row.value}
+                    alt="item primary img"
+                  />
+                </center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Part No",
+            accessor: "itempartno",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>{row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Tech Name",
+            accessor: "itemtechname",
+            maxWidth: 200,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>{row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Quantity",
+            accessor: "quantity",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center> {row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Item Warehouse",
+            accessor: "prodwarehouse",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center> {row.value}</center>
+              </span>
+            )
+          },
+          {
+            Header: "Created Date",
+            accessor: "date",
+            maxWidth: 290,
+            filterable: true,
+            Cell: row => (
+              <span>
+                <center>
+                  <Moment format="YYYY/MM/DD hh:mm A">{row.value}</Moment>
+                </center>
+              </span>
+            )
+          }
+        ];
 
         shownewstockhistory = (
           <div>
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-              <div class="col-3">
-                <div class="card card-bordered">
-                  {warehousetransferimg ? (
-                    <img
-                      style={{ width: "100%" }}
-                      class="card-img-top img-fluid"
-                      src={warehousetransferimg}
-                      alt="transfer img"
-                    />
-                  ) : (
-                    <Spinner />
-                  )}
+            <div className="container-fluid">
+              <div className="col-12 row">
+                <br />
+                <div className="col-2">&#8205;</div>
+                <div class="col-3">
+                  <div
+                    class="card card-bordered"
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    {warehousetransferimg ? (
+                      <img
+                        style={{ width: 100, height: 100 }}
+                        class="card-img-top img-fluid"
+                        src={warehousetransferimg}
+                        alt="newstock history img"
+                      />
+                    ) : (
+                      <Spinner />
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="col-5">
-                <table className="table table-striped table-hover  rtable">
-                  <thead>
-                    <tr>
-                      <th>New Stock History Date</th>
-                      <td>{this.props.match.params.date}</td>
-                    </tr>
+                <div className="col-5">
+                  <table className="table table-striped table-hover  rtable">
+                    <thead>
+                      <tr>
+                        <th>New Stock History Date</th>
+                        <td>{this.props.match.params.date}</td>
+                      </tr>
 
-                    <tr>
-                      <th>History INVOICE </th>
-                      <td>
-                        <input
-                          style={{
-                            cursor: "pointer",
-                            backgroundColor: "goldenrod",
-                            color: "#fff",
-                            padding: "5px"
-                          }}
-                          // onClick={this.printDocument.bind(this)}
-                          onClick={this.windowPrint.bind(this)}
-                          type="button"
-                          name="Pdf"
-                          value="Download Invoice"
-                        />
-                      </td>
-                    </tr>
-                  </thead>
-                </table>
+                      <tr>
+                        <th>Save Invoice PDF </th>
+                        <td>
+                          <input
+                            style={{
+                              cursor: "pointer",
+                              backgroundColor: "goldenrod",
+                              color: "#fff",
+                              padding: "5px"
+                            }}
+                            // onClick={this.printDocument.bind(this)}
+                            onClick={this.windowPrint.bind(this)}
+                            type="button"
+                            name="Pdf"
+                            value="Download Invoice"
+                          />
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th>Save Invoice CSV</th>
+                        <td>{csvContent}</td>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
               </div>
             </div>
 
-            <div className="col-12 row">
-              <br />
-              <div className="col-1">&#8205;</div>
-
-              <div className="col-3">
-                <h5>Added Products</h5>
-                <hr />
+            <div>
+              <div className="container-fluid">
+                <br />{" "}
+                <ReactTable
+                  data={newstockhistorybydate}
+                  columns={columns}
+                  defaultPageSize={5}
+                  pageSizeOptions={[
+                    10,
+                    30,
+                    60,
+                    90,
+                    120,
+                    150,
+                    180,
+                    210,
+                    240,
+                    270,
+                    300
+                  ]}
+                  style={
+                    {
+                      //height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
+                      /*, maxWidth: "800px" */
+                    }
+                  }
+                  className="-striped -highlight"
+                />
               </div>
-
-              <div className="col-8">{newstockhistorydata}</div>
             </div>
           </div>
         );
@@ -344,7 +380,7 @@ class NewStockHistoryByDate extends Component {
                 id="canvas_div_pdf"
                 style={{
                   backgroundColor: "#f5f5f5",
-                  width: "210mm",
+                  maxWidth: "461mm",
                   minHeight: "297mm",
                   padding: "50px",
                   marginLeft: "auto",

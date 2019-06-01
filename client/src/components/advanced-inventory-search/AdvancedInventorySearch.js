@@ -111,15 +111,34 @@ class AdvancedInventorySearch extends Component {
     let advsearchdtall;
     let advsearchdtalllen;
     let columns = [];
+    let headers = [];
     let csvContent;
     if (advsearchresult === null) {
       AdvSearchContent = <Spinner />;
     } else {
       advsearchdtall = advsearchresult;
       advsearchdtalllen = advsearchresult.length;
+
+      headers = [
+        { label: "Item Unique ID", key: "_id" },
+        { label: "Item Tech Name", key: "itemtechname" },
+        { label: "Item Part No", key: "itempartno" },
+        { label: "Machine Names", key: "machinenames" },
+        { label: "Item ID With Unit", key: "itemidwithunit" },
+        { label: "Item OD With Unit", key: "itemodwithunit" },
+        { label: "Item Length With Unit", key: "itemlengthwithunit" },
+        { label: "Item Thickness With Unit", key: "itemthicknesswithunit" },
+        { label: "Item Hsn Code", key: "hsncode" },
+        { label: "Item Min Rate", key: "minrate" },
+        { label: "Item Rate", key: "rate" },
+        { label: "Item Max Rate", key: "maxrate" },
+        { label: "Item Primary Image", key: "itemprimaryimg" }
+      ];
+
       csvContent = (
         <CSVLink
           data={advsearchresult.finalallstock}
+          headers={headers}
           filename={"Inventory-advsearchresult.csv"}
           className="btn btn-sm btn-success"
         >
@@ -349,9 +368,7 @@ class AdvancedInventorySearch extends Component {
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    {advsearchresult &&
-                      advsearchdtall.finalallstock.length == null &&
-                      csvContent}
+                    {advsearchresult && csvContent}
                   </div>
                 </div>
 
